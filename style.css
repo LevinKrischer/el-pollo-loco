@@ -5,7 +5,18 @@
     text-decoration: none;
     list-style: none;
     scroll-behavior: smooth;
-    font-size: inherit;
     color: inherit;
     font-family: inherit;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+canvas {
+    width: 720px;
+    height: 480px;
+    background-color: black;
 }
