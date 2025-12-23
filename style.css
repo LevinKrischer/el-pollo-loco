@@ -1,0 +1,11 @@
+* {
+    position: relative;
+    margin: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+    scroll-behavior: smooth;
+    font-size: inherit;
+    color: inherit;
+    font-family: inherit;
+}
