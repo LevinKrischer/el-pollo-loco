@@ -8,6 +8,10 @@ const level1 = new Level(
         new Cloud()
     ],
     [
+        new BackgroundObject(ImageHub.background.air[0], -720),
+        new BackgroundObject(ImageHub.background.third[1], -720),
+        new BackgroundObject(ImageHub.background.second[1], -720),
+        new BackgroundObject(ImageHub.background.first[1], -720),
         new BackgroundObject(ImageHub.background.air[0], 0),
         new BackgroundObject(ImageHub.background.third[0], 0),
         new BackgroundObject(ImageHub.background.second[0], 0),
@@ -28,5 +32,6 @@ const level1 = new Level(
         new BackgroundObject(ImageHub.background.third[0], 2880),
         new BackgroundObject(ImageHub.background.second[0], 2880),
         new BackgroundObject(ImageHub.background.first[0], 2880)
-    ]
+    ],
+    
 );
