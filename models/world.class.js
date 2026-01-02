@@ -8,12 +8,23 @@ class World {
     world;
 
     constructor(canvas, keyboard) {
-        this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        this.canvas = canvas;
         this.keyboard = keyboard;
-        this.setWorld();
-        this.run();
+
         this.draw();
+        this.setWorld();
+        this.checkCollisions();
+    }
+
+    checkCollisions() {
+        setInterval(() => {
+            this.level.enemies.forEach((enemy) => {
+                if (this.character.isColliding(enemy)) {
+                    this.character.hit();
+                }
+            })
+        }, 200);
     }
 
     generateBackground() {
@@ -37,12 +48,6 @@ class World {
         }
 
         return objects;
-    }
-
-    run() {
-        setInterval(() => {
-            this.checkKeyboard();
-        }, 1000 / 60);
     }
 
     checkKeyboard() {
@@ -105,4 +110,6 @@ class World {
         movObj.x = movObj.x * -1;
         this.ctx.restore();
     }
+
+    
 }
