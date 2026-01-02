@@ -13,10 +13,18 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-image: url('./assets/img/0_project-images/desert-bg.jpg');
+}
+
+.logo-main {
+    margin: 40px;
 }
 
 canvas {
     width: 720px;
     height: 480px;
     background-color: black;
+    border: 4px solid #de5e37e8;
+    border-radius: 0 20px;
+    box-shadow: 4px 4px 8px #DE5E37;
 }
