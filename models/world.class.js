@@ -15,18 +15,30 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        this.checkCollisions();
+        this.run();
+    }
+
+    run() {
+        setInterval(() => {
+            this.checkCollisions();
+            this.checkThrowObjects();
+        }, 200);
+    }
+
+    checkThrowObjects() {
+        if (Keyboard.D) {
+            let bottle = new ThrowableObject(this.character.x + 50, this.character.y + 80)
+            this.throwableObjects.push(bottle);
+        }
     }
 
     checkCollisions() {
-        setInterval(() => {
-            this.level.enemies.forEach((enemy) => {
+        this.level.enemies.forEach((enemy) => {
                 if (this.character.isColliding(enemy)) {
                     this.character.hit();
                     this.statusBar.setPercentage(this.character.energy, this.statusBar.imgsStatusHealth);
                 }
             })
-        }, 200);
     }
 
     generateBackground() {
@@ -48,17 +60,7 @@ class World {
                 objects.push(new BackgroundObject(img, x));
             });
         }
-
         return objects;
-    }
-
-    checkKeyboard() {
-        if (this.keyboard.RIGHT) {
-            this.character.moveRight();
-        }
-        if (this.keyboard.LEFT) {
-            this.character.moveLeft();
-        }
     }
 
     setWorld() {
