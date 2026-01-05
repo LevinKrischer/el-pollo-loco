@@ -12,7 +12,6 @@ class Keyboard {
         window.addEventListener("keydown", (e) => {
             if (e.key == ' ' || e.key == "ArrowUp") {
                 Keyboard.SPACE = true;
-                console.log("Jump!!!");
             }
             if (e.key == 'ArrowLeft') {
                 Keyboard.LEFT = true;
@@ -22,7 +21,6 @@ class Keyboard {
             }
             if (e.key == 'd') {
                 Keyboard.D = true;
-                console.log(`D is pressed`);
             }
         });
 

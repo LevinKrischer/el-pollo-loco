@@ -42,16 +42,24 @@ class Character extends MoveableObject {
 
             if (this.isDead()) {
                 this.playAnimation(this.imgsDead);
+                console.log("Pepe is DEAD!");
+                
             } else if (this.isHurt()) {
                 this.playAnimation(this.imgsHurt);
+                console.log("Pepe gets HURT");
+                
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.imgsJump);
             } else {
                 if (Keyboard.SPACE && !this.isAboveGround()) {
                     this.speedY = 20;
+                    console.log("Pepe JUMPS");
+                    
                 } 
                 if (Keyboard.RIGHT || Keyboard.LEFT) {
                     this.playAnimation(this.imgsWalking)
+                    console.log("Pepe WALKS");
+                    
                 } 
             }
         }, 50);
