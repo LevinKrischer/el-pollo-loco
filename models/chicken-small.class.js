@@ -1,16 +1,16 @@
-class Chicken extends MoveableObject {
-    imgsWalking = ImageHub.chicken.walking;
-    imgsDead = ImageHub.chicken.dead;
+class ChickenSmall extends MoveableObject {
+    imgsWalking = ImageHub.chickenSmall.walking;
+    imgsDead = ImageHub.chickenSmall.dead;
     currentImage = 0;
-    height = 60;
-    width = 60; 
-    y = 365;
+    height = 50;
+    width = 50; 
+    y = 385;
 
     constructor() {
-        super().loadImage(ImageHub.chicken.walking[0]);
+        super().loadImage(ImageHub.chickenSmall.walking[0]);
         this.loadImages(this.imgsWalking);
-        this.x = 200 + Math.random() * 3000;
-        this.speed = 0.15 + Math.random () * 0.5;
+        this.x = 200 + Math.random() * 3500;
+        this.speed = 0.15 + Math.random () * 0.4;
         this.animate();
     }
 
