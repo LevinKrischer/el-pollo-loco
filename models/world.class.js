@@ -6,7 +6,10 @@ class World {
     keyboard;
     camera_x = 0;
     world;
-    statusBar = new StatusBar;
+    statusBar = [new StatusBar(ImageHub.statusBar.health, 40, 0),
+    new StatusBar(ImageHub.statusBar.coins, 40, 45),
+    new StatusBar(ImageHub.statusBar.bottle, 40, 90)
+    ];
     throwableObjects = [new ThrowableObject()];
 
     constructor(canvas, keyboard) {
@@ -34,11 +37,11 @@ class World {
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy)) {
-                    this.character.hit();
-                    this.statusBar.setPercentage(this.character.energy, this.statusBar.imgsStatusHealth);
-                }
-            })
+            if (this.character.isColliding(enemy)) {
+                this.character.hit();
+                this.statusBar.setPercentage(this.character.energy, this.statusBar.imgsStatusHealth);
+            }
+        })
     }
 
     generateBackground() {
@@ -76,7 +79,7 @@ class World {
         this.addObjectsToMap(this.level.clouds);
 
         this.ctx.translate(-this.camera_x, 0);
-        this.addToMap(this.statusBar);
+        this.addObjectsToMap(this.statusBar);
         this.ctx.translate(this.camera_x, 0);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.enemies);
@@ -120,5 +123,5 @@ class World {
         this.ctx.restore();
     }
 
-    
+
 }

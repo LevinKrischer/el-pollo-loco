@@ -5,74 +5,84 @@ class Character extends MoveableObject {
     imgsJump = ImageHub.character.jumping;
     imgsHurt = ImageHub.character.hurt;
     imgsDead = ImageHub.character.dead;
-    currentImage = 0;
 
     height = 250;
     y = 0;
-    speed = 5;
+    speed = 6;
     world;
 
+    lastMoveTime = Date.now();
+    longIdleDelay = 5000;
+
     constructor() {
-        super().loadImage("assets/img/2_character_pepe/2_walk/W-21.png");
+        super().loadImage(this.imgsIdle[0]);
+        this.preloadAllImages();
+        this.applyGravity();
+        this.startLoops();
+    }
+
+    preloadAllImages() {
         this.loadImages(this.imgsWalking);
-        this.loadImages(this.imgsJump);
-        this.loadImages(this.imgsDead);
-        this.loadImages(this.imgsHurt);
         this.loadImages(this.imgsIdle);
         this.loadImages(this.imgsIdleLong);
-        this.applyGravity();
-        this.animate();
+        this.loadImages(this.imgsJump);
+        this.loadImages(this.imgsHurt);
+        this.loadImages(this.imgsDead);
     }
 
-    animate() {
-        setInterval(() => {
-            if (Keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.x += this.speed;
-                this.otherDirection = false;
-            } else {
-                if (Keyboard.LEFT && this.x > 0) {
-                    this.x -= this.speed;
-                    this.otherDirection = true;
-                }
-            }
-            this.world.camera_x = -this.x + 100;
-        }, 1000 / 60)
-
-        setInterval(() => {
-
-            if (this.isDead()) {
-                this.playAnimation(this.imgsDead);
-                console.log("Pepe is DEAD!");
-                
-            } else if (this.isHurt()) {
-                this.playAnimation(this.imgsHurt);
-                console.log("Pepe gets HURT");
-                
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.imgsJump);
-            } else {
-                if (Keyboard.SPACE && !this.isAboveGround()) {
-                    this.speedY = 20;
-                    console.log("Pepe JUMPS");
-                    
-                } 
-                if (Keyboard.RIGHT || Keyboard.LEFT) {
-                    this.playAnimation(this.imgsWalking)
-                    console.log("Pepe WALKS");
-                    
-                } 
-            }
-        }, 50);
-
-        setInterval(() => {
-            if (this.isAboveGround()) {
-                this.playAnimation(this.imgsJump);
-            }
-        }, 200)
+    startLoops() {
+        requestAnimationFrame(() => 
+            this.update());
+        setInterval(() => 
+            this.updateAnimation()
+        , 80);
     }
 
-    jump() {
+    update() {
+        this.handleMovement();
+        this.world.camera_x = -this.x + 100;
+        requestAnimationFrame(() => 
+            this.update());
+    }
 
-    };
+    handleMovement() {
+        if (Keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            this.x += this.speed;
+            this.otherDirection = false;
+            this.lastMoveTime = Date.now();
+        }
 
+        if (Keyboard.LEFT && this.x > 0) {
+            this.x -= this.speed;
+            this.otherDirection = true;
+            this.lastMoveTime = Date.now();
+        }
+
+        if (Keyboard.SPACE && !this.isAboveGround()) {
+            this.speedY = 20;
+            this.lastMoveTime = Date.now();
+        }
+    }
+
+    updateAnimation() {
+        if (this.isDead()) 
+            return this.playAnimation(this.imgsDead);
+        if (this.isHurt()) 
+            return this.playAnimation(this.imgsHurt);
+        if (this.isAboveGround()) 
+            return this.playAnimation(this.imgsJump);
+        if (Keyboard.RIGHT || Keyboard.LEFT) 
+            return this.playAnimation(this.imgsWalking);
+
+        this.handleIdleAnimation();
+    }
+
+    handleIdleAnimation() {
+        const idleTime = Date.now() - this.lastMoveTime;
+        if (idleTime > this.longIdleDelay) {
+            this.playAnimation(this.imgsIdleLong);
+        } else {
+            this.playAnimation(this.imgsIdle);
+        }
+    }
 }

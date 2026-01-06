@@ -27,6 +27,8 @@ class MoveableObject extends DrawableObject {
         }
     }
 
+    
+
     moveRight() {
         setInterval(() => {
             this.x += this.speed;
