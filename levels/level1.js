@@ -1,21 +1,21 @@
 const level1 = new Level(
     [   
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new ChickenSmall,
-        // new Chicken(),
-        // new Chicken(),
-        // new Chicken(),
-        // new Chicken(),
-        // new Chicken(),
-        // new Chicken(),
-        // new Chicken(),
-        // new Chicken(),
+        new ChickenSmall,
+        new ChickenSmall,
+        new ChickenSmall,
+        new ChickenSmall,
+        new ChickenSmall,
+        new ChickenSmall,
+        new ChickenSmall,
+        new ChickenSmall,
+        new Chicken(),
+        new Chicken(),
+        new Chicken(),
+        new Chicken(),
+        new Chicken(),
+        new Chicken(),
+        new Chicken(),
+        new Chicken(),
         new Endboss()
     ],
     [
@@ -53,5 +53,5 @@ const level1 = new Level(
         new BackgroundObject(ImageHub.background.second[0], 2880),
         new BackgroundObject(ImageHub.background.first[0], 2880)
     ],
-
+    
 );

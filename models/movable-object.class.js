@@ -27,8 +27,6 @@ class MoveableObject extends DrawableObject {
         }
     }
 
-    
-
     moveRight() {
         setInterval(() => {
             this.x += this.speed;
@@ -48,29 +46,6 @@ class MoveableObject extends DrawableObject {
         this.currentImage++;
     }
 
-    isColliding(movObj) {
-        return this.x + this.width > movObj.x &&
-            this.y + this.height > movObj.y &&
-            this.x < movObj.x &&
-            this.y < movObj.y + movObj.height;
-    }
+    
 
-    hit() {
-        this.energy -= 5;
-        if (this.energy < 0) {
-            this.energy = 0;
-        } else {
-            this.lastHit = new Date().getTime();
-        }
-    }
-
-    isHurt() {
-        let timePassed = new Date().getTime() - this.lastHit; // Diff in ms
-        timePassed = timePassed / 1000;
-        return timePassed < 0.8;
-    }
-
-    isDead() {
-        return this.energy == 0;
-    }
 }

@@ -6,9 +6,9 @@ class World {
     keyboard;
     camera_x = 0;
     world;
-    statusBar = [new StatusBar(ImageHub.statusBar.health, 40, 0),
-    new StatusBar(ImageHub.statusBar.coins, 40, 45),
-    new StatusBar(ImageHub.statusBar.bottle, 40, 90)
+    statusBar = [new StatusBar(ImageHub.statusBar.health, 40, 0, true),
+    new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
+    new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
     ];
     throwableObjects = [new ThrowableObject()];
 
@@ -25,7 +25,7 @@ class World {
         setInterval(() => {
             this.checkCollisions();
             this.checkThrowObjects();
-        }, 200);
+        }, 100);
     }
 
     checkThrowObjects() {
@@ -36,13 +36,22 @@ class World {
     }
 
     checkCollisions() {
-        this.level.enemies.forEach((enemy) => {
+        this.character.getRealFrame();
+
+        this.level.enemies.forEach(enemy => {
+            enemy.getRealFrame();
+
             if (this.character.isColliding(enemy)) {
                 this.character.hit();
-                this.statusBar.setPercentage(this.character.energy, this.statusBar.imgsStatusHealth);
+                this.statusBar[0].setPercentage(
+                    this.character.energy,
+                    this.statusBar[0].imgsStatusHealth
+                );
+                console.log("Pepe wurde getroffen");
             }
-        })
+        });
     }
+
 
     generateBackground() {
         const layers = [
@@ -77,20 +86,21 @@ class World {
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-
+        this.character.getRealFrame();   // ← Hitbox aktualisieren
+        this.addToMap(this.character);
+        this.character.drawFrame(this.ctx);
+        this.level.enemies.forEach(enemy => {
+            enemy.getRealFrame();        // ← Hitbox aktualisieren
+            this.addToMap(enemy);
+            enemy.drawFrame(this.ctx);
+        });
+        this.addObjectsToMap(this.throwableObjects);
         this.ctx.translate(-this.camera_x, 0);
         this.addObjectsToMap(this.statusBar);
-        this.ctx.translate(this.camera_x, 0);
-        this.addToMap(this.character);
-        this.addObjectsToMap(this.level.enemies);
-        this.addObjectsToMap(this.throwableObjects);
 
-        this.ctx.translate(-this.camera_x, 0);
-
-        requestAnimationFrame(() => {
-            this.draw();
-        });
+        requestAnimationFrame(() => this.draw());
     }
+
 
     addObjectsToMap(objects) {
         objects.forEach(o => {
@@ -104,7 +114,6 @@ class World {
         }
 
         movObj.draw(this.ctx);
-        movObj.drawFrame(this.ctx);
 
         if (movObj.otherDirection) {
             this.flipImageBack(movObj)

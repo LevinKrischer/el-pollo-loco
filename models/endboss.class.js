@@ -1,4 +1,4 @@
-class Endboss extends MoveableObject {
+class Endboss extends HitableObject {
 
     imgsWalking = ImageHub.endboss.walking;
     imgsDead = ImageHub.endboss.dead;

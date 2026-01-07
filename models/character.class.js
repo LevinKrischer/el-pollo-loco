@@ -1,4 +1,4 @@
-class Character extends MoveableObject {
+class Character extends HitableObject {
     imgsWalking = ImageHub.character.walking;
     imgsIdle = ImageHub.character.idle;
     imgsIdleLong = ImageHub.character.long_idle;
@@ -10,6 +10,13 @@ class Character extends MoveableObject {
     y = 0;
     speed = 6;
     world;
+
+    offset = {
+        top: 100,
+        right: 20,
+        bottom: 15,
+        left: 15
+    }
 
     lastMoveTime = Date.now();
     longIdleDelay = 5000;
@@ -31,17 +38,17 @@ class Character extends MoveableObject {
     }
 
     startLoops() {
-        requestAnimationFrame(() => 
+        requestAnimationFrame(() =>
             this.update());
-        setInterval(() => 
+        setInterval(() =>
             this.updateAnimation()
-        , 80);
+            , 80);
     }
 
     update() {
         this.handleMovement();
         this.world.camera_x = -this.x + 100;
-        requestAnimationFrame(() => 
+        requestAnimationFrame(() =>
             this.update());
     }
 
@@ -65,13 +72,13 @@ class Character extends MoveableObject {
     }
 
     updateAnimation() {
-        if (this.isDead()) 
+        if (this.isDead())
             return this.playAnimation(this.imgsDead);
-        if (this.isHurt()) 
+        if (this.isHurt())
             return this.playAnimation(this.imgsHurt);
-        if (this.isAboveGround()) 
+        if (this.isAboveGround())
             return this.playAnimation(this.imgsJump);
-        if (Keyboard.RIGHT || Keyboard.LEFT) 
+        if (Keyboard.RIGHT || Keyboard.LEFT)
             return this.playAnimation(this.imgsWalking);
 
         this.handleIdleAnimation();

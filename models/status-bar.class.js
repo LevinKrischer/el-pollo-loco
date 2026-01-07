@@ -6,7 +6,7 @@ class StatusBar extends DrawableObject {
 
     percentage = 100;
 
-    constructor(type, x, y) {
+    constructor(type, x, y, full) {
         super();
         this.type = type;        // ← direkt das Array
         this.loadImages(type);   // ← funktioniert
@@ -14,7 +14,7 @@ class StatusBar extends DrawableObject {
         this.y = y;
         this.width = 200;
         this.height = 60;
-        this.setPercentage(100, type);
+        this.setPercentage(full ? 100 : 0, type);
     }
 
     setPercentage(_percentage, _type) {
