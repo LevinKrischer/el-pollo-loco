@@ -41,13 +41,13 @@ class World {
     }
 
     spawnCoins() {
-    const coinHeights = [350, 300, 250, 200, 150];
+        const coinHeights = [350, 300, 250, 200, 150];
 
         for (let i = 0; i < 20; i++) {
             const x = 200 + Math.random() * 3000;
 
-        // Zufällige Höhe auswählen
-        const y = coinHeights[Math.floor(Math.random() * coinHeights.length)];
+            // Zufällige Höhe auswählen
+            const y = coinHeights[Math.floor(Math.random() * coinHeights.length)];
 
             this.level.coins.push(new Coin(x, y));
         }
@@ -60,6 +60,8 @@ class World {
             this.checkBottlePickup();
             this.checkThrowObjects();
             this.checkCoinPickup();
+            this.removeDeadEnemies();
+
         }, 100);
     }
 
@@ -132,28 +134,33 @@ class World {
         );
     }
 
-
-
-
     checkCollisions() {
         this.character.getRealFrame();
 
         this.level.enemies.forEach(enemy => {
             enemy.getRealFrame();
 
-            if (this.character.isColliding(enemy)) {
-                this.character.hit();
+            if (!enemy.isDead() && this.character.isColliding(enemy)) {
 
+                const isFalling = this.character.speedY < 0;
+
+                if (isFalling && !enemy.isEndboss) {
+                    enemy.die();
+                    console.log("STOMP! Gegner besiegt");
+                    return;
+                }
+
+                if (enemy.isDead()) return;
+                // SCHADEN (nur wenn NICHT gestomped)
+                this.character.hit();
                 this.statusBar[0].setPercentage(
                     this.character.energy,
                     this.statusBar[0].imgsStatusHealth
                 );
-
                 console.log("Pepe wurde getroffen");
             }
         });
     }
-
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -175,6 +182,12 @@ class World {
 
         requestAnimationFrame(() => this.draw());
     }
+
+    removeDeadEnemies() {
+        this.level.enemies = this.level.enemies.filter(e => !e.markedForDeletion);
+    }
+
+
 
     addObjectsToMap(objects) {
         objects.forEach(o => this.addToMap(o));

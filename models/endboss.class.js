@@ -9,6 +9,8 @@ class Endboss extends HitableObject {
     height = 400;
     width = 350; 
     y = 50;
+    isEndboss = true;
+
 
     constructor() {
         super().loadImage(ImageHub.endboss.alert[0]);

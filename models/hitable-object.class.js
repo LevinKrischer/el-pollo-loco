@@ -46,6 +46,19 @@ class HitableObject extends MoveableObject {
             this.rY < hitObj.rY + hitObj.rHeight;
     }
 
+    die() {
+    this.energy = 0;
+    this.speed = 0;
+    this.currentImage = 0;
+    this.isDeadFlag = true;
+
+    // Gegner erst nach 2 Sekunden entfernen
+    setTimeout(() => {
+        this.markedForDeletion = true;
+    }, 2000);
+}
+
+
     drawFrame(ctx) {
         ctx.beginPath();
         ctx.lineWidth = '5';
