@@ -8,16 +8,13 @@ class World {
     maxBottles = 7;
     coinCount = 0;
     maxCoins = 20;
-
-
+    bottleCount = 0;
+    flyingBottles = [];
     statusBar = [
         new StatusBar(ImageHub.statusBar.health, 40, 0, true),
         new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
         new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
     ];
-
-    bottleCount = 0;
-    flyingBottles = [];
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -40,6 +37,39 @@ class World {
         }
     }
 
+    checkBottleHits() {
+        this.flyingBottles.forEach((bottle, bottleIndex) => {
+            bottle.getRealFrame();
+
+            this.level.enemies.forEach((enemy, enemyIndex) => {
+                enemy.getRealFrame();
+
+                if (bottle.isColliding(enemy) && !enemy.isDead()) {
+
+                    // Bottle verschwindet nach Treffer
+                    this.flyingBottles.splice(bottleIndex, 1);
+
+                    // Endboss braucht mehrere Treffer
+                    if (enemy instanceof Endboss) {
+                        enemy.hitsTaken++;
+
+                        console.log("Endboss getroffen! Treffer:", enemy.hitsTaken);
+
+                        if (enemy.hitsTaken >= enemy.hitsToKill) {
+                            enemy.die();
+                            console.log("Endboss besiegt!");
+                        }
+
+                    } else {
+                        // Normale Gegner sterben sofort
+                        enemy.die();
+                        console.log("Gegner durch Flasche besiegt");
+                    }
+                }
+            });
+        });
+    }
+
     spawnCoins() {
         const coinHeights = [350, 300, 250, 200, 150];
 
@@ -53,17 +83,17 @@ class World {
         }
     }
 
-
     run() {
         setInterval(() => {
             this.checkCollisions();
             this.checkBottlePickup();
             this.checkThrowObjects();
             this.checkCoinPickup();
+            this.checkBottleHits();
             this.removeDeadEnemies();
-
         }, 100);
     }
+
 
     checkBottlePickup() {
         this.character.getRealFrame();
@@ -102,8 +132,6 @@ class World {
         });
     }
 
-
-
     checkThrowObjects() {
         if (Keyboard.D && this.bottleCount > 0) {
 
@@ -118,7 +146,6 @@ class World {
             this.updateBottleStatusBar();
         }
     }
-
 
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;
@@ -161,6 +188,7 @@ class World {
             }
         });
     }
+
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -186,8 +214,6 @@ class World {
     removeDeadEnemies() {
         this.level.enemies = this.level.enemies.filter(e => !e.markedForDeletion);
     }
-
-
 
     addObjectsToMap(objects) {
         objects.forEach(o => this.addToMap(o));

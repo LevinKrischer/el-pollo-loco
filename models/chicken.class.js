@@ -3,7 +3,7 @@ class Chicken extends HitableObject {
     imgsDead = ImageHub.chicken.dead;
     currentImage = 0;
     height = 60;
-    width = 60; 
+    width = 60;
     y = 365;
 
     offset = {
@@ -18,29 +18,28 @@ class Chicken extends HitableObject {
         this.loadImages(this.imgsWalking);
         this.loadImages(this.imgsDead);
         this.x = 200 + Math.random() * 3000;
-        this.speed = 0.15 + Math.random () * 0.5;
+        this.speed = 0.15 + Math.random() * 0.5;
         this.animate();
     }
 
     animate() {
-    this.moveLeft();
+        this.moveLeft();
 
-    setInterval(() => {
-        if (this.isDead()) {
-            this.playAnimation(this.imgsDead);
-        } else {
-            let index = this.currentImage % this.imgsWalking.length;
-            let path = this.imgsWalking[index];
-            this.img = this.imageCache[path];
-            this.currentImage++;
-        }
-    }, 200);
-}
-
+        setInterval(() => {
+            if (this.isDead()) {
+                this.playAnimation(this.imgsDead);
+            } else {
+                let index = this.currentImage % this.imgsWalking.length;
+                let path = this.imgsWalking[index];
+                this.img = this.imageCache[path];
+                this.currentImage++;
+            }
+        }, 200);
+    }
 
     isDead() {
-    return this.energy <= 0;
-}
+        return this.energy <= 0;
+    }
 
 }
 

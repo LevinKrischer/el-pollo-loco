@@ -7,10 +7,11 @@ class Endboss extends HitableObject {
     imgsAttack = ImageHub.endboss.attack;
     currentImage = 0;
     height = 400;
-    width = 350; 
+    width = 350;
     y = 50;
     isEndboss = true;
-
+    hitsToKill = 5; // Anzahl benötigter Treffer hitsTaken = 0; // bisherige Treffer
+    hitsTaken = 0;
 
     constructor() {
         super().loadImage(ImageHub.endboss.alert[0]);

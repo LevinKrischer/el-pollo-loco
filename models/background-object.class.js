@@ -8,6 +8,6 @@ class BackgroundObject extends DrawableObject {
         this.height = 480;
     }
 
-    getRealFrame() {}
-    drawFrame() {}
+    getRealFrame() { }
+    drawFrame() { }
 }

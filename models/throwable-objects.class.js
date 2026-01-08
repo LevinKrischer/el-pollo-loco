@@ -1,8 +1,15 @@
-class ThrowableObject extends MoveableObject {
+class ThrowableObject extends HitableObject {
 
     imgBottleNormal = ImageHub.bottle.normal;
     imgsBottleRotating = ImageHub.bottle.rotating;
     imgsBottleSplash = ImageHub.bottle.splash;
+
+    offset = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+    };
 
     constructor(x, y) {
         super();

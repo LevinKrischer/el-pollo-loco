@@ -10,8 +10,6 @@ class HitableObject extends MoveableObject {
         left: 0
     }
 
-
-
     hit() {
         this.energy -= 2;
         if (this.energy < 0) {
@@ -28,7 +26,7 @@ class HitableObject extends MoveableObject {
     }
 
     isDead() {
-        return this.energy == 0;        
+        return this.energy == 0;
     }
 
     getRealFrame() {
@@ -47,17 +45,16 @@ class HitableObject extends MoveableObject {
     }
 
     die() {
-    this.energy = 0;
-    this.speed = 0;
-    this.currentImage = 0;
-    this.isDeadFlag = true;
+        this.energy = 0;
+        this.speed = 0;
+        this.currentImage = 0;
+        this.isDeadFlag = true;
 
-    // Gegner erst nach 2 Sekunden entfernen
-    setTimeout(() => {
-        this.markedForDeletion = true;
-    }, 2000);
-}
-
+        // Gegner erst nach 2 Sekunden entfernen
+        setTimeout(() => {
+            this.markedForDeletion = true;
+        }, 2000);
+    }
 
     drawFrame(ctx) {
         ctx.beginPath();
