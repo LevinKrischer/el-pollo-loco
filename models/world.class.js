@@ -15,6 +15,9 @@ class World {
         new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
         new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
     ];
+    lastThrowTime = 0;
+    throwCooldown = 500; // 0,5 Sekunden
+
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -31,44 +34,55 @@ class World {
 
     spawnBottles() {
         for (let i = 0; i < 15; i++) {
-            const x = 200 + Math.random() * 3000;
+            const x = 200 + Math.random() * 2400;
             const y = 350;
             this.level.bottles.push(new Bottle(x, y));
         }
     }
 
     checkBottleHits() {
-        this.flyingBottles.forEach((bottle, bottleIndex) => {
+        this.flyingBottles.forEach((bottle) => {
+
+            if (bottle.isExploded) return;
+
             bottle.getRealFrame();
 
-            this.level.enemies.forEach((enemy, enemyIndex) => {
+            for (let enemy of this.level.enemies) {
                 enemy.getRealFrame();
 
-                if (bottle.isColliding(enemy) && !enemy.isDead()) {
+                if (!enemy.isDead() && bottle.isColliding(enemy)) {
 
-                    // Bottle verschwindet nach Treffer
-                    this.flyingBottles.splice(bottleIndex, 1);
+                    bottle.explode();
 
-                    // Endboss braucht mehrere Treffer
                     if (enemy instanceof Endboss) {
                         enemy.hitsTaken++;
+                        console.log("Treffer! hitsTaken:", enemy.hitsTaken);
+
 
                         console.log("Endboss getroffen! Treffer:", enemy.hitsTaken);
+                        enemy.lastHit = new Date().getTime();
+
 
                         if (enemy.hitsTaken >= enemy.hitsToKill) {
                             enemy.die();
                             console.log("Endboss besiegt!");
+                            
                         }
-
                     } else {
-                        // Normale Gegner sterben sofort
                         enemy.die();
-                        console.log("Gegner durch Flasche besiegt");
                     }
+
+                    // ❗ WICHTIG: Keine weiteren Kollisionen prüfen
+                    return;
                 }
-            });
+            }
         });
+
+        this.flyingBottles = this.flyingBottles.filter(b => !b.markedForDeletion);
     }
+
+
+
 
     spawnCoins() {
         const coinHeights = [350, 300, 250, 200, 150];
@@ -91,9 +105,9 @@ class World {
             this.checkCoinPickup();
             this.checkBottleHits();
             this.removeDeadEnemies();
+            this.checkEndbossTrigger();
         }, 100);
     }
-
 
     checkBottlePickup() {
         this.character.getRealFrame();
@@ -133,19 +147,28 @@ class World {
     }
 
     checkThrowObjects() {
-        if (Keyboard.D && this.bottleCount > 0) {
+    const now = Date.now();
 
-            let bottle = new ThrowableObject(
-                this.character.x + 50,
-                this.character.y + 80
-            );
+    // ❗ Pepe darf NICHT werfen, wenn er verletzt ist
+    if (this.character.isHurt()) return;
 
-            this.flyingBottles.push(bottle);
-            this.bottleCount--;
+    // ❗ Cooldown prüfen
+    if (Keyboard.D && this.bottleCount > 0 && now - this.lastThrowTime >= this.throwCooldown) {
 
-            this.updateBottleStatusBar();
-        }
+        let bottle = new Bottle(
+            this.character.x + 20,
+            this.character.y + 80
+        );
+
+        bottle.throw();
+        this.flyingBottles.push(bottle);
+        this.bottleCount--;
+
+        this.lastThrowTime = now;
+
+        this.updateBottleStatusBar();
     }
+}
 
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;
@@ -188,6 +211,28 @@ class World {
             }
         });
     }
+
+    checkEndbossTrigger() {
+    // Endboss aus enemies holen
+    const boss = this.level.enemies.find(e => e.isEndboss);
+
+    // Falls noch nicht gespawnt oder nicht gefunden → abbrechen
+    if (!boss) return;
+
+    // Wenn Boss schon aktiviert wurde → nichts tun
+    if (boss.activated) return;
+
+    // Trigger-Position
+    if (this.character.x > 2500) {
+        boss.activated = true;
+
+        setTimeout(() => {
+            boss.startMoving();
+        }, 2000);
+    }
+}
+
+
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

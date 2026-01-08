@@ -14,7 +14,7 @@ class Character extends HitableObject {
     offset = {
         top: 100,
         right: 20,
-        bottom: 15,
+        bottom: 5,
         left: 15
     }
 

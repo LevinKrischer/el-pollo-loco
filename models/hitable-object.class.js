@@ -2,6 +2,7 @@ class HitableObject extends MoveableObject {
 
     energy = 100;
     lastHit = 0;
+    dead = false;
 
     offset = {
         top: 0,
@@ -45,16 +46,11 @@ class HitableObject extends MoveableObject {
     }
 
     die() {
-        this.energy = 0;
-        this.speed = 0;
-        this.currentImage = 0;
-        this.isDeadFlag = true;
+        if (this.dead) return; // verhindert mehrfaches Sterben
 
-        // Gegner erst nach 2 Sekunden entfernen
-        setTimeout(() => {
-            this.markedForDeletion = true;
-        }, 2000);
+        this.dead = true; this.speed = 0; this.speedY = 0;
     }
+
 
     drawFrame(ctx) {
         ctx.beginPath();

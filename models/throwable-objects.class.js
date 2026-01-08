@@ -18,16 +18,14 @@ class ThrowableObject extends HitableObject {
         this.y = y;
         this.height = 80;
         this.width = 80;
-
-        this.throw();
     }
 
-    throw() {
-        this.speedY = 25;
-        this.applyGravity();
+throw() {
+    this.speedY = 25;
+    this.applyGravity();
 
-        setInterval(() => {
-            this.x += 10;
-        }, 25);
-    }
+    this.throwInterval = setInterval(() => {
+        this.x += 10;
+    }, 25);
+}
 }
