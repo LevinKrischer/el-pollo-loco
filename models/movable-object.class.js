@@ -27,6 +27,13 @@ class MoveableObject extends DrawableObject {
         }
     }
 
+    getRealFrame() {
+        this.rX = this.x + this.offset.left;
+        this.rY = this.y + this.offset.top;
+        this.rWidth = this.width - this.offset.left - this.offset.right;
+        this.rHeight = this.height - this.offset.top - this.offset.bottom;
+    }
+
     moveRight() {
         setInterval(() => {
             this.x += this.speed;
@@ -45,7 +52,5 @@ class MoveableObject extends DrawableObject {
         this.img = this.imageCache[path];
         this.currentImage++;
     }
-
-    
 
 }

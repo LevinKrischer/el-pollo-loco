@@ -179,6 +179,13 @@ class ImageHub {
         ]
     }
 
+    static coin = {
+        rotating: [
+            "assets/img/8_coin/coin_1.png",
+            "assets/img/8_coin/coin_2.png",
+        ]
+    }
+
     static bottle = {
         normal: [
             "assets/img/6_salsa_bottle/salsa_bottle.png"

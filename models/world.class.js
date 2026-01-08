@@ -5,35 +5,135 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
-    world;
-    statusBar = [new StatusBar(ImageHub.statusBar.health, 40, 0, true),
-    new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
-    new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
+    maxBottles = 7;
+    coinCount = 0;
+    maxCoins = 20;
+
+
+    statusBar = [
+        new StatusBar(ImageHub.statusBar.health, 40, 0, true),
+        new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
+        new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
     ];
-    throwableObjects = [new ThrowableObject()];
+
+    bottleCount = 0;
+    flyingBottles = [];
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.draw();
+
         this.setWorld();
+        this.spawnBottles();
+        this.spawnCoins();
+
+        this.draw();
         this.run();
     }
+
+    spawnBottles() {
+        for (let i = 0; i < 15; i++) {
+            const x = 200 + Math.random() * 3000;
+            const y = 350;
+            this.level.bottles.push(new Bottle(x, y));
+        }
+    }
+
+    spawnCoins() {
+    const coinHeights = [350, 300, 250, 200, 150];
+
+        for (let i = 0; i < 20; i++) {
+            const x = 200 + Math.random() * 3000;
+
+        // Zufällige Höhe auswählen
+        const y = coinHeights[Math.floor(Math.random() * coinHeights.length)];
+
+            this.level.coins.push(new Coin(x, y));
+        }
+    }
+
 
     run() {
         setInterval(() => {
             this.checkCollisions();
+            this.checkBottlePickup();
             this.checkThrowObjects();
+            this.checkCoinPickup();
         }, 100);
     }
 
+    checkBottlePickup() {
+        this.character.getRealFrame();
+
+        this.level.bottles.forEach((bottle, index) => {
+            bottle.getRealFrame();
+
+            if (this.character.isColliding(bottle)) {
+
+                if (this.bottleCount < this.maxBottles) {
+                    this.bottleCount++;
+                    this.level.bottles.splice(index, 1);
+
+                    this.updateBottleStatusBar();
+                    console.log("Flasche eingesammelt!");
+                } else {
+                    console.log("Inventar voll – Flasche bleibt liegen");
+                }
+            }
+        });
+    }
+
+    checkCoinPickup() {
+        this.character.getRealFrame();
+
+        this.level.coins.forEach((coin, index) => {
+            coin.getRealFrame();
+
+            if (this.character.isColliding(coin)) {
+                this.coinCount++;
+                this.level.coins.splice(index, 1);
+
+                this.updateCoinStatusBar();
+                console.log("Coin eingesammelt!");
+            }
+        });
+    }
+
+
+
     checkThrowObjects() {
-        if (Keyboard.D) {
-            let bottle = new ThrowableObject(this.character.x + 50, this.character.y + 80)
-            this.throwableObjects.push(bottle);
+        if (Keyboard.D && this.bottleCount > 0) {
+
+            let bottle = new ThrowableObject(
+                this.character.x + 50,
+                this.character.y + 80
+            );
+
+            this.flyingBottles.push(bottle);
+            this.bottleCount--;
+
+            this.updateBottleStatusBar();
         }
     }
+
+
+    updateBottleStatusBar() {
+        const percentage = (this.bottleCount / this.maxBottles) * 100;
+        this.statusBar[2].setPercentage(percentage, this.statusBar[2].imgsStatusBottles);
+    }
+
+    updateCoinStatusBar() {
+        const percentage = (this.coinCount / this.maxCoins) * 100;
+
+        this.statusBar[1].setPercentage(
+            percentage,
+            this.statusBar[1].imgsStatusCoins
+        );
+    }
+
+
+
 
     checkCollisions() {
         this.character.getRealFrame();
@@ -43,40 +143,15 @@ class World {
 
             if (this.character.isColliding(enemy)) {
                 this.character.hit();
+
                 this.statusBar[0].setPercentage(
                     this.character.energy,
                     this.statusBar[0].imgsStatusHealth
                 );
+
                 console.log("Pepe wurde getroffen");
             }
         });
-    }
-
-
-    generateBackground() {
-        const layers = [
-            ImageHub.background.air,
-            ImageHub.background.third,
-            ImageHub.background.second,
-            ImageHub.background.first
-        ];
-
-        const objects = [];
-
-        for (let i = 0; i < this.map_length; i++) {
-            const x = i * 720;
-
-            layers.forEach(layer => {
-                // Falls ein Layer nur 1 Bild hat → immer Index 0
-                const img = layer[i % layer.length];
-                objects.push(new BackgroundObject(img, x));
-            });
-        }
-        return objects;
-    }
-
-    setWorld() {
-        this.character.world = this;
     }
 
     draw() {
@@ -86,26 +161,23 @@ class World {
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-        this.character.getRealFrame();   // ← Hitbox aktualisieren
+        this.addObjectsToMap(this.level.bottles);
+
         this.addToMap(this.character);
-        this.character.drawFrame(this.ctx);
-        this.level.enemies.forEach(enemy => {
-            enemy.getRealFrame();        // ← Hitbox aktualisieren
-            this.addToMap(enemy);
-            enemy.drawFrame(this.ctx);
-        });
-        this.addObjectsToMap(this.throwableObjects);
+        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.flyingBottles);
+        this.addObjectsToMap(this.level.coins);
+
+
         this.ctx.translate(-this.camera_x, 0);
+
         this.addObjectsToMap(this.statusBar);
 
         requestAnimationFrame(() => this.draw());
     }
 
-
     addObjectsToMap(objects) {
-        objects.forEach(o => {
-            this.addToMap(o);
-        });
+        objects.forEach(o => this.addToMap(o));
     }
 
     addToMap(movObj) {
@@ -116,7 +188,7 @@ class World {
         movObj.draw(this.ctx);
 
         if (movObj.otherDirection) {
-            this.flipImageBack(movObj)
+            this.flipImageBack(movObj);
         }
     }
 
@@ -132,5 +204,7 @@ class World {
         this.ctx.restore();
     }
 
-
+    setWorld() {
+        this.character.world = this;
+    }
 }
