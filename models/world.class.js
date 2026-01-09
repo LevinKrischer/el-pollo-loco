@@ -56,33 +56,29 @@ class World {
 
                     if (enemy instanceof Endboss) {
                         enemy.hitsTaken++;
-                        console.log("Treffer! hitsTaken:", enemy.hitsTaken);
 
+                        const percentage = ((enemy.hitsToKill - enemy.hitsTaken) / enemy.hitsToKill) * 100;
 
-                        console.log("Endboss getroffen! Treffer:", enemy.hitsTaken);
-                        enemy.lastHit = new Date().getTime();
-
+                        const bossBar = this.statusBar[this.statusBar.length - 1];
+                        bossBar.setPercentage(percentage, ImageHub.statusBar.endboss);
 
                         if (enemy.hitsTaken >= enemy.hitsToKill) {
                             enemy.die();
-                            console.log("Endboss besiegt!");
-                            
                         }
                     } else {
+                        // ❗ Alle anderen Gegner (Chicken, ChickenSmall, etc.)
                         enemy.die();
                     }
 
                     // ❗ WICHTIG: Keine weiteren Kollisionen prüfen
                     return;
                 }
+
             }
         });
 
         this.flyingBottles = this.flyingBottles.filter(b => !b.markedForDeletion);
     }
-
-
-
 
     spawnCoins() {
         const coinHeights = [350, 300, 250, 200, 150];
@@ -106,7 +102,9 @@ class World {
             this.checkBottleHits();
             this.removeDeadEnemies();
             this.checkEndbossTrigger();
+            this.checkEndbossAttack();
         }, 100);
+        setInterval(() => { const boss = this.level.enemies.find(e => e.isEndboss); if (boss) { boss.updateBehavior(this.character); } }, 100);
     }
 
     checkBottlePickup() {
@@ -147,28 +145,28 @@ class World {
     }
 
     checkThrowObjects() {
-    const now = Date.now();
+        const now = Date.now();
 
-    // ❗ Pepe darf NICHT werfen, wenn er verletzt ist
-    if (this.character.isHurt()) return;
+        // ❗ Pepe darf NICHT werfen, wenn er verletzt ist
+        if (this.character.isHurt()) return;
 
-    // ❗ Cooldown prüfen
-    if (Keyboard.D && this.bottleCount > 0 && now - this.lastThrowTime >= this.throwCooldown) {
+        // ❗ Cooldown prüfen
+        if (Keyboard.D && this.bottleCount > 0 && now - this.lastThrowTime >= this.throwCooldown) {
 
-        let bottle = new Bottle(
-            this.character.x + 20,
-            this.character.y + 80
-        );
+            let bottle = new Bottle(
+                this.character.x + 20,
+                this.character.y + 80
+            );
 
-        bottle.throw();
-        this.flyingBottles.push(bottle);
-        this.bottleCount--;
+            bottle.throw();
+            this.flyingBottles.push(bottle);
+            this.bottleCount--;
 
-        this.lastThrowTime = now;
+            this.lastThrowTime = now;
 
-        this.updateBottleStatusBar();
+            this.updateBottleStatusBar();
+        }
     }
-}
 
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;
@@ -213,31 +211,56 @@ class World {
     }
 
     checkEndbossTrigger() {
-    // Endboss aus enemies holen
-    const boss = this.level.enemies.find(e => e.isEndboss);
+        // Endboss aus enemies holen
+        const boss = this.level.enemies.find(e => e.isEndboss);
 
-    // Falls noch nicht gespawnt oder nicht gefunden → abbrechen
-    if (!boss) return;
+        // Falls noch nicht gespawnt oder nicht gefunden → abbrechen
+        if (!boss) return;
 
-    // Wenn Boss schon aktiviert wurde → nichts tun
-    if (boss.activated) return;
+        // Wenn Boss schon aktiviert wurde → nichts tun
+        if (boss.activated) return;
 
-    // Trigger-Position
-    if (this.character.x > 2500) {
-        boss.activated = true;
+        // Trigger-Position
+        if (!boss.activated && this.character.x > 2500) {
+            boss.activated = true;
+            boss.preparing = true;
 
-        setTimeout(() => {
-            boss.startMoving();
-        }, 2000);
+            this.statusBar.push(
+                new StatusBar(ImageHub.statusBar.endboss, this.canvas.width - 200, 0, true));
+
+            setTimeout(() => {
+                boss.preparing = false;
+                boss.speed = 4; // jetzt erst loslaufen
+            }, 2000);
+        }
+
     }
-}
 
+    checkEndbossAttack() {
+        const boss = this.level.enemies.find(e => e.isEndboss);
+        if (!boss || boss.dead) return;
 
+        const pepe = this.character;
+
+        const distance = Math.abs(boss.x - pepe.x);
+
+        // Wenn Pepe in Reichweite ist → stehen bleiben + angreifen
+        if (distance < boss.attackRange) {
+            boss.speed = 0;
+        }
+    }
+
+    checkEndbossBehavior() {
+        const boss = this.level.enemies.find(e => e.isEndboss);
+        if (boss) boss.updateBehavior(this.character);
+    }
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
+
+        this.level.enemies.forEach(enemy => enemy.updatePosition());
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
@@ -253,7 +276,8 @@ class World {
 
         this.addObjectsToMap(this.statusBar);
 
-        requestAnimationFrame(() => this.draw());
+        requestAnimationFrame(() => this.draw()
+        );
     }
 
     removeDeadEnemies() {
@@ -266,26 +290,20 @@ class World {
 
     addToMap(movObj) {
         if (movObj.otherDirection) {
-            this.flipImage(movObj);
+            this.ctx.save();
+
+            this.ctx.translate(movObj.x + movObj.width, 0);
+            this.ctx.scale(-1, 1);
+
+            const originalX = movObj.x;
+            movObj.x = 0;
+            movObj.draw(this.ctx);
+            movObj.x = originalX;
+
+            this.ctx.restore();
+        } else {
+            movObj.draw(this.ctx);
         }
-
-        movObj.draw(this.ctx);
-
-        if (movObj.otherDirection) {
-            this.flipImageBack(movObj);
-        }
-    }
-
-    flipImage(movObj) {
-        this.ctx.save();
-        this.ctx.translate(movObj.width, 0);
-        this.ctx.scale(-1, 1);
-        movObj.x = movObj.x * -1;
-    }
-
-    flipImageBack(movObj) {
-        movObj.x = movObj.x * -1;
-        this.ctx.restore();
     }
 
     setWorld() {

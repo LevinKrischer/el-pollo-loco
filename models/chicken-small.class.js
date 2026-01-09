@@ -5,6 +5,7 @@ class ChickenSmall extends HitableObject {
     height = 50;
     width = 50;
     y = 375;
+    energy = 1;
 
     offset = {
         top: 5,
@@ -36,6 +37,23 @@ class ChickenSmall extends HitableObject {
             }
         }, 200);
     }
+
+    die() {
+    this.energy = 0;
+    this.dead = true;
+    this.speed = 0;
+
+    // Bewegung stoppen
+    if (this.moveInterval) {
+        clearInterval(this.moveInterval);
+    }
+
+    // Nach kurzer Zeit entfernen
+    setTimeout(() => {
+        this.markedForDeletion = true;
+    }, 300);
+}
+
 
     isDead() {
         return this.energy <= 0;

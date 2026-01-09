@@ -11,8 +11,8 @@ class HitableObject extends MoveableObject {
         left: 0
     }
 
-    hit() {
-        this.energy -= 2;
+    hit(amount = 2) {
+        this.energy -= amount;
         if (this.energy < 0) {
             this.energy = 0;
         } else {
@@ -27,8 +27,10 @@ class HitableObject extends MoveableObject {
     }
 
     isDead() {
-        return this.energy == 0;
+        return this.dead || this.energy <= 0;
     }
+
+    
 
     getRealFrame() {
         this.rX = this.x + this.offset.left;
@@ -46,9 +48,19 @@ class HitableObject extends MoveableObject {
     }
 
     die() {
-        if (this.dead) return; // verhindert mehrfaches Sterben
+        this.energy = 0;
+        this.dead = true;
+        this.speed = 0;
 
-        this.dead = true; this.speed = 0; this.speedY = 0;
+        // Bewegung stoppen
+        if (this.moveInterval) {
+            clearInterval(this.moveInterval);
+        }
+
+        // Nach kurzer Zeit entfernen
+        setTimeout(() => {
+            this.markedForDeletion = true;
+        }, 5000);
     }
 
 

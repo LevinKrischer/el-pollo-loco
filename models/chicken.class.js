@@ -5,6 +5,7 @@ class Chicken extends HitableObject {
     height = 60;
     width = 60;
     y = 365;
+    energy = 1;
 
     offset = {
         top: 0,
@@ -23,19 +24,24 @@ class Chicken extends HitableObject {
     }
 
     animate() {
-        this.moveLeft();
+    this.moveLeft();
 
-        setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.imgsDead);
-            } else {
-                let index = this.currentImage % this.imgsWalking.length;
-                let path = this.imgsWalking[index];
-                this.img = this.imageCache[path];
-                this.currentImage++;
-            }
-        }, 200);
-    }
+    setInterval(() => {
+        if (this.isDead()) {
+            this.playAnimation(this.imgsDead);
+            return; // ❗ WICHTIG
+        }
+
+        let index = this.currentImage % this.imgsWalking.length;
+        let path = this.imgsWalking[index];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+    }, 200);
+}
+
+
+    
+
 
     isDead() {
         return this.energy <= 0;

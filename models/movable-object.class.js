@@ -8,16 +8,15 @@ class MoveableObject extends DrawableObject {
     lastHit = 0;
 
     applyGravity() {
-    this.gravityInterval = setInterval(() => {
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
+        this.gravityInterval = setInterval(() => {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
 
-        if (!this.isAboveGround()) {
-            this.speedY = 0;
-        }
-    }, 1000 / 25);
-}
-
+            if (!this.isAboveGround()) {
+                this.speedY = 0;
+            }
+        }, 1000 / 25);
+    }
 
     isAboveGround() {
         if (this instanceof ThrowableObject) {
@@ -41,9 +40,13 @@ class MoveableObject extends DrawableObject {
     }
 
     moveLeft() {
-        setInterval(() => {
+        this.moveInterval = setInterval(() => {
             this.x -= this.speed;
         }, 1000 / 60);
+    }
+
+    stopMoving() {
+        clearInterval(this.moveInterval);
     }
 
     playAnimation(images) {
@@ -52,5 +55,21 @@ class MoveableObject extends DrawableObject {
         this.img = this.imageCache[path];
         this.currentImage++;
     }
+
+    updatePosition() {
+        if (this.dead || this.energy <= 0) return;
+
+        if (this.speed === 0) return;
+
+        if (this.otherDirection) {
+            this.x += this.speed;
+        } else {
+            this.x -= this.speed;
+        }
+    }
+
+
+
+
 
 }
