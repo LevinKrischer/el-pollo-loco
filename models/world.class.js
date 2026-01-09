@@ -122,11 +122,16 @@ class World {
             if (this.character.isColliding(bottle)) {
 
                 if (this.bottleCount < this.maxBottles) {
+
+                    // 💡 Collect-Sound
+                    SoundManager.play(SoundHub.collectibles.bottle, 0.4);
+
                     this.bottleCount++;
                     this.level.bottles.splice(index, 1);
 
                     this.updateBottleStatusBar();
                     console.log("Flasche eingesammelt!");
+
                 } else {
                     console.log("Inventar voll – Flasche bleibt liegen");
                 }
@@ -134,21 +139,27 @@ class World {
         });
     }
 
+
     checkCoinPickup() {
-        this.character.getRealFrame();
+    this.character.getRealFrame();
 
-        this.level.coins.forEach((coin, index) => {
-            coin.getRealFrame();
+    this.level.coins.forEach((coin, index) => {
+        coin.getRealFrame();
 
-            if (this.character.isColliding(coin)) {
-                this.coinCount++;
-                this.level.coins.splice(index, 1);
+        if (this.character.isColliding(coin)) {
 
-                this.updateCoinStatusBar();
-                console.log("Coin eingesammelt!");
-            }
-        });
-    }
+            // 💰 Coin-Sound
+            SoundManager.play(SoundHub.collectibles.coin, 0.4);
+
+            this.coinCount++;
+            this.level.coins.splice(index, 1);
+
+            this.updateCoinStatusBar();
+            console.log("Coin eingesammelt!");
+        }
+    });
+}
+
 
     checkThrowObjects() {
         const now = Date.now();
@@ -158,6 +169,9 @@ class World {
 
         // ❗ Cooldown prüfen
         if (Keyboard.D && this.bottleCount > 0 && now - this.lastThrowTime >= this.throwCooldown) {
+
+            // ❗ Throw-Sound (GENAU hier!)
+            SoundManager.play(SoundHub.collectibles.bottleThrow, 0.4);
 
             // ❗ Startposition abhängig von Blickrichtung
             let offsetX = this.character.otherDirection ? -20 : 20;
@@ -177,8 +191,8 @@ class World {
 
             this.updateBottleStatusBar();
         }
-
     }
+
 
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;

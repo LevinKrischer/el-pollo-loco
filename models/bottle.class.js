@@ -22,6 +22,9 @@ class Bottle extends ThrowableObject {
     explode() {
         this.isExploded = true;
 
+        // 💥 Break-Sound
+        SoundManager.play(SoundHub.collectibles.bottleBreak, 0.5);
+
         // horizontale Bewegung stoppen
         clearInterval(this.throwInterval);
 
@@ -31,12 +34,14 @@ class Bottle extends ThrowableObject {
         this.speed = 0;
         this.speedY = 0;
         this.currentImage = 0;
+
         console.log("Bottle explodiert bei X:", this.x, "Y:", this.y);
 
         setTimeout(() => {
             this.markedForDeletion = true;
         }, 400);
     }
+
 
     animate() {
         setInterval(() => {

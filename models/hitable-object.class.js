@@ -3,6 +3,7 @@ class HitableObject extends MoveableObject {
     energy = 100;
     lastHit = 0;
     dead = false;
+    deathSoundPlayed = false;
 
     offset = {
         top: 0,
@@ -13,26 +14,26 @@ class HitableObject extends MoveableObject {
 
     hit(amount = 2) {
 
-    // Wenn Pepe noch in der Hurt-Phase ist → NICHT erneut treffen
-    if (this.isHurt()) {
-        return;
-    }
+        // Wenn Pepe noch in der Hurt-Phase ist → NICHT erneut treffen
+        if (this.isHurt()) {
+            return;
+        }
 
-    this.energy -= amount;
+        this.energy -= amount;
 
-    if (this.energy < 0) {
-        this.energy = 0;
-    } else {
-        this.lastHit = new Date().getTime();
+        if (this.energy < 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = new Date().getTime();
 
-        // Nur Pepe bekommt Hurt-Sound
-        if (this instanceof Character) {
-            SoundManager.play(SoundHub.character.damage, 0.5);
-            SoundManager.stop(this.walkSound);
-            SoundManager.stop(this.snoreSound);
+            // Nur Pepe bekommt Hurt-Sound
+            if (this instanceof Character) {
+                SoundManager.play(SoundHub.character.damage, 0.5);
+                SoundManager.stop(this.walkSound);
+                SoundManager.stop(this.snoreSound);
+            }
         }
     }
-}
 
 
     isHurt() {
@@ -65,6 +66,22 @@ class HitableObject extends MoveableObject {
         this.dead = true;
         this.speed = 0;
 
+        // 💥 Death-Sound nur einmal abspielen
+        if (!this.deathSoundPlayed) {
+
+            // Chicken normal
+            if (this instanceof Chicken) {
+                SoundManager.play(SoundHub.chicken.dead1, 0.5);
+            }
+
+            // Chicken small
+            if (this instanceof ChickenSmall) {
+                SoundManager.play(SoundHub.chicken.dead2, 1);
+            }
+
+            this.deathSoundPlayed = true;
+        }
+
         // Bewegung stoppen
         if (this.moveInterval) {
             clearInterval(this.moveInterval);
@@ -75,6 +92,7 @@ class HitableObject extends MoveableObject {
             this.markedForDeletion = true;
         }, 5000);
     }
+
 
 
     drawFrame(ctx) {
