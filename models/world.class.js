@@ -33,7 +33,7 @@ class World {
     }
 
     spawnBottles() {
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < this.maxBottles; i++) {
             const x = 200 + Math.random() * 2400;
             const y = 350;
             this.level.bottles.push(new Bottle(x, y));
@@ -55,6 +55,10 @@ class World {
                     bottle.explode();
 
                     if (enemy instanceof Endboss) {
+
+                        // ❗ Hurt-State aktivieren
+                        enemy.lastHit = Date.now();
+
                         enemy.hitsTaken++;
 
                         const percentage = ((enemy.hitsToKill - enemy.hitsTaken) / enemy.hitsToKill) * 100;
@@ -65,10 +69,12 @@ class World {
                         if (enemy.hitsTaken >= enemy.hitsToKill) {
                             enemy.die();
                         }
+
                     } else {
                         // ❗ Alle anderen Gegner (Chicken, ChickenSmall, etc.)
                         enemy.die();
                     }
+
 
                     // ❗ WICHTIG: Keine weiteren Kollisionen prüfen
                     return;
@@ -153,12 +159,17 @@ class World {
         // ❗ Cooldown prüfen
         if (Keyboard.D && this.bottleCount > 0 && now - this.lastThrowTime >= this.throwCooldown) {
 
+            // ❗ Startposition abhängig von Blickrichtung
+            let offsetX = this.character.otherDirection ? -20 : 20;
+
             let bottle = new Bottle(
-                this.character.x + 20,
+                this.character.x + offsetX,
                 this.character.y + 80
             );
 
-            bottle.throw();
+            // ❗ Richtung an Bottle übergeben
+            bottle.throw(this.character.otherDirection);
+
             this.flyingBottles.push(bottle);
             this.bottleCount--;
 
@@ -166,6 +177,7 @@ class World {
 
             this.updateBottleStatusBar();
         }
+
     }
 
     updateBottleStatusBar() {
@@ -190,6 +202,9 @@ class World {
 
             if (!enemy.isDead() && this.character.isColliding(enemy)) {
 
+                // ❗ Endboss verursacht KEINEN Kontaktschaden
+                if (enemy.isEndboss) return;
+
                 const isFalling = this.character.speedY < 0;
 
                 if (isFalling && !enemy.isEndboss) {
@@ -199,6 +214,7 @@ class World {
                 }
 
                 if (enemy.isDead()) return;
+
                 // SCHADEN (nur wenn NICHT gestomped)
                 this.character.hit();
                 this.statusBar[0].setPercentage(
@@ -209,6 +225,7 @@ class World {
             }
         });
     }
+
 
     checkEndbossTrigger() {
         // Endboss aus enemies holen

@@ -39,10 +39,6 @@ class Chicken extends HitableObject {
     }, 200);
 }
 
-
-    
-
-
     isDead() {
         return this.energy <= 0;
     }

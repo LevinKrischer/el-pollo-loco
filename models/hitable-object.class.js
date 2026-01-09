@@ -30,7 +30,10 @@ class HitableObject extends MoveableObject {
         return this.dead || this.energy <= 0;
     }
 
-    
+    isHurt() {
+        const timePassed = (Date.now() - this.lastHit) / 1000;
+        return timePassed < 2; // 2 Sekunden
+    }
 
     getRealFrame() {
         this.rX = this.x + this.offset.left;

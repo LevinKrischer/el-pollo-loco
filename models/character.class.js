@@ -1,4 +1,6 @@
 class Character extends HitableObject {
+
+
     imgsWalking = ImageHub.character.walking;
     imgsIdle = ImageHub.character.idle;
     imgsIdleLong = ImageHub.character.long_idle;
@@ -46,11 +48,28 @@ class Character extends HitableObject {
     }
 
     update() {
-        this.handleMovement();
-        this.world.camera_x = -this.x + 100;
-        requestAnimationFrame(() =>
-            this.update());
+    this.handleMovement();
+
+    // Dead-Zone definieren (in Pixeln)
+    const deadZoneLeft = 200;
+    const deadZoneRight = 300;
+
+    // Kamera in Weltkoordinaten umrechnen
+    const camX = -this.world.camera_x;
+
+    // Pepe ist links aus der Dead-Zone raus
+    if (this.x < camX + deadZoneLeft) {
+        this.world.camera_x = -(this.x - deadZoneLeft);
     }
+
+    // Pepe ist rechts aus der Dead-Zone raus
+    if (this.x > camX + deadZoneRight) {
+        this.world.camera_x = -(this.x - deadZoneRight);
+    }
+
+    requestAnimationFrame(() => this.update());
+}
+
 
     handleMovement() {
         if (Keyboard.RIGHT && this.x < this.world.level.level_end_x) {

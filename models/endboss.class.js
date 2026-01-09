@@ -48,6 +48,10 @@ class Endboss extends HitableObject {
         return this.dead;
     }
 
+    isHurt() {
+        return (Date.now() - this.lastHit) / 1000 < 2;
+    }
+
     attack(character) {
         if (!this.canAttack || this.isAttacking || this.dead) return;
 
@@ -70,13 +74,14 @@ class Endboss extends HitableObject {
         if (this.dead)
             return this.playAnimation(this.imgsDead);
 
-        if (this.isHurt())
+        if (this.isHurt()) {
+            this.speed = 0;
             return this.playAnimation(this.imgsHurt);
+        }
 
         if (this.isAttacking)
             return this.playAnimation(this.imgsAttack);
 
-        // 🔧 Fix: Während der 2s-Startphase → Alert
         if (this.preparing)
             return this.playAnimation(this.imgsAlert);
 
@@ -89,13 +94,17 @@ class Endboss extends HitableObject {
     updateBehavior(character) {
         if (this.dead) return;
 
-        // 🔧 Fix: Boss aktiviert, aber noch in der 2s-Startphase
+        // ❗ Wenn Boss verletzt ist → Verhalten pausieren
+        if (this.isHurt()) {
+            this.speed = 0;
+            return;
+        }
+
         if (this.preparing) {
             this.speed = 0;
             return;
         }
 
-        // Boss noch nicht aktiviert → stehen bleiben
         if (!this.activated) {
             this.speed = 0;
             return;
@@ -104,19 +113,17 @@ class Endboss extends HitableObject {
         const dx = this.x - character.x;
         const distance = Math.abs(dx);
 
-        // Blickrichtung
         this.otherDirection = dx < 0;
 
-        // In Schlagreichweite → stehen bleiben + angreifen
         if (distance < this.attackRange) {
             this.speed = 0;
             this.attack(character);
             return;
         }
 
-        // Außerhalb der Reichweite → hinterherlaufen
         if (!this.isAttacking) {
             this.speed = 4;
         }
     }
+
 }

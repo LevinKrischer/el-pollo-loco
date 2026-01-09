@@ -38,8 +38,6 @@ class Bottle extends ThrowableObject {
         }, 400);
     }
 
-
-
     animate() {
         setInterval(() => {
             if (this.isExploded) {
@@ -47,5 +45,4 @@ class Bottle extends ThrowableObject {
             }
         }, 80);
     }
-
 }
