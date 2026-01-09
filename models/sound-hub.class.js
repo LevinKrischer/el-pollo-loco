@@ -24,6 +24,8 @@ class SoundHub {
         coin:   "assets/sounds/collectibles/collectSound.wav"
     };
     static endboss = {
-        alert: "assets/sounds/endboss/endbossApproach.wav"
+        alert: "assets/sounds/endboss/endbossApproach.wav",
+        hurt: "assets/sounds/endboss/endbossHurt.wav",
+        dead: "assets/sounds/endboss/endbossDead.wav"
     }
 }

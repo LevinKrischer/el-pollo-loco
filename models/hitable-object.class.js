@@ -14,7 +14,7 @@ class HitableObject extends MoveableObject {
 
     hit(amount = 2) {
 
-        // Wenn Pepe noch in der Hurt-Phase ist → NICHT erneut treffen
+        // Wenn Objekt noch in der Hurt-Phase ist → NICHT erneut treffen
         if (this.isHurt()) {
             return;
         }
@@ -26,14 +26,20 @@ class HitableObject extends MoveableObject {
         } else {
             this.lastHit = new Date().getTime();
 
-            // Nur Pepe bekommt Hurt-Sound
+            // 🟦 Hurt-Sound für Pepe
             if (this instanceof Character) {
                 SoundManager.play(SoundHub.character.damage, 0.5);
                 SoundManager.stop(this.walkSound);
                 SoundManager.stop(this.snoreSound);
             }
+
+            // 🟥 Hurt-Sound für Endboss
+            if (this.isEndboss) {
+                SoundManager.play(SoundHub.character.damage, 0.8);
+            }
         }
     }
+
 
 
     isHurt() {

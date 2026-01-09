@@ -17,7 +17,7 @@ class World {
     ];
     lastThrowTime = 0;
     throwCooldown = 500; // 0,5 Sekunden
-
+    alertSoundPlayed = false;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -60,6 +60,7 @@ class World {
                         enemy.lastHit = Date.now();
 
                         enemy.hitsTaken++;
+                        SoundManager.play(SoundHub.endboss.hurt, 1);
 
                         const percentage = ((enemy.hitsToKill - enemy.hitsTaken) / enemy.hitsToKill) * 100;
 
@@ -74,7 +75,6 @@ class World {
                         // ❗ Alle anderen Gegner (Chicken, ChickenSmall, etc.)
                         enemy.die();
                     }
-
 
                     // ❗ WICHTIG: Keine weiteren Kollisionen prüfen
                     return;
@@ -141,24 +141,24 @@ class World {
 
 
     checkCoinPickup() {
-    this.character.getRealFrame();
+        this.character.getRealFrame();
 
-    this.level.coins.forEach((coin, index) => {
-        coin.getRealFrame();
+        this.level.coins.forEach((coin, index) => {
+            coin.getRealFrame();
 
-        if (this.character.isColliding(coin)) {
+            if (this.character.isColliding(coin)) {
 
-            // 💰 Coin-Sound
-            SoundManager.play(SoundHub.collectibles.coin, 0.4);
+                // 💰 Coin-Sound
+                SoundManager.play(SoundHub.collectibles.coin, 0.4);
 
-            this.coinCount++;
-            this.level.coins.splice(index, 1);
+                this.coinCount++;
+                this.level.coins.splice(index, 1);
 
-            this.updateCoinStatusBar();
-            console.log("Coin eingesammelt!");
-        }
-    });
-}
+                this.updateCoinStatusBar();
+                console.log("Coin eingesammelt!");
+            }
+        });
+    }
 
 
     checkThrowObjects() {
@@ -252,19 +252,29 @@ class World {
 
         // Trigger-Position
         if (!boss.activated && this.character.x > 2500) {
+
             boss.activated = true;
             boss.preparing = true;
 
-            this.statusBar.push(
-                new StatusBar(ImageHub.statusBar.endboss, this.canvas.width - 200, 0, true));
+            // 🔊 ALERT-SOUND nur einmal
+            if (!boss.alertSoundPlayed) {
+                SoundManager.play(SoundHub.endboss.alert, 0.7);
+                boss.alertSoundPlayed = true;
+            }
 
+            // Endboss-Statusbar einblenden
+            this.statusBar.push(
+                new StatusBar(ImageHub.statusBar.endboss, this.canvas.width - 200, 0, true)
+            );
+
+            // Nach 2 Sekunden beginnt der Boss zu laufen
             setTimeout(() => {
                 boss.preparing = false;
-                boss.speed = 4; // jetzt erst loslaufen
+                boss.speed = 4;
             }, 2000);
         }
-
     }
+
 
     checkEndbossAttack() {
         const boss = this.level.enemies.find(e => e.isEndboss);
