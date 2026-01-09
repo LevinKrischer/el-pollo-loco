@@ -226,7 +226,6 @@ class World {
         });
     }
 
-
     checkEndbossTrigger() {
         // Endboss aus enemies holen
         const boss = this.level.enemies.find(e => e.isEndboss);

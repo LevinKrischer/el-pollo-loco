@@ -12,13 +12,28 @@ class HitableObject extends MoveableObject {
     }
 
     hit(amount = 2) {
-        this.energy -= amount;
-        if (this.energy < 0) {
-            this.energy = 0;
-        } else {
-            this.lastHit = new Date().getTime();
+
+    // Wenn Pepe noch in der Hurt-Phase ist → NICHT erneut treffen
+    if (this.isHurt()) {
+        return;
+    }
+
+    this.energy -= amount;
+
+    if (this.energy < 0) {
+        this.energy = 0;
+    } else {
+        this.lastHit = new Date().getTime();
+
+        // Nur Pepe bekommt Hurt-Sound
+        if (this instanceof Character) {
+            SoundManager.play(SoundHub.character.damage, 0.5);
+            SoundManager.stop(this.walkSound);
+            SoundManager.stop(this.snoreSound);
         }
     }
+}
+
 
     isHurt() {
         let timePassed = new Date().getTime() - this.lastHit; // Diff in ms
@@ -28,11 +43,6 @@ class HitableObject extends MoveableObject {
 
     isDead() {
         return this.dead || this.energy <= 0;
-    }
-
-    isHurt() {
-        const timePassed = (Date.now() - this.lastHit) / 1000;
-        return timePassed < 2; // 2 Sekunden
     }
 
     getRealFrame() {
