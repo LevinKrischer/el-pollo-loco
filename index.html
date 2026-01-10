@@ -41,7 +41,7 @@
                     </div>
                     <div class="buttonsRight">
                         <button class="button" onclick="startGame()">START GAME</button>
-                        <button class="button" onclick="toggleSound()"><img id="soundToggleButton" src="./assets/img/0_project-images/sound-on.png" alt="sound toggle icon"></button>
+                        <button class="button" onclick="toggleSound()"><img id="soundToggleButton" src="./assets/img/0_project-images/sound-on.png" alt="sound toggle icon" /></button>
                     </div>
                 </section>
             </section>
@@ -49,10 +49,16 @@
             <section class="overlay invisible" id="controlsOverlay">
                 <div class="overlayContent">
                     <h2>Controls</h2>
-                    <div>
-                        <p>Move: Arrow left & Arrow right</p>
-                        <p>Jump: Space</p>
-                        <p>Throw bottle: "D"</p>
+                    <div class="dFlexColumn">
+                        <p>Move:</p>
+                        <div class="controlKeys">
+                            <img class="controlIcon" src="./assets/img/0_project-images/left-arrow.png" alt="keyboard left arrow icon" />
+                            <img class="controlIcon" src="./assets/img/0_project-images/right-arrow.png" alt="keyboard right arrow icon" />
+                        </div>
+                        <p>Jump:</p>
+                        <img class="controlIcon" src="./assets/img/0_project-images/space.png" alt="keyboard space icon" />
+                        <p>Throw bottle:</p>
+                        <img class="controlIcon" src="./assets/img/0_project-images/letter-d.png" alt="keyboard letter d icon" class="" />
                     </div>
                     <button class="button" onclick="toggleOverlay('controls')">CLOSE</button>
                 </div>
@@ -61,22 +67,43 @@
             <section class="overlay invisible" id="imprintOverlay">
                 <div class="overlayContent">
                     <h2>Imprint</h2>
-                    <div>
-                        <p>Levin Krischer<br>Auf dem Amtshof 19<br>30938 Burgwedel<br>Germany</p>
-                        <p>+49 163 68 08 422<br>levin@levinkrischer.de</p>
+                    <div class="dFlexColumn">
+                        <p>Levin Krischer<br />Auf dem Amtshof 19<br />30938 Burgwedel<br />Germany</p>
+                        <p>+49 163 68 08 422<br />levin@levinkrischer.de</p>
                     </div>
-                    
+
                     <button class="button" onclick="toggleOverlay('imprint')">CLOSE</button>
                 </div>
             </section>
 
-            <canvas id="canvas" width="720" height="480" style="display: block; position: absolute; z-index:10;"></canvas>
+            <canvas id="canvas" width="720" height="480"></canvas>
+
+            <section class="endScreen invisible" id="gameOverScreen">
+                <div class="endscreenInner">
+                    <img class="endScreenImage" src="./assets/img/You won, you lost/You lost.png" alt="Endscreen image" />
+                    <section class="bottomButtons">
+                        <button class="button" onclick="restartGame()">TRY AGAIN</button>
+                        <button class="button" onclick="openMainMenu()">MAIN MENU</button>
+                    </section>
+                </div>
+            </section>
+
+            <section class="endScreen invisible" id="winScreen">
+                <img src="./assets/img/You won, you lost/You Win A.png" alt="Endscreen image" />
+                <section class="bottomButtons">
+                    <button class="button" onclick="restartGame()">PLAY AGAIN</button>
+                    <button class="button" onclick="openMainMenu()">MAIN MENU</button>
+                </section>
+            </section>
         </main>
         <footer style="display: none">
             <a href="https://www.flaticon.com/free-icons/keyboard" title="keyboard icons">Keyboard icons created by Sebastian Belalcazar - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/info" title="info icons">Info icons created by Freepik - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/audio" title="audio icons">Audio icons created by Bogdan Rosu - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/control" title="control icons">Control icons created by Bogdan Rosu - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/keyboard-key" title="keyboard key icons">Keyboard key icons created by littleicon - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/keyboard-key" title="keyboard-key icons">Keyboard-key icons created by littleicon - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/keyboard-key" title="keyboard-key icons">Keyboard-key icons created by littleicon - Flaticon</a>
         </footer>
     </body>
 </html>

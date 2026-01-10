@@ -4,6 +4,7 @@ class HitableObject extends MoveableObject {
     lastHit = 0;
     dead = false;
     deathSoundPlayed = false;
+    deathAnimationDuration = 1500;
 
     // --- SOUND REFERENCES ---
     soundEndbossHurt = SoundHub.sfx.endboss.hurt;
@@ -84,8 +85,24 @@ class HitableObject extends MoveableObject {
             }
 
             else if (this instanceof Endboss) {
+                // Death-Sound einmal abspielen
                 SoundManager.play(this.soundEndbossDead);
+                console.log("Boss dead:", this.world, this.world?.gameStopped);
+
+
+                // Death-Animation starten
+                this.playAnimation(this.imgsDead);
+
+                // Timer erst NACH Start der Animation setzen
+                this.world.setTimeoutTracked(() => {
+                    if (!this.world.gameStopped) {
+                        this.world.stopGame();
+                        toggleEndScreen('win');
+                    }
+                }, this.deathAnimationDuration);
             }
+
+
 
             this.deathSoundPlayed = true;
         }
@@ -94,8 +111,10 @@ class HitableObject extends MoveableObject {
             clearInterval(this.moveInterval);
         }
 
-        setTimeout(() => {
+        this.world.setTimeoutTracked(() => {
             this.markedForDeletion = true;
         }, 5000);
     }
+
+
 }

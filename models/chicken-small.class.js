@@ -20,13 +20,16 @@ class ChickenSmall extends HitableObject {
         this.loadImages(this.imgsDead);
         this.x = 200 + Math.random() * 3500;
         this.speed = 0.15 + Math.random() * 0.4;
+    }
+
+    initAfterWorldSet() {
         this.animate();
     }
 
     animate() {
         this.moveLeft();
 
-        setInterval(() => {
+        this.world.setIntervalTracked(() => {
             if (this.isDead()) {
                 this.playAnimation(this.imgsDead);
             } else {

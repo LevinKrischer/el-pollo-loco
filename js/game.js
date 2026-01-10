@@ -1,8 +1,9 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+let bgMusic = SoundHub.music.background;
 
-let bgMusic = SoundHub.music.background; 
+/* ------------------------- INITIALISIERUNG ------------------------- */
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -11,84 +12,141 @@ function init() {
 }
 
 function startBgMusic() {
-    SoundManager.play(bgMusic)
+    SoundManager.play(bgMusic);
 }
+
+/* ------------------------- SPIELSTART / RESTART ------------------------- */
 
 function startGame() {
     hideStartScreen();
-    document.activeElement.blur(); // Fokus entfernen, damit SPACE nicht erneut klickt
+    hideEndScreens();
+    blurActiveElement();
+    stopExistingWorld();
+    createNewWorld();
+    startBackgroundMusic();
+}
 
-    world = new World(canvas, keyboard);
-    world.start();
+function restartGame() {
+    stopExistingWorld();
+    closeVisibleEndScreen();
+    setTimeout(startGame, 200);
+}
 
-    // Hintergrundmusik nur starten, wenn nicht gemutet
-    if (!SoundManager.muted) {
-       bgMusic.play();
+function stopExistingWorld() {
+    if (window.world) {
+        window.world.stopGame();
+        window.world = null;
     }
 }
 
+function createNewWorld() {
+    world = new World(canvas, keyboard);
+    world.start();
+}
+
+function startBackgroundMusic() {
+    if (!SoundManager.muted) bgMusic.play();
+}
+
+function blurActiveElement() {
+    document.activeElement.blur();
+}
+
+/* ------------------------- STARTSCREEN ------------------------- */
 
 function hideStartScreen() {
-  const startScreen = document.getElementById("StartScreen");
-  if (startScreen) {
-    startScreen.classList.add("hidden");
-  }
-  canvas.style.display = "block";
-  document.activeElement.blur();
+    const startScreen = document.getElementById("StartScreen");
+    if (startScreen) startScreen.classList.add("hidden");
+    canvas.style.display = "block";
+    blurActiveElement();
 }
 
 function showStartScreen() {
-  const startScreen = document.getElementById("StartScreen");
-  if (startScreen) {
-    startScreen.classList.remove("hidden");
-  }
-  canvas.style.display = "none";
+    const startScreen = document.getElementById("StartScreen");
+    if (startScreen) startScreen.classList.remove("hidden");
+    canvas.style.display = "none";
 }
 
+/* ------------------------- SOUND ------------------------- */
+
 function toggleSound() {
-    const newState = !SoundManager.muted;
-    SoundManager.setMutedState(newState);
+    SoundManager.setMutedState(!SoundManager.muted);
     updateSoundButtonIcon();
 }
 
-
 function updateSoundButtonIcon() {
     const img = document.getElementById('soundToggleButton');
-
     img.src = SoundManager.muted
         ? './assets/img/0_project-images/sound-off.png'
         : './assets/img/0_project-images/sound-on.png';
 }
 
+/* ------------------------- OVERLAYS ------------------------- */
+
 function toggleImprint() {
-    const imprint = document.getElementById('imprintOverlay');
-    imprint.classList.toggle('hidden');
+    document.getElementById('imprintOverlay').classList.toggle('hidden');
 }
 
 function toggleOverlay(type) {
     const overlay = document.getElementById(type + 'Overlay');
-
-    if (overlay.classList.contains('visible')) {
-        // Fade-Out
-        overlay.classList.remove('visible');
-
-        // Nach der Transition display:none setzen
-        setTimeout(() => {
-            overlay.classList.add('invisible');
-        }, 300);
-
-    } else {
-        // Sofort sichtbar machen (aber noch transparent)
-        overlay.classList.remove('invisible');
-
-        // Kleiner Delay, damit CSS die Transition erkennt
-        requestAnimationFrame(() => {
-            overlay.classList.add('visible');
-        });
-    }
+    overlay.classList.contains('visible')
+        ? hideOverlay(overlay)
+        : showOverlay(overlay);
 }
 
+function hideOverlay(overlay) {
+    overlay.classList.remove('visible');
+    const run = () => overlay.classList.add('invisible');
+    useTrackedOrNormalTimeout(run, 300);
+}
 
+function showOverlay(overlay) {
+    overlay.classList.remove('invisible');
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+}
 
+/* ------------------------- ENDSCREENS ------------------------- */
 
+function toggleEndScreen(type) {
+    const screen = document.getElementById(`${type}Screen`);
+    screen.classList.contains('visible')
+        ? hideEndScreen(screen)
+        : showEndScreen(screen);
+}
 
+function hideEndScreen(screen) {
+    screen.classList.remove('visible');
+    const run = () => screen.classList.add('invisible');
+    useTrackedOrNormalTimeout(run, 400);
+}
+
+function showEndScreen(screen) {
+    screen.classList.remove('invisible');
+    requestAnimationFrame(() => screen.classList.add('visible'));
+}
+
+function closeVisibleEndScreen() {
+    ['gameOver', 'win'].forEach(type => {
+        const screen = document.getElementById(`${type}Screen`);
+        if (screen.classList.contains('visible')) toggleEndScreen(type);
+    });
+}
+
+function hideEndScreens() {
+    document.getElementById('gameOverScreen').classList.add('invisible');
+    document.getElementById('winScreen').classList.add('invisible');
+}
+
+/* ------------------------- TIMEOUT HELFER ------------------------- */
+
+function useTrackedOrNormalTimeout(callback, delay) {
+    const canTrack = window.world && window.world.setTimeoutTracked;
+    canTrack ? window.world.setTimeoutTracked(callback, delay)
+             : setTimeout(callback, delay);
+}
+
+/* ------------------------- LEVEL ------------------------- */
+
+function initLevel() {
+    return this.level;
+}

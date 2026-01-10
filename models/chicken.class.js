@@ -15,29 +15,33 @@ class Chicken extends HitableObject {
     }
 
     constructor() {
-        super().loadImage(ImageHub.chicken.walking[0]);
+        super()
+        this.loadImage(ImageHub.chicken.walking[0]);
         this.loadImages(this.imgsWalking);
         this.loadImages(this.imgsDead);
         this.x = 400 + Math.random() * 3000;
         this.speed = 0.15 + Math.random() * 0.5;
+    }
+
+    initAfterWorldSet() {
         this.animate();
     }
 
     animate() {
-    this.moveLeft();
+        this.moveLeft();
 
-    setInterval(() => {
-        if (this.isDead()) {
-            this.playAnimation(this.imgsDead);
-            return; // ❗ WICHTIG
-        }
+        this.world.setIntervalTracked(() => {
+            if (this.isDead()) {
+                this.playAnimation(this.imgsDead);
+                return; // ❗ WICHTIG
+            }
 
-        let index = this.currentImage % this.imgsWalking.length;
-        let path = this.imgsWalking[index];
-        this.img = this.imageCache[path];
-        this.currentImage++;
-    }, 200);
-}
+            let index = this.currentImage % this.imgsWalking.length;
+            let path = this.imgsWalking[index];
+            this.img = this.imageCache[path];
+            this.currentImage++;
+        }, 200);
+    }
 
     isDead() {
         return this.energy <= 0;

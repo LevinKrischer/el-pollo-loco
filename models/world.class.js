@@ -1,10 +1,10 @@
 class World {
     character = new Character();
-    level = level1;
     canvas;
     ctx;
     keyboard;
     camera_x = 0;
+    gameStopped = false;
 
     maxBottles = 7;
     coinCount = 0;
@@ -30,20 +30,39 @@ class World {
     soundEndbossHurt = SoundHub.sfx.endboss.hurt;
     soundEndbossAlert = SoundHub.sfx.endboss.alert;
 
+    intervals = [];
+    timeouts = [];
+
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
+
+        this.level = createLevel1();   // ⬅️ jedes Mal ein frisches Level1
 
         this.setWorld();
         this.spawnBottles();
         this.spawnCoins();
     }
 
+
     start() {
         this.draw();
         this.run();
     }
+
+    setIntervalTracked(fn, time) {
+        const id = setInterval(fn, time);
+        this.intervals.push(id);
+        return id;
+    }
+
+    setTimeoutTracked(callback, time) {
+        const id = setTimeout(callback, time);
+        this.timeouts.push(id);
+        return id;
+    }
+
 
     spawnBottles() {
         for (let i = 0; i < this.maxBottles; i++) {
@@ -103,7 +122,9 @@ class World {
     }
 
     run() {
-        setInterval(() => {
+        this.interval1 = this.setIntervalTracked(() => {
+            if (this.gameStopped) return;
+
             this.checkCollisions();
             this.checkBottlePickup();
             this.checkThrowObjects();
@@ -114,11 +135,15 @@ class World {
             this.checkEndbossAttack();
         }, 100);
 
-        setInterval(() => {
-            const boss = this.level.enemies.find(e => e.isEndboss);
+        this.interval2 = this.setIntervalTracked(() => {
+            if (this.gameStopped) return;
+
+            const boss = this.level.enemies.find(e => e.isEndboss && !e.dead);
             if (boss) boss.updateBehavior(this.character);
         }, 100);
+
     }
+
 
     checkBottlePickup() {
         this.character.getRealFrame();
@@ -171,16 +196,27 @@ class World {
                 this.character.y + 80
             );
 
+            bottle.world = this;                 // ⭐ WICHTIG
+            if (bottle.initAfterWorldSet) {
+                bottle.initAfterWorldSet();      // ⭐ WICHTIG
+            }
+
             bottle.throw(this.character.otherDirection);
+
 
             this.flyingBottles.push(bottle);
             this.bottleCount--;
 
+            // ⭐ WICHTIG: Cooldown setzen!
             this.lastThrowTime = now;
+
+            // ⭐ IdleLong abbrechen
+            this.character.lastMoveTime = now;
 
             this.updateBottleStatusBar();
         }
     }
+
 
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;
@@ -238,7 +274,7 @@ class World {
             }
 
             this.statusBar.push(
-                new StatusBar(ImageHub.statusBar.endboss, this.canvas.width - 200, 0, true)
+                new StatusBar(ImageHub.statusBar.endboss, this.canvas.width - 240, 0, true)
             );
 
             setTimeout(() => {
@@ -260,6 +296,7 @@ class World {
     }
 
     draw() {
+        if (this.gameStopped) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
@@ -308,6 +345,72 @@ class World {
     }
 
     setWorld() {
+        // Character
         this.character.world = this;
+        if (this.character.initAfterWorldSet) {
+            this.character.initAfterWorldSet();
+        }
+
+        // Enemies (Chicken, ChickenSmall, Endboss)
+        this.level.enemies.forEach(enemy => {
+            enemy.world = this;
+            if (enemy.initAfterWorldSet) {
+                enemy.initAfterWorldSet();
+            }
+        });
+
+        // Clouds
+        this.level.clouds.forEach(cloud => {
+            cloud.world = this;
+            if (cloud.initAfterWorldSet) {
+                cloud.initAfterWorldSet();
+            }
+        });
+
+        // Background Objects
+        this.level.backgroundObjects.forEach(bg => {
+            bg.world = this;
+            if (bg.initAfterWorldSet) {
+                bg.initAfterWorldSet();
+            }
+        });
+
+        this.level.clouds.forEach(cloud => {
+            cloud.world = this;
+            if (cloud.initAfterWorldSet)
+                cloud.initAfterWorldSet();
+        });
+
+        // Bottles on the ground
+        this.level.bottles.forEach(bottle => {
+            bottle.world = this;
+            if (bottle.initAfterWorldSet) {
+                bottle.initAfterWorldSet();
+            }
+        });
+
+        // Coins
+        this.level.coins.forEach(coin => {
+            coin.world = this;
+            if (coin.initAfterWorldSet) {
+                coin.initAfterWorldSet();
+            }
+        });
     }
+
+
+    stopGame() {
+        this.gameStopped = true;
+
+        this.intervals.forEach(id =>
+            clearInterval(id));
+        this.intervals = [];
+
+        this.timeouts.forEach(id =>
+            clearTimeout(id)); 
+            this.timeouts = [];
+        
+        cancelAnimationFrame(this.animationFrameId);
+    }
+
 }

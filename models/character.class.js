@@ -22,12 +22,14 @@ class Character extends HitableObject {
 
     hurtSoundPlayed = false;
     deathSoundPlayed = false;
+    deathAnimationDuration = 800;
 
     // --- CHARACTER PROPERTIES ---
     height = 250;
     y = 0;
     speed = 6;
     world;
+    energy = 10;
 
     offset = {
         top: 100,
@@ -42,9 +44,15 @@ class Character extends HitableObject {
 
 
     constructor() {
-        super().loadImage(this.imgsIdle[0]);
+        super(); // MUSS alleine stehen
+
+        this.loadImage(this.imgsIdle[0]);
         this.preloadAllImages();
-        this.applyGravity();
+    }
+
+
+    initAfterWorldSet() {
+        this.applyGravity(); 
         this.startLoops();
     }
 
@@ -58,9 +66,10 @@ class Character extends HitableObject {
     }
 
     startLoops() {
+        this.world.setIntervalTracked(() => this.updateAnimation(), 80);
         requestAnimationFrame(() => this.update());
-        setInterval(() => this.updateAnimation(), 80);
     }
+
 
     update() {
         this.handleMovement();
@@ -120,12 +129,25 @@ class Character extends HitableObject {
             SoundManager.stop(this.walkSound);
             SoundManager.stop(this.snoreSound);
 
+            // Animation starten
+            const frame = this.playAnimation(this.imgsDead);
+
             if (!this.deathSoundPlayed) {
                 SoundManager.play(this.soundDead);
                 this.deathSoundPlayed = true;
+
+                // Timer erst NACH dem ersten Frame setzen
+                this.world.setTimeoutTracked(() => {
+                    if (!this.endScreenShown) {
+                        this.endScreenShown = true;
+
+                        this.world.stopGame();
+                        toggleEndScreen('gameOver');
+                    }
+                }, this.deathAnimationDuration);
             }
 
-            return this.playAnimation(this.imgsDead);
+            return frame;
         }
 
         // --- HURT ---

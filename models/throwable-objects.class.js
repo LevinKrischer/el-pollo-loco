@@ -27,7 +27,7 @@ throw(facingLeft) {
     // Richtung bestimmen
     const direction = facingLeft ? -10 : 10;
 
-    this.throwInterval = setInterval(() => {
+    this.throwInterval = this.world.setIntervalTracked(() => {
         this.x += direction;
     }, 25);
 }

@@ -20,6 +20,8 @@ class Endboss extends HitableObject {
     canAttack = true;
     attackCooldown = 1500;
     preparing = false;
+    deathAnimationDuration = 1200; // oder was du brauchst
+
 
     offset = {
         top: 20,
@@ -29,19 +31,22 @@ class Endboss extends HitableObject {
     }
 
     constructor() {
-        super().loadImage(ImageHub.endboss.alert[0]);
+        super();
+        this.x = 3000;
+        this.loadImage(this.imgsAlert[0]);
         this.loadImages(this.imgsAlert);
         this.loadImages(this.imgsDead);
         this.loadImages(this.imgsHurt);
         this.loadImages(this.imgsWalking);
         this.loadImages(this.imgsAttack);
-        this.x = 3000;
-        this.speed = 0;
+    }
+
+    initAfterWorldSet() {
         this.startLoops();
     }
 
     startLoops() {
-        setInterval(() => this.updateAnimation(), 100);
+        this.world.setIntervalTracked(() => this.updateAnimation(), 100);
     }
 
     isDead() {
@@ -61,11 +66,11 @@ class Endboss extends HitableObject {
 
         character.hit(10);
 
-        setTimeout(() => {
+        this.world.setTimeoutTracked(() => {
             this.isAttacking = false;
         }, 600);
 
-        setTimeout(() => {
+        this.world.setTimeoutTracked(() => {
             this.canAttack = true;
         }, this.attackCooldown);
     }

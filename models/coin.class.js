@@ -8,19 +8,23 @@ class Coin extends MoveableObject {
     };
 
     constructor(x, y) {
-        super().loadImage(ImageHub.coin.rotating[0]);
+        super()
+        this.loadImage(ImageHub.coin.rotating[0]);
         this.loadImages(ImageHub.coin.rotating);
 
         this.x = x;
         this.y = y;
         this.width = 60;
         this.height = 60;
-
-        this.animate();
     }
 
+    initAfterWorldSet() {
+    this.animate();
+}
+
+
     animate() {
-        setInterval(() => {
+        this.world.setIntervalTracked(() => {
             this.playAnimation(ImageHub.coin.rotating);
         }, 200);
     }

@@ -7,8 +7,10 @@ class MoveableObject extends DrawableObject {
     energy = 100;
     lastHit = 0;
 
+    initAfterWorldSet() { this.applyGravity(); }
+
     applyGravity() {
-        this.gravityInterval = setInterval(() => {
+        this.gravityInterval = this.world.setIntervalTracked(() => {
             this.y -= this.speedY;
             this.speedY -= this.acceleration;
 
@@ -34,13 +36,13 @@ class MoveableObject extends DrawableObject {
     }
 
     moveRight() {
-        setInterval(() => {
+        this.world.setIntervalTracked(() => {
             this.x += this.speed;
         }, 1000 / 60);
     }
 
     moveLeft() {
-        this.moveInterval = setInterval(() => {
+        this.moveInterval = this.world.setIntervalTracked(() => {
             this.x -= this.speed;
         }, 1000 / 60);
     }

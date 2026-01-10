@@ -16,9 +16,16 @@ class Bottle extends ThrowableObject {
     };
 
     constructor(x, y) {
-        super(x, y);
-        this.loadImages(this.imgsSplash);
+        super();
         this.loadImage(this.imgBottleNormal);
+        this.loadImages(this.imgsSplash);
+        this.x = x;
+        this.y = y;
+        this.height = 80;
+        this.width = 80;
+    }
+
+    initAfterWorldSet() {
         this.animate();
     }
 
@@ -34,13 +41,13 @@ class Bottle extends ThrowableObject {
         this.speedY = 0;
         this.currentImage = 0;
 
-        setTimeout(() => {
+        this.world.setTimeoutTracked(() => {
             this.markedForDeletion = true;
         }, 400);
     }
 
     animate() {
-        setInterval(() => {
+        this.world.setIntervalTracked(() => {
             if (this.isExploded) {
                 this.playAnimation(this.imgsSplash);
             }
