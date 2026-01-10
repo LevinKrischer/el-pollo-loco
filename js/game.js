@@ -60,4 +60,35 @@ function updateSoundButtonIcon() {
         : './assets/img/0_project-images/sound-on.png';
 }
 
+function toggleImprint() {
+    const imprint = document.getElementById('imprintOverlay');
+    imprint.classList.toggle('hidden');
+}
+
+function toggleOverlay(type) {
+    const overlay = document.getElementById(type + 'Overlay');
+
+    if (overlay.classList.contains('visible')) {
+        // Fade-Out
+        overlay.classList.remove('visible');
+
+        // Nach der Transition display:none setzen
+        setTimeout(() => {
+            overlay.classList.add('invisible');
+        }, 300);
+
+    } else {
+        // Sofort sichtbar machen (aber noch transparent)
+        overlay.classList.remove('invisible');
+
+        // Kleiner Delay, damit CSS die Transition erkennt
+        requestAnimationFrame(() => {
+            overlay.classList.add('visible');
+        });
+    }
+}
+
+
+
+
 

@@ -36,17 +36,17 @@
                 <img class="startScreenImage" src="./assets/img/9_intro_outro_screens/start/startscreen_1.png" alt="" />
                 <section class="topButtons">
                     <div class="buttonsLeft">
-                        <button class="button" onclick="showKeyboardControls()"><img src="./assets/img/0_project-images/keyboard.png" alt="keyboard icon" /></button>
-                        <button class="button" onclick="showImprint()"><img src="./assets/img/0_project-images/imprint.png" alt="imprint icon" /></button>
+                        <button class="button" onclick="toggleOverlay('controls')"><img src="./assets/img/0_project-images/keyboard.png" alt="keyboard icon" /></button>
+                        <button class="button" onclick="toggleOverlay('imprint')"><img src="./assets/img/0_project-images/imprint.png" alt="imprint icon" /></button>
                     </div>
                     <div class="buttonsRight">
                         <button class="button" onclick="startGame()">START GAME</button>
-                        <button class="button" id="soundToggleButton" onclick="toggleSound()"><img src="./assets/img/0_project-images/sound-on.png" alt="sound toggle icon"></button>
+                        <button class="button" onclick="toggleSound()"><img id="soundToggleButton" src="./assets/img/0_project-images/sound-on.png" alt="sound toggle icon"></button>
                     </div>
                 </section>
             </section>
 
-            <section class="overlay hidden" id="controlsOverlay">
+            <section class="overlay invisible" id="controlsOverlay">
                 <div class="overlayContent">
                     <h2>Controls</h2>
                     <div>
@@ -54,11 +54,11 @@
                         <p>Jump: Space</p>
                         <p>Throw bottle: "D"</p>
                     </div>
-                    <button class="button">CLOSE</button>
+                    <button class="button" onclick="toggleOverlay('controls')">CLOSE</button>
                 </div>
             </section>
 
-            <section class="overlay hidden" id="imprintOverlay">
+            <section class="overlay invisible" id="imprintOverlay">
                 <div class="overlayContent">
                     <h2>Imprint</h2>
                     <div>
@@ -66,7 +66,7 @@
                         <p>+49 163 68 08 422<br>levin@levinkrischer.de</p>
                     </div>
                     
-                    <button class="button">CLOSE</button>
+                    <button class="button" onclick="toggleOverlay('imprint')">CLOSE</button>
                 </div>
             </section>
 
