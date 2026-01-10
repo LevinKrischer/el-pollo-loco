@@ -6,7 +6,12 @@ let bgMusic = SoundHub.music.background;
 
 function init() {
     canvas = document.getElementById('canvas');
+    startBgMusic();
     showStartScreen();
+}
+
+function startBgMusic() {
+    SoundManager.play(bgMusic)
 }
 
 function startGame() {

@@ -3,7 +3,7 @@ class SoundHub {
     static music = {
         background: (() => {
             const a = new Audio("assets/sounds/game/backgroundsound.mp3");
-            a.volume = 0.25;
+            a.volume = 0.4;
             a.loop = true;
             return a;
         })(),
@@ -26,7 +26,7 @@ class SoundHub {
         ui: {
             click: (() => {
                 const a = new Audio("assets/sounds/game/click.mp3");
-                a.volume = 0.5;
+                a.volume = 0.4;
                 return a;
             })()
         },
@@ -34,25 +34,25 @@ class SoundHub {
         character: {
             damage: (() => {
                 const a = new Audio("assets/sounds/character/characterDamage.mp3");
-                a.volume = 0.6;
+                a.volume = 0.4;
                 return a;
             })(),
 
             dead: (() => {
                 const a = new Audio("assets/sounds/character/characterDead.wav");
-                a.volume = 0.7;
+                a.volume = 0.5;
                 return a;
             })(),
 
             jump: (() => {
                 const a = new Audio("assets/sounds/character/characterJump.wav");
-                a.volume = 0.4;
+                a.volume = 0.3;
                 return a;
             })(),
 
             run: (() => {
                 const a = new Audio("assets/sounds/character/characterRun.mp3");
-                a.volume = 0.3;
+                a.volume = 0.2;
                 return a;
             })(),
 
