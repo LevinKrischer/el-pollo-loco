@@ -3,8 +3,6 @@ let world;
 let keyboard = new Keyboard();
 
 let bgMusic = SoundHub.music.background; 
-bgMusic.loop = true; 
-bgMusic.volume = 0.5;
 
 function init() {
     canvas = document.getElementById('canvas');

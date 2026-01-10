@@ -14,7 +14,6 @@ class SoundManager {
     return audio;
 }
 
-
     /**
      * Stoppt einen Sound sicher.
      */
@@ -23,7 +22,6 @@ class SoundManager {
     audio.pause();
     audio.currentTime = 0;
 }
-
 
     /**
      * Globales Muting für ALLE Sounds.

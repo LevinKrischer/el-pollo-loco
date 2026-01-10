@@ -205,16 +205,21 @@ class World {
 
                 if (isFalling) {
                     enemy.die();
+                    this.character.speedY = 12;
+                    this.character.wasOnGround = false;
+                    this.character.lastMoveTime = Date.now();
                     return;
                 }
 
                 if (enemy.isDead()) return;
 
-                this.character.hit();
-                this.statusBar[0].setPercentage(
-                    this.character.energy,
-                    this.statusBar[0].imgsStatusHealth
-                );
+                if (!this.character.isAboveGround()) {
+                    this.character.hit();
+                    this.statusBar[0].setPercentage(
+                        this.character.energy,
+                        this.statusBar[0].imgsStatusHealth
+                    );
+                }
             }
         });
     }

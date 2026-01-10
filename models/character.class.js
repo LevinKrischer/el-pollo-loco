@@ -84,6 +84,13 @@ class Character extends HitableObject {
     }
 
     handleMovement() {
+
+        // ❗ Während Hurt → KEINE Bewegung erlauben
+        if (this.isHurt()) {
+            SoundManager.stop(this.walkSound);
+            return;
+        }
+
         if (Keyboard.RIGHT && this.x < this.world.level.level_end_x) {
             this.x += this.speed;
             this.otherDirection = false;
@@ -99,13 +106,11 @@ class Character extends HitableObject {
         if (Keyboard.SPACE && this.wasOnGround) {
             this.speedY = 20;
             this.lastMoveTime = Date.now();
-
-            // Jump-Sound nur beim Absprung
             SoundManager.play(this.soundJump);
-
             this.wasOnGround = false;
         }
     }
+
 
     updateAnimation() {
 
