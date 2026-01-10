@@ -18,7 +18,7 @@ class Chicken extends HitableObject {
         super().loadImage(ImageHub.chicken.walking[0]);
         this.loadImages(this.imgsWalking);
         this.loadImages(this.imgsDead);
-        this.x = 200 + Math.random() * 3000;
+        this.x = 400 + Math.random() * 3000;
         this.speed = 0.15 + Math.random() * 0.5;
         this.animate();
     }

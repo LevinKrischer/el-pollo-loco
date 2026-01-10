@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'rye';
+    src: url("./assets/fonts/rye.ttf") format("truetype");
+}
+
 * {
     position: relative;
     margin: 0;
@@ -13,19 +18,131 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: url('./assets/img/0_project-images/desert-bg.jpg');
+    background-image: url("./assets/img/0_project-images/desert-bg.jpg");
     background-position: center;
+    font-family: 'rye', Arial, Helvetica, sans-serif;
 }
 
 .logo-main {
     margin: 40px;
 }
 
-canvas {
-    width: 720px;
-    height: 480px;
+.mainContainer {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    max-width: 728px;
+    max-height: 488px;
     background-color: black;
     border: 4px solid #de5e37e8;
     border-radius: 0 20px;
-    box-shadow: 4px 4px 8px #DE5E37;
+    box-shadow: 4px 4px 8px #de5e37;
+    overflow: hidden;
+}
+
+canvas {
+    display: none;
+    background-color: black;
+    border-radius: 0 20px;
+}
+
+.startScreen {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height:100%;
+    max-width: 720px;
+    max-height: 480px;
+}
+
+.startScreenImage {
+    height: 100%;
+    width:100%;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid #8B4513;
+    border-radius: 10px;
+    background-color: #ffca00;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0 #8B4513;
+    transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+    scale: 1.1;
+    background-color: #ffe063;
+}
+
+.button img{
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.topButtons {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    width:100%;
+}
+
+.buttonsLeft, 
+.buttonsRight {
+    display: flex;
+    gap: 16px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.overlayContent {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    background: #f9ecd4;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 400px;
+}
+
+.overlayContent .button {
+    width: 50%;
+    margin: auto
+}
+
+.overlayContent div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap:8px;
+}
+
+.hidden {
+    display: none;
 }

@@ -5,46 +5,46 @@ class HitableObject extends MoveableObject {
     dead = false;
     deathSoundPlayed = false;
 
+    // --- SOUND REFERENCES ---
+    soundEndbossHurt = SoundHub.sfx.endboss.hurt;
+    soundEndbossDead = SoundHub.sfx.endboss.dead;
+
+    soundChickenDead1 = SoundHub.sfx.chicken.dead1;
+    soundChickenDead2 = SoundHub.sfx.chicken.dead2;
+
     offset = {
         top: 0,
         right: 0,
         bottom: 0,
         left: 0
-    }
+    };
 
     hit(amount = 2) {
-
-        // Wenn Objekt noch in der Hurt-Phase ist → NICHT erneut treffen
-        if (this.isHurt()) {
-            return;
-        }
+        if (this.isHurt()) return;
 
         this.energy -= amount;
 
         if (this.energy < 0) {
             this.energy = 0;
         } else {
-            this.lastHit = new Date().getTime();
+            this.lastHit = Date.now();
 
-            // 🟦 Hurt-Sound für Pepe
+            // Hurt-Sound für Pepe
             if (this instanceof Character) {
-                SoundManager.play(SoundHub.character.damage, 0.5);
+                SoundManager.play(this.soundHurt);
                 SoundManager.stop(this.walkSound);
                 SoundManager.stop(this.snoreSound);
             }
 
-            // 🟥 Hurt-Sound für Endboss
+            // Hurt-Sound für Endboss
             if (this.isEndboss) {
-                SoundManager.play(SoundHub.character.damage, 0.8);
+                SoundManager.play(this.soundEndbossHurt);
             }
         }
     }
 
-
-
     isHurt() {
-        let timePassed = new Date().getTime() - this.lastHit; // Diff in ms
-        timePassed = timePassed / 1000;
+        let timePassed = (Date.now() - this.lastHit) / 1000;
         return timePassed < 1;
     }
 
@@ -59,12 +59,13 @@ class HitableObject extends MoveableObject {
         this.rHeight = this.height - this.offset.top - this.offset.bottom;
     }
 
-
     isColliding(hitObj) {
-        return this.rX + this.rWidth > hitObj.rX &&
+        return (
+            this.rX + this.rWidth > hitObj.rX &&
             this.rX < hitObj.rX + hitObj.rWidth &&
             this.rY + this.rHeight > hitObj.rY &&
-            this.rY < hitObj.rY + hitObj.rHeight;
+            this.rY < hitObj.rY + hitObj.rHeight
+        );
     }
 
     die() {
@@ -72,40 +73,29 @@ class HitableObject extends MoveableObject {
         this.dead = true;
         this.speed = 0;
 
-        // 💥 Death-Sound nur einmal abspielen
         if (!this.deathSoundPlayed) {
 
-            // Chicken normal
             if (this instanceof Chicken) {
-                SoundManager.play(SoundHub.chicken.dead1, 0.5);
+                SoundManager.play(this.soundChickenDead1);
             }
 
-            // Chicken small
-            if (this instanceof ChickenSmall) {
-                SoundManager.play(SoundHub.chicken.dead2, 1);
+            else if (this instanceof ChickenSmall) {
+                SoundManager.play(this.soundChickenDead2);
+            }
+
+            else if (this instanceof Endboss) {
+                SoundManager.play(this.soundEndbossDead);
             }
 
             this.deathSoundPlayed = true;
         }
 
-        // Bewegung stoppen
         if (this.moveInterval) {
             clearInterval(this.moveInterval);
         }
 
-        // Nach kurzer Zeit entfernen
         setTimeout(() => {
             this.markedForDeletion = true;
         }, 5000);
-    }
-
-
-
-    drawFrame(ctx) {
-        ctx.beginPath();
-        ctx.lineWidth = '5';
-        ctx.strokeStyle = 'blue';
-        ctx.rect(this.rX, this.rY, this.rWidth, this.rHeight);
-        ctx.stroke();
     }
 }

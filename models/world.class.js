@@ -5,19 +5,30 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+
     maxBottles = 7;
     coinCount = 0;
     maxCoins = 20;
     bottleCount = 0;
     flyingBottles = [];
+
     statusBar = [
         new StatusBar(ImageHub.statusBar.health, 40, 0, true),
         new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
         new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
     ];
+
     lastThrowTime = 0;
-    throwCooldown = 500; // 0,5 Sekunden
+    throwCooldown = 500;
     alertSoundPlayed = false;
+
+    // --- SOUND REFERENCES ---
+    soundBottleCollect = SoundHub.sfx.collectibles.bottle;
+    soundBottleThrow = SoundHub.sfx.collectibles.bottleThrow;
+    soundCoinCollect = SoundHub.sfx.collectibles.coin;
+
+    soundEndbossHurt = SoundHub.sfx.endboss.hurt;
+    soundEndbossAlert = SoundHub.sfx.endboss.alert;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -27,7 +38,9 @@ class World {
         this.setWorld();
         this.spawnBottles();
         this.spawnCoins();
+    }
 
+    start() {
         this.draw();
         this.run();
     }
@@ -41,8 +54,7 @@ class World {
     }
 
     checkBottleHits() {
-        this.flyingBottles.forEach((bottle) => {
-
+        this.flyingBottles.forEach(bottle => {
             if (bottle.isExploded) return;
 
             bottle.getRealFrame();
@@ -51,18 +63,16 @@ class World {
                 enemy.getRealFrame();
 
                 if (!enemy.isDead() && bottle.isColliding(enemy)) {
-
                     bottle.explode();
 
                     if (enemy instanceof Endboss) {
-
-                        // ❗ Hurt-State aktivieren
                         enemy.lastHit = Date.now();
-
                         enemy.hitsTaken++;
-                        SoundManager.play(SoundHub.endboss.hurt, 1);
 
-                        const percentage = ((enemy.hitsToKill - enemy.hitsTaken) / enemy.hitsToKill) * 100;
+                        SoundManager.play(this.soundEndbossHurt);
+
+                        const percentage =
+                            ((enemy.hitsToKill - enemy.hitsTaken) / enemy.hitsToKill) * 100;
 
                         const bossBar = this.statusBar[this.statusBar.length - 1];
                         bossBar.setPercentage(percentage, ImageHub.statusBar.endboss);
@@ -70,16 +80,12 @@ class World {
                         if (enemy.hitsTaken >= enemy.hitsToKill) {
                             enemy.die();
                         }
-
                     } else {
-                        // ❗ Alle anderen Gegner (Chicken, ChickenSmall, etc.)
                         enemy.die();
                     }
 
-                    // ❗ WICHTIG: Keine weiteren Kollisionen prüfen
                     return;
                 }
-
             }
         });
 
@@ -91,10 +97,7 @@ class World {
 
         for (let i = 0; i < 20; i++) {
             const x = 200 + Math.random() * 3000;
-
-            // Zufällige Höhe auswählen
             const y = coinHeights[Math.floor(Math.random() * coinHeights.length)];
-
             this.level.coins.push(new Coin(x, y));
         }
     }
@@ -110,7 +113,11 @@ class World {
             this.checkEndbossTrigger();
             this.checkEndbossAttack();
         }, 100);
-        setInterval(() => { const boss = this.level.enemies.find(e => e.isEndboss); if (boss) { boss.updateBehavior(this.character); } }, 100);
+
+        setInterval(() => {
+            const boss = this.level.enemies.find(e => e.isEndboss);
+            if (boss) boss.updateBehavior(this.character);
+        }, 100);
     }
 
     checkBottlePickup() {
@@ -120,25 +127,17 @@ class World {
             bottle.getRealFrame();
 
             if (this.character.isColliding(bottle)) {
-
                 if (this.bottleCount < this.maxBottles) {
-
-                    // 💡 Collect-Sound
-                    SoundManager.play(SoundHub.collectibles.bottle, 0.4);
+                    SoundManager.play(this.soundBottleCollect);
 
                     this.bottleCount++;
                     this.level.bottles.splice(index, 1);
 
                     this.updateBottleStatusBar();
-                    console.log("Flasche eingesammelt!");
-
-                } else {
-                    console.log("Inventar voll – Flasche bleibt liegen");
                 }
             }
         });
     }
-
 
     checkCoinPickup() {
         this.character.getRealFrame();
@@ -147,41 +146,31 @@ class World {
             coin.getRealFrame();
 
             if (this.character.isColliding(coin)) {
-
-                // 💰 Coin-Sound
-                SoundManager.play(SoundHub.collectibles.coin, 0.4);
+                SoundManager.play(this.soundCoinCollect);
 
                 this.coinCount++;
                 this.level.coins.splice(index, 1);
 
                 this.updateCoinStatusBar();
-                console.log("Coin eingesammelt!");
             }
         });
     }
 
-
     checkThrowObjects() {
         const now = Date.now();
 
-        // ❗ Pepe darf NICHT werfen, wenn er verletzt ist
         if (this.character.isHurt()) return;
 
-        // ❗ Cooldown prüfen
         if (Keyboard.D && this.bottleCount > 0 && now - this.lastThrowTime >= this.throwCooldown) {
+            SoundManager.play(this.soundBottleThrow);
 
-            // ❗ Throw-Sound (GENAU hier!)
-            SoundManager.play(SoundHub.collectibles.bottleThrow, 0.4);
+            const offsetX = this.character.otherDirection ? -20 : 20;
 
-            // ❗ Startposition abhängig von Blickrichtung
-            let offsetX = this.character.otherDirection ? -20 : 20;
-
-            let bottle = new Bottle(
+            const bottle = new Bottle(
                 this.character.x + offsetX,
                 this.character.y + 80
             );
 
-            // ❗ Richtung an Bottle übergeben
             bottle.throw(this.character.otherDirection);
 
             this.flyingBottles.push(bottle);
@@ -193,7 +182,6 @@ class World {
         }
     }
 
-
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;
         this.statusBar[2].setPercentage(percentage, this.statusBar[2].imgsStatusBottles);
@@ -201,11 +189,7 @@ class World {
 
     updateCoinStatusBar() {
         const percentage = (this.coinCount / this.maxCoins) * 100;
-
-        this.statusBar[1].setPercentage(
-            percentage,
-            this.statusBar[1].imgsStatusCoins
-        );
+        this.statusBar[1].setPercentage(percentage, this.statusBar[1].imgsStatusCoins);
     }
 
     checkCollisions() {
@@ -215,59 +199,43 @@ class World {
             enemy.getRealFrame();
 
             if (!enemy.isDead() && this.character.isColliding(enemy)) {
-
-                // ❗ Endboss verursacht KEINEN Kontaktschaden
                 if (enemy.isEndboss) return;
 
                 const isFalling = this.character.speedY < 0;
 
-                if (isFalling && !enemy.isEndboss) {
+                if (isFalling) {
                     enemy.die();
-                    console.log("STOMP! Gegner besiegt");
                     return;
                 }
 
                 if (enemy.isDead()) return;
 
-                // SCHADEN (nur wenn NICHT gestomped)
                 this.character.hit();
                 this.statusBar[0].setPercentage(
                     this.character.energy,
                     this.statusBar[0].imgsStatusHealth
                 );
-                console.log("Pepe wurde getroffen");
             }
         });
     }
 
     checkEndbossTrigger() {
-        // Endboss aus enemies holen
         const boss = this.level.enemies.find(e => e.isEndboss);
+        if (!boss || boss.activated) return;
 
-        // Falls noch nicht gespawnt oder nicht gefunden → abbrechen
-        if (!boss) return;
-
-        // Wenn Boss schon aktiviert wurde → nichts tun
-        if (boss.activated) return;
-
-        // Trigger-Position
-        if (!boss.activated && this.character.x > 2500) {
-
+        if (this.character.x > 2500) {
             boss.activated = true;
             boss.preparing = true;
 
-            // 🔊 ALERT-SOUND nur einmal
             if (!boss.alertSoundPlayed) {
-                SoundManager.play(SoundHub.endboss.alert, 0.7);
+                SoundManager.play(this.soundEndbossAlert);
                 boss.alertSoundPlayed = true;
             }
 
-            // Endboss-Statusbar einblenden
             this.statusBar.push(
                 new StatusBar(ImageHub.statusBar.endboss, this.canvas.width - 200, 0, true)
             );
 
-            // Nach 2 Sekunden beginnt der Boss zu laufen
             setTimeout(() => {
                 boss.preparing = false;
                 boss.speed = 4;
@@ -275,24 +243,15 @@ class World {
         }
     }
 
-
     checkEndbossAttack() {
         const boss = this.level.enemies.find(e => e.isEndboss);
         if (!boss || boss.dead) return;
 
-        const pepe = this.character;
+        const distance = Math.abs(boss.x - this.character.x);
 
-        const distance = Math.abs(boss.x - pepe.x);
-
-        // Wenn Pepe in Reichweite ist → stehen bleiben + angreifen
         if (distance < boss.attackRange) {
             boss.speed = 0;
         }
-    }
-
-    checkEndbossBehavior() {
-        const boss = this.level.enemies.find(e => e.isEndboss);
-        if (boss) boss.updateBehavior(this.character);
     }
 
     draw() {
@@ -311,13 +270,11 @@ class World {
         this.addObjectsToMap(this.flyingBottles);
         this.addObjectsToMap(this.level.coins);
 
-
         this.ctx.translate(-this.camera_x, 0);
 
         this.addObjectsToMap(this.statusBar);
 
-        requestAnimationFrame(() => this.draw()
-        );
+        requestAnimationFrame(() => this.draw());
     }
 
     removeDeadEnemies() {
@@ -331,7 +288,6 @@ class World {
     addToMap(movObj) {
         if (movObj.otherDirection) {
             this.ctx.save();
-
             this.ctx.translate(movObj.x + movObj.width, 0);
             this.ctx.scale(-1, 1);
 

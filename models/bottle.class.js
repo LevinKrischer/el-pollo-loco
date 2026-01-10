@@ -5,6 +5,9 @@ class Bottle extends ThrowableObject {
     imgsSplash = ImageHub.bottle.splash;
     imgBottleNormal = ImageHub.bottle.normal[0];
 
+    // --- SOUND REFERENCE ---
+    soundBreak = SoundHub.sfx.collectibles.bottleBreak;
+
     offset = {
         top: 10,
         right: 10,
@@ -22,26 +25,19 @@ class Bottle extends ThrowableObject {
     explode() {
         this.isExploded = true;
 
-        // 💥 Break-Sound
-        SoundManager.play(SoundHub.collectibles.bottleBreak, 0.5);
+        SoundManager.play(this.soundBreak);
 
-        // horizontale Bewegung stoppen
         clearInterval(this.throwInterval);
-
-        // GRAVITY STOPPEN
         clearInterval(this.gravityInterval);
 
         this.speed = 0;
         this.speedY = 0;
         this.currentImage = 0;
 
-        console.log("Bottle explodiert bei X:", this.x, "Y:", this.y);
-
         setTimeout(() => {
             this.markedForDeletion = true;
         }, 400);
     }
-
 
     animate() {
         setInterval(() => {

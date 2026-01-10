@@ -1,5 +1,6 @@
 class Character extends HitableObject {
 
+    // --- IMAGE SETS ---
     imgsWalking = ImageHub.character.walking;
     imgsIdle = ImageHub.character.idle;
     imgsIdleLong = ImageHub.character.long_idle;
@@ -7,6 +8,22 @@ class Character extends HitableObject {
     imgsHurt = ImageHub.character.hurt;
     imgsDead = ImageHub.character.dead;
 
+    // --- PREDEFINED SOUND REFERENCES (from SoundHub) ---
+    soundWalk = SoundHub.sfx.character.run;
+    soundSnore = SoundHub.sfx.character.snoring;
+    soundJump = SoundHub.sfx.character.jump;
+    soundHurt = SoundHub.sfx.character.damage;
+    soundDead = SoundHub.sfx.character.dead;
+
+    // --- SOUND INSTANCES (running sounds) ---
+    walkSound = null;
+    snoreSound = null;
+    hurtSound = null;
+
+    hurtSoundPlayed = false;
+    deathSoundPlayed = false;
+
+    // --- CHARACTER PROPERTIES ---
     height = 250;
     y = 0;
     speed = 6;
@@ -17,17 +34,11 @@ class Character extends HitableObject {
         right: 20,
         bottom: 5,
         left: 15
-    }
+    };
 
     lastMoveTime = Date.now();
     longIdleDelay = 5000;
     wasOnGround = true;
-
-    walkSound = null;
-    snoreSound = null;
-    hurtSound = null;
-    hurtSoundPlayed = false;
-    deathSoundPlayed = false;
 
 
     constructor() {
@@ -47,11 +58,8 @@ class Character extends HitableObject {
     }
 
     startLoops() {
-        requestAnimationFrame(() =>
-            this.update());
-        setInterval(() =>
-            this.updateAnimation()
-            , 80);
+        requestAnimationFrame(() => this.update());
+        setInterval(() => this.updateAnimation(), 80);
     }
 
     update() {
@@ -64,12 +72,10 @@ class Character extends HitableObject {
         // Kamera in Weltkoordinaten umrechnen
         const camX = -this.world.camera_x;
 
-        // Pepe ist links aus der Dead-Zone raus
         if (this.x < camX + deadZoneLeft) {
             this.world.camera_x = -(this.x - deadZoneLeft);
         }
 
-        // Pepe ist rechts aus der Dead-Zone raus
         if (this.x > camX + deadZoneRight) {
             this.world.camera_x = -(this.x - deadZoneRight);
         }
@@ -95,71 +101,85 @@ class Character extends HitableObject {
             this.lastMoveTime = Date.now();
 
             // Jump-Sound nur beim Absprung
-            SoundManager.play(SoundHub.character.jump, 0.4);
+            SoundManager.play(this.soundJump);
 
             this.wasOnGround = false;
         }
-
-
     }
 
     updateAnimation() {
+
+        // --- DEAD ---
         if (this.isDead()) {
 
-            // Alle laufenden Sounds stoppen
             SoundManager.stop(this.walkSound);
             SoundManager.stop(this.snoreSound);
 
-            // Death-Sound nur einmal abspielen
             if (!this.deathSoundPlayed) {
-                SoundManager.play(SoundHub.character.dead, 0.6);
+                SoundManager.play(this.soundDead);
                 this.deathSoundPlayed = true;
             }
 
             return this.playAnimation(this.imgsDead);
         }
 
+        // --- HURT ---
         if (this.isHurt()) {
 
-            // Lauf- und Schnarch-Sound stoppen
             SoundManager.stop(this.walkSound);
             SoundManager.stop(this.snoreSound);
 
+            // Hurt-Sound nur EINMAL pro Hurt-Phase
+            if (!this.hurtSoundPlayed) {
+                SoundManager.play(this.soundHurt);
+                this.hurtSoundPlayed = true;
+            }
+
             return this.playAnimation(this.imgsHurt);
         }
+        // Hurt vorbei → Flag zurücksetzen
+        if (!this.isHurt()) {
+            this.hurtSoundPlayed = false;
+        }
 
-        if (this.isAboveGround())
+
+        // --- JUMP ---
+        if (this.isAboveGround()) {
             return this.playAnimation(this.imgsJump);
+        }
+
         if (!this.isAboveGround()) {
             this.wasOnGround = true;
         }
 
+        // --- WALKING ---
         if (Keyboard.RIGHT || Keyboard.LEFT) {
             this.playWalkSound();
             return this.playAnimation(this.imgsWalking);
         }
-        if (!Keyboard.RIGHT && !Keyboard.LEFT) {
-            SoundManager.stop(this.walkSound);
-        }
 
+        // Wenn nicht mehr in Bewegung → Walk-Sound stoppen
+        SoundManager.stop(this.walkSound);
 
+        // --- IDLE ---
         this.handleIdleAnimation();
     }
 
     handleIdleAnimation() {
-    const idleTime = Date.now() - this.lastMoveTime;
+        const idleTime = Date.now() - this.lastMoveTime;
 
-    if (idleTime > this.longIdleDelay) {
-        this.playSnoreSound();
-        return this.playAnimation(this.imgsIdleLong);
+        if (idleTime > this.longIdleDelay) {
+            this.playSnoreSound();
+            return this.playAnimation(this.imgsIdleLong);
+        }
+
+        // Wenn NICHT idleLong → Snore stoppen
+        SoundManager.stop(this.snoreSound);
+
+        this.playAnimation(this.imgsIdle);
     }
 
-    // Wenn NICHT idleLong → Snore stoppen
-    SoundManager.stop(this.snoreSound);
-
-    this.playAnimation(this.imgsIdle);
-}
-
+    // --- SOUND METHODS ---
 
     playWalkSound() {
         // Wenn Sound bereits läuft → nichts tun
@@ -168,19 +188,15 @@ class Character extends HitableObject {
         // Falls vorher ein Sound hing → stoppen
         SoundManager.stop(this.walkSound);
 
-        this.walkSound = SoundManager.play(
-            SoundHub.character.run,
-            0.3,
-            true // loop
-        );
+        // Neuen Sound starten
+        this.walkSound = SoundManager.play(this.soundWalk);
     }
 
     playSnoreSound() {
         if (this.snoreSound && !this.snoreSound.paused) return;
 
         SoundManager.stop(this.snoreSound);
-        this.snoreSound = SoundManager.play(SoundHub.character.snoring, 0.4, true);
+
+        this.snoreSound = SoundManager.play(this.soundSnore);
     }
-
-
 }

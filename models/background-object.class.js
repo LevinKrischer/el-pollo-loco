@@ -7,7 +7,4 @@ class BackgroundObject extends DrawableObject {
         this.width = 720;
         this.height = 480;
     }
-
-    getRealFrame() { }
-    drawFrame() { }
 }
