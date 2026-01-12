@@ -1,9 +1,11 @@
 class Bottle extends ThrowableObject {
 
     isExploded = false;
+    isThrown = false;
 
     imgsSplash = ImageHub.bottle.splash;
-    imgBottleNormal = ImageHub.bottle.normal[0];
+    imgsBottleNormal = ImageHub.bottle.normal;
+    imgsBottleRotation = ImageHub.bottle.rotating;
 
     soundBreak = SoundHub.sfx.collectibles.bottleBreak;
 
@@ -16,8 +18,10 @@ class Bottle extends ThrowableObject {
 
     constructor(x, y) {
         super();
-        this.loadImage(this.imgBottleNormal);
+        this.loadImage(this.imgsBottleNormal[0]);
+        this.loadImages(this.imgsBottleNormal);
         this.loadImages(this.imgsSplash);
+        this.loadImages(this.imgsBottleRotation);
         this.x = x;
         this.y = y;
         this.height = 80;
@@ -39,6 +43,7 @@ class Bottle extends ThrowableObject {
         this.speed = 0;
         this.speedY = 0;
         this.currentImage = 0;
+        this.isThrown = false;
 
         this.world.setTimeoutTracked(() => {
             this.markedForDeletion = true;
@@ -46,10 +51,23 @@ class Bottle extends ThrowableObject {
     }
 
     animate() {
+        let idleTimer = 0;
+
         this.world.setIntervalTracked(() => {
-            if (this.isExploded) {
-                this.playAnimation(this.imgsSplash);
-            }
-        }, 80);
+            if (this.isExploded) return this.animateSplash();
+            if (this.isThrown) return this.animateThrow();
+            idleTimer = this.animateIdle(idleTimer);
+        }, 60);
     }
+
+    animateIdle(timer) {
+        if (timer >= 300) {
+            this.playAnimation(this.imgsBottleNormal);
+            return 0;
+        }
+        return timer + 60;
+    }
+
+    animateThrow() { this.playAnimation(this.imgsBottleRotation); }
+    animateSplash() { this.playAnimation(this.imgsSplash); }
 }

@@ -6,9 +6,9 @@ class World {
     camera_x = 0;
     gameStopped = false;
 
-    maxBottles = 7;
+    maxBottles = 10;
     coinCount = 0;
-    maxCoins = 20;
+    maxCoins = 15;
     bottleCount = 0;
     flyingBottles = [];
 
@@ -62,19 +62,26 @@ class World {
     }
 
     spawnBottles() {
-        for (let i = 0; i < this.maxBottles; i++) {
-            const x = 200 + Math.random() * 2400;
-            const y = 350;
-            this.level.bottles.push(new Bottle(x, y));
-        }
+    for (let i = 0; i < this.maxBottles; i++) {
+        const x = 200 + Math.random() * 2400;
+        const y = 350;
+
+        const bottle = new Bottle(x, y);
+        this.assignWorld(bottle);
+        this.level.bottles.push(bottle);
     }
+}
 
     spawnCoins() {
         const heights = [350, 300, 250, 200, 150];
+
         for (let i = 0; i < 20; i++) {
             const x = 200 + Math.random() * 3000;
             const y = heights[Math.floor(Math.random() * heights.length)];
-            this.level.coins.push(new Coin(x, y));
+
+            const coin = new Coin(x, y);
+            this.assignWorld(coin);
+            this.level.coins.push(coin);
         }
     }
 
@@ -156,12 +163,12 @@ class World {
     }
 
     throwBottle(now) {
-    SoundManager.play(this.soundBottleThrow);
+        SoundManager.play(this.soundBottleThrow);
 
-    const bottle = this.createThrownBottle();
-    this.initThrownBottle(bottle);
-    this.registerBottleThrow(bottle, now);
-}
+        const bottle = this.createThrownBottle();
+        this.initThrownBottle(bottle);
+        this.registerBottleThrow(bottle, now);
+    }
 
     createThrownBottle() {
         const offsetX = this.character.otherDirection ? -20 : 20;
@@ -178,12 +185,12 @@ class World {
     }
 
     registerBottleThrow(bottle, now) {
-    this.flyingBottles.push(bottle);
-    this.bottleCount--;
-    this.lastThrowTime = now;
-    this.character.lastMoveTime = now;
-    this.updateBottleStatusBar();
-}
+        this.flyingBottles.push(bottle);
+        this.bottleCount--;
+        this.lastThrowTime = now;
+        this.character.lastMoveTime = now;
+        this.updateBottleStatusBar();
+    }
 
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;

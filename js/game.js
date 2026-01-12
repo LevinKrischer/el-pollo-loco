@@ -49,16 +49,17 @@ function blurActiveElement() {
 }
 
 function hideStartScreen() {
-    const startScreen = document.getElementById("StartScreen");
+    const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.add("hidden");
     canvas.style.display = "block";
     blurActiveElement();
 }
 
 function showStartScreen() {
-    const startScreen = document.getElementById("StartScreen");
+    const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.remove("hidden");
     canvas.style.display = "none";
+    closeVisibleEndScreen();
 }
 
 function toggleSound() {
@@ -86,13 +87,18 @@ function toggleOverlay(type) {
 
 function hideOverlay(overlay) {
     overlay.classList.remove('visible');
-    const run = () => overlay.classList.add('invisible');
-    useTrackedOrNormalTimeout(run, 300);
+
+    useTrackedOrNormalTimeout(function() {
+        overlay.classList.add('invisible');
+    }, 300);
 }
 
 function showOverlay(overlay) {
     overlay.classList.remove('invisible');
-    requestAnimationFrame(() => overlay.classList.add('visible'));
+
+    requestAnimationFrame(function() {
+        overlay.classList.add('visible');
+    });
 }
 
 function toggleEndScreen(type) {
@@ -104,13 +110,18 @@ function toggleEndScreen(type) {
 
 function hideEndScreen(screen) {
     screen.classList.remove('visible');
-    const run = () => screen.classList.add('invisible');
-    useTrackedOrNormalTimeout(run, 400);
+
+    useTrackedOrNormalTimeout(function() {
+        screen.classList.add('invisible');
+    }, 400);
 }
 
 function showEndScreen(screen) {
     screen.classList.remove('invisible');
-    requestAnimationFrame(() => screen.classList.add('visible'));
+
+    requestAnimationFrame(function() {
+        screen.classList.add('visible');
+    });
 }
 
 function closeVisibleEndScreen() {

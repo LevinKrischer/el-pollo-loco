@@ -14,15 +14,13 @@ class Coin extends MoveableObject {
         super()
         this.loadImage(ImageHub.coin.rotating[0]);
         this.loadImages(ImageHub.coin.rotating);
-
         this.x = x;
         this.y = y;
     }
 
     initAfterWorldSet() {
-    this.animate();
-}
-
+        this.animate();
+    }
 
     animate() {
         this.world.setIntervalTracked(() => {

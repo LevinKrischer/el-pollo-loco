@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" translate="no">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,7 +25,6 @@
         <script src="./models/cloud.class.js"></script>
         <script src="./models/level.class.js"></script>
         <script src="./js/game.js"></script>
-
         <script src="./levels/level1.js"></script>
     </head>
     <body onload="init()">
@@ -97,7 +96,20 @@
                     </section>
                 </div>
             </section>
+            <section class="mobileButtons">
+                <div class="mobileButtonsMove">
+                    <img src="./assets/img/0_project-images/mobile-arrow-left.png" alt="" />
+                    <img src="./assets/img/0_project-images/mobile-arrow-right.png" alt="" />
+                </div>
+                <div class="mobileButtonsJumpThrow">
+                    <img src="./assets/img/0_project-images/mobile-jump.png" alt="" />
+                    <img src="./assets/img/0_project-images/mobile-throw-bottle.png" alt="" />
+                </div>
+            </section>
         </main>
+        <section id="rotateDeviceOverlay" class="fullscreenNotice">
+            <p>Please rotate your device to landscape mode</p>
+        </section>
         <footer style="display: none">
             <a href="https://www.flaticon.com/free-icons/keyboard" title="keyboard icons">Keyboard icons created by Sebastian Belalcazar - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/info" title="info icons">Info icons created by Freepik - Flaticon</a>

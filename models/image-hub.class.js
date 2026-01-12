@@ -188,7 +188,8 @@ class ImageHub {
 
     static bottle = {
         normal: [
-            "assets/img/6_salsa_bottle/salsa_bottle.png"
+            "assets/img/6_salsa_bottle/1_salsa_bottle_on_ground.png",
+            "assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png"
         ],
         rotating: [
             "assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",

@@ -1,9 +1,5 @@
 class ThrowableObject extends HitableObject {
 
-    imgBottleNormal = ImageHub.bottle.normal;
-    imgsBottleRotating = ImageHub.bottle.rotating;
-    imgsBottleSplash = ImageHub.bottle.splash;
-
     offset = {
         top: 0,
         right: 0,
@@ -13,7 +9,6 @@ class ThrowableObject extends HitableObject {
 
     constructor(x, y) {
         super();
-        this.loadImage(this.imgBottleNormal);
         this.x = x;
         this.y = y;
         this.height = 80;
@@ -21,7 +16,9 @@ class ThrowableObject extends HitableObject {
     }
 
     throw(facingLeft) {
-        this.speedY = 25;
+        this.isThrown = true;
+
+        this.speedY = 15;
         this.applyGravity();
 
         const direction = facingLeft ? -10 : 10;
@@ -30,5 +27,4 @@ class ThrowableObject extends HitableObject {
             this.x += direction;
         }, 25);
     }
-
 }
