@@ -125,6 +125,13 @@ function hideEndScreens() {
     document.getElementById('winScreen').classList.add('invisible');
 }
 
+function openMainMenu() {
+    stopExistingWorld();
+    hideEndScreens();
+    showStartScreen();
+    blurActiveElement();
+}
+
 function useTrackedOrNormalTimeout(callback, delay) {
     const canTrack = window.world && window.world.setTimeoutTracked;
     canTrack

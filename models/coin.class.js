@@ -1,13 +1,13 @@
 class Coin extends MoveableObject {
 
-    width = 60;
-    height = 60;
+    width = 80;
+    height = 80;
 
     offset = {
-        top: 10,
-        right: 10,
-        bottom: 10,
-        left: 10
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
     };
 
     constructor(x, y) {
