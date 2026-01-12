@@ -5,7 +5,6 @@ class Bottle extends ThrowableObject {
     imgsSplash = ImageHub.bottle.splash;
     imgBottleNormal = ImageHub.bottle.normal[0];
 
-    // --- SOUND REFERENCE ---
     soundBreak = SoundHub.sfx.collectibles.bottleBreak;
 
     offset = {

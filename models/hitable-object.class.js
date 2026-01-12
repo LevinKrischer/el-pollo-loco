@@ -6,19 +6,13 @@ class HitableObject extends MoveableObject {
     deathSoundPlayed = false;
     deathAnimationDuration = 1500;
 
-    // --- SOUND REFERENCES ---
     soundEndbossHurt = SoundHub.sfx.endboss.hurt;
     soundEndbossDead = SoundHub.sfx.endboss.dead;
 
     soundChickenDead1 = SoundHub.sfx.chicken.dead1;
     soundChickenDead2 = SoundHub.sfx.chicken.dead2;
 
-    offset = {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-    };
+    offset = { top: 0, right: 0, bottom: 0, left: 0 };
 
     hit(amount = 2) {
         if (this.isHurt()) return;
@@ -28,19 +22,21 @@ class HitableObject extends MoveableObject {
         if (this.energy < 0) {
             this.energy = 0;
         } else {
-            this.lastHit = Date.now();
+            this.handleHitEffects();
+        }
+    }
 
-            // Hurt-Sound für Pepe
-            if (this instanceof Character) {
-                SoundManager.play(this.soundHurt);
-                SoundManager.stop(this.walkSound);
-                SoundManager.stop(this.snoreSound);
-            }
+    handleHitEffects() {
+        this.lastHit = Date.now();
 
-            // Hurt-Sound für Endboss
-            if (this.isEndboss) {
-                SoundManager.play(this.soundEndbossHurt);
-            }
+        if (this instanceof Character) {
+            SoundManager.play(this.soundHurt);
+            SoundManager.stop(this.walkSound);
+            SoundManager.stop(this.snoreSound);
+        }
+
+        if (this.isEndboss) {
+            SoundManager.play(this.soundEndbossHurt);
         }
     }
 
@@ -75,46 +71,48 @@ class HitableObject extends MoveableObject {
         this.speed = 0;
 
         if (!this.deathSoundPlayed) {
-
-            if (this instanceof Chicken) {
-                SoundManager.play(this.soundChickenDead1);
-            }
-
-            else if (this instanceof ChickenSmall) {
-                SoundManager.play(this.soundChickenDead2);
-            }
-
-            else if (this instanceof Endboss) {
-                // Death-Sound einmal abspielen
-                SoundManager.play(this.soundEndbossDead);
-                console.log("Boss dead:", this.world, this.world?.gameStopped);
-
-
-                // Death-Animation starten
-                this.playAnimation(this.imgsDead);
-
-                // Timer erst NACH Start der Animation setzen
-                this.world.setTimeoutTracked(() => {
-                    if (!this.world.gameStopped) {
-                        this.world.stopGame();
-                        toggleEndScreen('win');
-                    }
-                }, this.deathAnimationDuration);
-            }
-
-
-
+            this.handleDeathSound();
+            this.handleEndbossDeath();
             this.deathSoundPlayed = true;
         }
 
+        this.stopMovement();
+        this.scheduleDeletion();
+    }
+
+    handleDeathSound() {
+        if (this instanceof Chicken) {
+            SoundManager.play(this.soundChickenDead1);
+        } else if (this instanceof ChickenSmall) {
+            SoundManager.play(this.soundChickenDead2);
+        }
+    }
+
+    handleEndbossDeath() {
+        if (!(this instanceof Endboss)) return;
+
+        SoundManager.play(this.soundEndbossDead);
+        console.log("Boss dead:", this.world, this.world?.gameStopped);
+
+        this.playAnimation(this.imgsDead);
+
+        this.world.setTimeoutTracked(() => {
+            if (!this.world.gameStopped) {
+                this.world.stopGame();
+                toggleEndScreen('win');
+            }
+        }, this.deathAnimationDuration);
+    }
+
+    stopMovement() {
         if (this.moveInterval) {
             clearInterval(this.moveInterval);
         }
+    }
 
+    scheduleDeletion() {
         this.world.setTimeoutTracked(() => {
             this.markedForDeletion = true;
         }, 5000);
     }
-
-
 }

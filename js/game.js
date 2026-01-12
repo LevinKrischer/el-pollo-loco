@@ -3,8 +3,6 @@ let world;
 let keyboard = new Keyboard();
 let bgMusic = SoundHub.music.background;
 
-/* ------------------------- INITIALISIERUNG ------------------------- */
-
 function init() {
     canvas = document.getElementById('canvas');
     startBgMusic();
@@ -14,8 +12,6 @@ function init() {
 function startBgMusic() {
     SoundManager.play(bgMusic);
 }
-
-/* ------------------------- SPIELSTART / RESTART ------------------------- */
 
 function startGame() {
     hideStartScreen();
@@ -52,8 +48,6 @@ function blurActiveElement() {
     document.activeElement.blur();
 }
 
-/* ------------------------- STARTSCREEN ------------------------- */
-
 function hideStartScreen() {
     const startScreen = document.getElementById("StartScreen");
     if (startScreen) startScreen.classList.add("hidden");
@@ -67,8 +61,6 @@ function showStartScreen() {
     canvas.style.display = "none";
 }
 
-/* ------------------------- SOUND ------------------------- */
-
 function toggleSound() {
     SoundManager.setMutedState(!SoundManager.muted);
     updateSoundButtonIcon();
@@ -80,8 +72,6 @@ function updateSoundButtonIcon() {
         ? './assets/img/0_project-images/sound-off.png'
         : './assets/img/0_project-images/sound-on.png';
 }
-
-/* ------------------------- OVERLAYS ------------------------- */
 
 function toggleImprint() {
     document.getElementById('imprintOverlay').classList.toggle('hidden');
@@ -104,8 +94,6 @@ function showOverlay(overlay) {
     overlay.classList.remove('invisible');
     requestAnimationFrame(() => overlay.classList.add('visible'));
 }
-
-/* ------------------------- ENDSCREENS ------------------------- */
 
 function toggleEndScreen(type) {
     const screen = document.getElementById(`${type}Screen`);
@@ -137,15 +125,12 @@ function hideEndScreens() {
     document.getElementById('winScreen').classList.add('invisible');
 }
 
-/* ------------------------- TIMEOUT HELFER ------------------------- */
-
 function useTrackedOrNormalTimeout(callback, delay) {
     const canTrack = window.world && window.world.setTimeoutTracked;
-    canTrack ? window.world.setTimeoutTracked(callback, delay)
-             : setTimeout(callback, delay);
+    canTrack
+        ? window.world.setTimeoutTracked(callback, delay)
+        : setTimeout(callback, delay);
 }
-
-/* ------------------------- LEVEL ------------------------- */
 
 function initLevel() {
     return this.level;

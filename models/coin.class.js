@@ -1,5 +1,8 @@
 class Coin extends MoveableObject {
 
+    width = 60;
+    height = 60;
+
     offset = {
         top: 10,
         right: 10,
@@ -14,8 +17,6 @@ class Coin extends MoveableObject {
 
         this.x = x;
         this.y = y;
-        this.width = 60;
-        this.height = 60;
     }
 
     initAfterWorldSet() {

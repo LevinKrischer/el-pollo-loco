@@ -20,16 +20,15 @@ class ThrowableObject extends HitableObject {
         this.width = 80;
     }
 
-throw(facingLeft) {
-    this.speedY = 25;
-    this.applyGravity();
+    throw(facingLeft) {
+        this.speedY = 25;
+        this.applyGravity();
 
-    // Richtung bestimmen
-    const direction = facingLeft ? -10 : 10;
+        const direction = facingLeft ? -10 : 10;
 
-    this.throwInterval = this.world.setIntervalTracked(() => {
-        this.x += direction;
-    }, 25);
-}
+        this.throwInterval = this.world.setIntervalTracked(() => {
+            this.x += direction;
+        }, 25);
+    }
 
 }

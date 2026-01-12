@@ -8,8 +8,8 @@ class StatusBar extends DrawableObject {
 
     constructor(type, x, y, full) {
         super();
-        this.type = type;        // ← direkt das Array
-        this.loadImages(type);   // ← funktioniert
+        this.type = type;
+        this.loadImages(type);
         this.x = x;
         this.y = y;
         this.width = 200;

@@ -21,7 +21,6 @@ class Keyboard {
             }
             if (e.key == 'd') {
                 Keyboard.D = true;
-                console.log('"D" is pressed');
 
             }
         });

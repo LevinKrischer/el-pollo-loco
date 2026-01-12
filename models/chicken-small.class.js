@@ -7,12 +7,7 @@ class ChickenSmall extends HitableObject {
     y = 375;
     energy = 1;
 
-    offset = {
-        top: 5,
-        right: 0,
-        bottom: 0,
-        left: 5
-    }
+    offset = { top: 5, right: 0, bottom: 0, left: 5 };
 
     constructor() {
         super().loadImage(ImageHub.chickenSmall.walking[0]);
@@ -28,22 +23,28 @@ class ChickenSmall extends HitableObject {
 
     animate() {
         this.moveLeft();
+        this.startAnimationLoop();
+    }
 
+    startAnimationLoop() {
         this.world.setIntervalTracked(() => {
             if (this.isDead()) {
                 this.playAnimation(this.imgsDead);
             } else {
-                let index = this.currentImage % this.imgsWalking.length;
-                let path = this.imgsWalking[index];
-                this.img = this.imageCache[path];
-                this.currentImage++;
+                this.playWalkingFrame();
             }
         }, 200);
+    }
+
+    playWalkingFrame() {
+        const index = this.currentImage % this.imgsWalking.length;
+        const path = this.imgsWalking[index];
+
+        this.img = this.imageCache[path];
+        this.currentImage++;
     }
 
     isDead() {
         return this.energy <= 0;
     }
-
 }
-
