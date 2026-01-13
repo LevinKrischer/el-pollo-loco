@@ -1,11 +1,22 @@
 /**
  * Provides global audio control utilities such as playing, stopping,
  * and muting all game sounds. Works together with SoundHub to manage
- * preloaded audio assets.
+ * preloaded audio assets. The mute state is persisted in localStorage
+ * to maintain user preferences across sessions.
  */
 class SoundManager {
 
     static muted = false;
+
+    /**
+     * Initializes the SoundManager by loading the persisted mute state
+     * from localStorage, if available.
+     */
+    static init() {
+        const saved = localStorage.getItem('soundMuted');
+        this.muted = saved === 'true';
+        this.setMutedState(this.muted);
+    }
 
     /**
      * Plays the given audio clip if sound is not muted.
@@ -32,6 +43,15 @@ class SoundManager {
         if (!audio || !(audio instanceof HTMLAudioElement)) return;
         audio.pause();
         audio.currentTime = 0;
+    }
+
+    /**
+     * Toggles the global mute state and persists the new value
+     * in localStorage.
+     */
+    static toggleMute() {
+        this.setMutedState(!this.muted);
+        localStorage.setItem('soundMuted', this.muted);
     }
 
     /**

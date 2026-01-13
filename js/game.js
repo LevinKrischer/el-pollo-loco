@@ -22,7 +22,28 @@ let keyboard;
  */
 let bgMusic = SoundHub.music.background;
 
+/**
+ * Initializes the game once the DOM is fully loaded.
+ * 
+ * This handler prevents default browser interactions such as the context menu
+ * on right‑click and long‑press behavior on touch devices, ensuring a clean
+ * fullscreen game experience. After disabling these interactions, the game
+ * environment is initialized by creating the keyboard controller, retrieving
+ * the canvas element, and instantiating the game world.
+ */
 window.addEventListener("DOMContentLoaded", () => {
+
+    // Disable right-click and touch-hold behavior
+    window.addEventListener("contextmenu", e => e.preventDefault());
+    window.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+    window.addEventListener("touchend",   e => e.preventDefault(), { passive: false });
+    window.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
+
+    // Initialize sound system
+    SoundManager.init();
+    updateSoundButtonIcon();
+
+    // Initialize game
     keyboard = new Keyboard();
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
@@ -90,7 +111,7 @@ function createNewWorld() {
  * Starts background music if the sound system is not muted.
  */
 function startBackgroundMusic() {
-    if (!SoundManager.muted) bgMusic.play();
+    SoundManager.play(bgMusic);
 }
 
 /**
@@ -124,7 +145,7 @@ function showStartScreen() {
  * Toggles the global sound state (muted/unmuted) and updates the UI icon.
  */
 function toggleSound() {
-    SoundManager.setMutedState(!SoundManager.muted);
+    SoundManager.toggleMute();
     updateSoundButtonIcon();
 }
 

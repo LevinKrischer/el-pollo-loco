@@ -21,6 +21,7 @@ class Character extends HitableObject {
     walkSound = null;
     snoreSound = null;
     hurtSound = null;
+    isSnoring = false;
 
     hurtSoundPlayed = false;
     deathSoundPlayed = false;
@@ -30,7 +31,7 @@ class Character extends HitableObject {
     y = 180;
     speed = 6;
     world;
-    energy = 50;
+    energy = 100;
 
     offset = { top: 100, right: 20, bottom: 5, left: 15 };
 
@@ -147,6 +148,7 @@ class Character extends HitableObject {
             this.lastMoveTime = Date.now();
             SoundManager.play(this.soundJump);
             this.wasOnGround = false;
+            this.stopSnoring();
         }
     }
 
@@ -162,7 +164,7 @@ class Character extends HitableObject {
         this.wasOnGround = true;
 
         if (Keyboard.RIGHT || Keyboard.LEFT) {
-            this.playWalkSound();
+            this.stopSnoring(); this.playWalkSound();
             return this.playAnimation(this.imgsWalking);
         }
 
@@ -232,13 +234,17 @@ class Character extends HitableObject {
         const idleTime = Date.now() - this.lastMoveTime;
 
         if (idleTime > this.longIdleDelay) {
-            this.playSnoreSound();
+            if (!this.isSnoring) {
+                this.snoreSound = SoundManager.play(this.soundSnore);
+                this.isSnoring = true;
+            }
             return this.playAnimation(this.imgsIdleLong);
         }
 
-        SoundManager.stop(this.snoreSound);
+        this.stopSnoring();
         this.playAnimation(this.imgsIdle);
     }
+
 
     /**
      * Plays the walking sound if not already playing.
@@ -258,5 +264,13 @@ class Character extends HitableObject {
 
         SoundManager.stop(this.snoreSound);
         this.snoreSound = SoundManager.play(this.soundSnore);
+    }
+
+    stopSnoring() {
+        if (!this.isSnoring) return;
+
+        SoundManager.stop(this.snoreSound);
+        this.snoreSound = null;
+        this.isSnoring = false;
     }
 }
