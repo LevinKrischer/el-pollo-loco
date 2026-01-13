@@ -22,7 +22,7 @@ class Chicken extends HitableObject {
         this.loadImages(this.imgsDead);
 
         // Random spawn position and movement speed
-        this.x = 800 + Math.random() * 3000;
+        this.x = 600 + Math.random() * 3000;
         this.speed = 0.15 + Math.random() * 0.5;
     }
 
