@@ -1,6 +1,25 @@
+/**
+ * The main canvas element used for rendering the game world.
+ * @type {HTMLCanvasElement | null}
+ */
 let canvas;
+
+/**
+ * The active game world instance.
+ * @type {World | null}
+ */
 let world;
+
+/**
+ * The global keyboard input handler.
+ * @type {Keyboard}
+ */
 let keyboard;
+
+/**
+ * Background music audio object provided by SoundHub.
+ * @type {HTMLAudioElement}
+ */
 let bgMusic = SoundHub.music.background;
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -9,17 +28,27 @@ window.addEventListener("DOMContentLoaded", () => {
     world = new World(canvas, keyboard);
 });
 
-
+/**
+ * Initializes the game by preparing the canvas, starting background music,
+ * and showing the start screen.
+ */
 function init() {
     canvas = document.getElementById('canvas');
     startBgMusic();
     showStartScreen();
 }
 
+/**
+ * Plays the background music using the SoundManager.
+ */
 function startBgMusic() {
     SoundManager.play(bgMusic);
 }
 
+/**
+ * Starts a new game session by resetting UI states, stopping any existing world,
+ * creating a new world instance, and starting background music.
+ */
 function startGame() {
     hideStartScreen();
     hideEndScreens();
@@ -29,12 +58,19 @@ function startGame() {
     startBackgroundMusic();
 }
 
+/**
+ * Restarts the game after a short delay, ensuring the previous world instance
+ * is fully cleaned up before starting a new one.
+ */
 function restartGame() {
     stopExistingWorld();
     closeVisibleEndScreen();
     setTimeout(startGame, 200);
 }
 
+/**
+ * Stops the currently running world instance if one exists.
+ */
 function stopExistingWorld() {
     if (window.world) {
         window.world.stopGame();
@@ -42,19 +78,31 @@ function stopExistingWorld() {
     }
 }
 
+/**
+ * Creates a new world instance and starts the game loop.
+ */
 function createNewWorld() {
     world = new World(canvas, keyboard);
     world.start();
 }
 
+/**
+ * Starts background music if the sound system is not muted.
+ */
 function startBackgroundMusic() {
     if (!SoundManager.muted) bgMusic.play();
 }
 
+/**
+ * Removes focus from the currently active DOM element.
+ */
 function blurActiveElement() {
     document.activeElement.blur();
 }
 
+/**
+ * Hides the start screen and shows the game canvas.
+ */
 function hideStartScreen() {
     const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.add("hidden");
@@ -62,6 +110,9 @@ function hideStartScreen() {
     blurActiveElement();
 }
 
+/**
+ * Shows the start screen and hides the game canvas.
+ */
 function showStartScreen() {
     const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.remove("hidden");
@@ -69,11 +120,17 @@ function showStartScreen() {
     closeVisibleEndScreen();
 }
 
+/**
+ * Toggles the global sound state (muted/unmuted) and updates the UI icon.
+ */
 function toggleSound() {
     SoundManager.setMutedState(!SoundManager.muted);
     updateSoundButtonIcon();
 }
 
+/**
+ * Updates the sound toggle button icon depending on the mute state.
+ */
 function updateSoundButtonIcon() {
     const img = document.getElementById('soundToggleButton');
     img.src = SoundManager.muted
@@ -81,10 +138,18 @@ function updateSoundButtonIcon() {
         : './assets/img/0_project-images/sound-on.png';
 }
 
+/**
+ * Toggles the visibility of the imprint overlay.
+ */
 function toggleImprint() {
     document.getElementById('imprintOverlay').classList.toggle('hidden');
 }
 
+/**
+ * Toggles visibility of a generic overlay by type name.
+ *
+ * @param {string} type - The overlay type (e.g., "controls", "imprint").
+ */
 function toggleOverlay(type) {
     const overlay = document.getElementById(type + 'Overlay');
     overlay.classList.contains('visible')
@@ -92,22 +157,37 @@ function toggleOverlay(type) {
         : showOverlay(overlay);
 }
 
+/**
+ * Hides an overlay with a fade-out animation.
+ *
+ * @param {HTMLElement} overlay - The overlay element to hide.
+ */
 function hideOverlay(overlay) {
     overlay.classList.remove('visible');
 
-    useTrackedOrNormalTimeout(function() {
+    useTrackedOrNormalTimeout(() => {
         overlay.classList.add('invisible');
     }, 300);
 }
 
+/**
+ * Shows an overlay with a fade-in animation.
+ *
+ * @param {HTMLElement} overlay - The overlay element to show.
+ */
 function showOverlay(overlay) {
     overlay.classList.remove('invisible');
 
-    requestAnimationFrame(function() {
+    requestAnimationFrame(() => {
         overlay.classList.add('visible');
     });
 }
 
+/**
+ * Toggles visibility of an end screen (e.g., "gameOver", "win").
+ *
+ * @param {string} type - The end screen type.
+ */
 function toggleEndScreen(type) {
     const screen = document.getElementById(`${type}Screen`);
     screen.classList.contains('visible')
@@ -115,22 +195,35 @@ function toggleEndScreen(type) {
         : showEndScreen(screen);
 }
 
+/**
+ * Hides an end screen with animation.
+ *
+ * @param {HTMLElement} screen - The screen element to hide.
+ */
 function hideEndScreen(screen) {
     screen.classList.remove('visible');
 
-    useTrackedOrNormalTimeout(function() {
+    useTrackedOrNormalTimeout(() => {
         screen.classList.add('invisible');
     }, 400);
 }
 
+/**
+ * Shows an end screen with animation.
+ *
+ * @param {HTMLElement} screen - The screen element to show.
+ */
 function showEndScreen(screen) {
     screen.classList.remove('invisible');
 
-    requestAnimationFrame(function() {
+    requestAnimationFrame(() => {
         screen.classList.add('visible');
     });
 }
 
+/**
+ * Closes any currently visible end screen.
+ */
 function closeVisibleEndScreen() {
     ['gameOver', 'win'].forEach(type => {
         const screen = document.getElementById(`${type}Screen`);
@@ -138,11 +231,17 @@ function closeVisibleEndScreen() {
     });
 }
 
+/**
+ * Immediately hides both end screens without animation.
+ */
 function hideEndScreens() {
     document.getElementById('gameOverScreen').classList.add('invisible');
     document.getElementById('winScreen').classList.add('invisible');
 }
 
+/**
+ * Returns to the main menu by stopping the world and resetting UI states.
+ */
 function openMainMenu() {
     stopExistingWorld();
     hideEndScreens();
@@ -150,6 +249,13 @@ function openMainMenu() {
     blurActiveElement();
 }
 
+/**
+ * Uses the world's tracked timeout system if available, otherwise falls back
+ * to the native setTimeout.
+ *
+ * @param {Function} callback - The function to execute after the delay.
+ * @param {number} delay - Delay in milliseconds.
+ */
 function useTrackedOrNormalTimeout(callback, delay) {
     const canTrack = window.world && window.world.setTimeoutTracked;
     canTrack
@@ -157,6 +263,11 @@ function useTrackedOrNormalTimeout(callback, delay) {
         : setTimeout(callback, delay);
 }
 
+/**
+ * Returns the current level of the world.
+ *
+ * @returns {Level} The active level instance.
+ */
 function initLevel() {
     return this.level;
 }

@@ -1,3 +1,45 @@
+/**
+ * A centralized registry for all audio assets used in the game.
+ *
+ * SoundHub acts as a static, globally accessible container that organizes
+ * every sound effect and music track into structured categories. This allows
+ * game objects (Character, Enemies, Collectibles, UI, etc.) to play sounds
+ * without hard‑coding file paths or creating new Audio() instances repeatedly.
+ *
+ * Key responsibilities:
+ * - Provides pre‑configured Audio objects for background music and SFX.
+ * - Ensures consistent volume levels and looping behavior across the game.
+ * - Groups sounds by purpose (UI, character, enemies, collectibles, endboss).
+ * - Prevents redundant audio loading and improves performance.
+ * - Serves as the single source of truth for all sound assets.
+ *
+ * Usage examples:
+ *   SoundManager.play(SoundHub.music.background);
+ *   SoundManager.play(SoundHub.sfx.character.jump);
+ *   SoundManager.play(SoundHub.sfx.collectibles.coin);
+ *
+ * Structure overview:
+ * - `music`: Contains looping background tracks and one‑shot game state sounds
+ *            (start, game over, etc.).
+ *
+ * - `sfx.ui`: Sounds for button clicks and interface interactions.
+ *
+ * - `sfx.character`: Sounds for player actions such as jumping, running,
+ *                    taking damage, snoring, or dying.
+ *
+ * - `sfx.chicken`: Death sounds for normal and small chickens.
+ *
+ * - `sfx.collectibles`: Sounds for picking up bottles, coins, and throwing
+ *                       or breaking bottles.
+ *
+ * - `sfx.endboss`: Sounds for the boss alert, hurt reaction, and death.
+ *
+ * All audio objects are created once at load time using static IIFEs,
+ * ensuring they are ready to play immediately and never re‑initialized.
+ *
+ * The class contains no methods; it is purely a structured asset registry.
+ */
+
 class SoundHub {
 
     static music = {

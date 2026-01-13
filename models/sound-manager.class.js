@@ -1,6 +1,17 @@
+/**
+ * Provides global audio control utilities such as playing, stopping,
+ * and muting all game sounds. Works together with SoundHub to manage
+ * preloaded audio assets.
+ */
 class SoundManager {
-    static muted = false;
 
+    /**
+     * Plays the given audio clip if sound is not muted.
+     * Resets playback to the beginning before playing.
+     *
+     * @param {HTMLAudioElement} audio - The audio object to play.
+     * @returns {HTMLAudioElement|null} The played audio object or null if invalid.
+     */
     static play(audio) {
         if (!audio || !(audio instanceof HTMLAudioElement)) return null;
         if (this.muted) return audio;
@@ -10,12 +21,23 @@ class SoundManager {
         return audio;
     }
 
+    /**
+     * Stops the given audio clip immediately and resets its playback position.
+     *
+     * @param {HTMLAudioElement} audio - The audio object to stop.
+     */
     static stop(audio) {
         if (!audio || !(audio instanceof HTMLAudioElement)) return;
         audio.pause();
         audio.currentTime = 0;
     }
 
+    /**
+     * Enables or disables global muting and applies the mute state
+     * to all audio groups defined in SoundHub.
+     *
+     * @param {boolean} isMuted - Whether all sounds should be muted.
+     */
     static setMutedState(isMuted) {
         this.muted = isMuted;
 
@@ -27,6 +49,13 @@ class SoundManager {
         this._applyMuteToGroup(SoundHub.sfx.ui, isMuted);
     }
 
+    /**
+     * Applies the mute state to all audio objects within a given group.
+     *
+     * @param {Object<string, HTMLAudioElement>} group - A SoundHub category.
+     * @param {boolean} isMuted - Whether the audio elements should be muted.
+     * @private
+     */
     static _applyMuteToGroup(group, isMuted) {
         Object.values(group).forEach(audio => {
             if (audio instanceof HTMLAudioElement) {

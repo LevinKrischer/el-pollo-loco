@@ -1,3 +1,8 @@
+/**
+ * A throwable bottle that can idle‑animate, rotate while thrown,
+ * and play a splash animation when exploding. Inherits physics,
+ * animation utilities, and world‑tracked timers from ThrowableObject.
+ */
 class Bottle extends ThrowableObject {
 
     isExploded = false;
@@ -16,6 +21,13 @@ class Bottle extends ThrowableObject {
         left: 10
     };
 
+    /**
+     * Creates a new bottle at the given world coordinates and loads
+     * all required animation frames.
+     *
+     * @param {number} x - Horizontal world position.
+     * @param {number} y - Vertical world position.
+     */
     constructor(x, y) {
         super();
         this.loadImage(this.imgsBottleNormal[0]);
@@ -28,10 +40,22 @@ class Bottle extends ThrowableObject {
         this.width = 80;
     }
 
+    /**
+     * Called once the world reference is assigned.
+     * Starts the bottle's animation loop.
+     */
     initAfterWorldSet() {
         this.animate();
     }
 
+    /**
+     * Triggers the explosion sequence:
+     * - marks the bottle as exploded
+     * - plays the breaking sound
+     * - stops movement and physics
+     * - resets animation state
+     * - schedules deletion after a short delay
+     */
     explode() {
         this.isExploded = true;
 
@@ -50,6 +74,12 @@ class Bottle extends ThrowableObject {
         }, 400);
     }
 
+    /**
+     * Starts the main animation loop, switching between:
+     * - splash animation (exploded)
+     * - rotation animation (thrown)
+     * - idle animation (default)
+     */
     animate() {
         let idleTimer = 0;
 
@@ -60,6 +90,12 @@ class Bottle extends ThrowableObject {
         }, 60);
     }
 
+    /**
+     * Plays the idle animation in timed intervals.
+     *
+     * @param {number} timer - Accumulated idle time.
+     * @returns {number} Updated timer value.
+     */
     animateIdle(timer) {
         if (timer >= 300) {
             this.playAnimation(this.imgsBottleNormal);
@@ -68,6 +104,17 @@ class Bottle extends ThrowableObject {
         return timer + 60;
     }
 
-    animateThrow() { this.playAnimation(this.imgsBottleRotation); }
-    animateSplash() { this.playAnimation(this.imgsSplash); }
+    /**
+     * Plays the rotation animation while the bottle is thrown.
+     */
+    animateThrow() {
+        this.playAnimation(this.imgsBottleRotation);
+    }
+
+    /**
+     * Plays the splash animation after the bottle explodes.
+     */
+    animateSplash() {
+        this.playAnimation(this.imgsSplash);
+    }
 }

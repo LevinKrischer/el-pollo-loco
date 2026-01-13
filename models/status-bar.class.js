@@ -1,11 +1,19 @@
+/**
+ * A drawable status bar used to display values such as health,
+ * collected coins, bottle count, or boss health. The bar updates
+ * its displayed image based on the current percentage value.
+ */
 class StatusBar extends DrawableObject {
-    imgsStatusHealth = ImageHub.statusBar.health;
-    imgsStatusCoins = ImageHub.statusBar.coins;
-    imgsStatusBottles = ImageHub.statusBar.bottle;
-    imgStatusBossHealth = ImageHub.statusBar.endboss;
 
-    percentage = 100;
-
+    /**
+     * Creates a new status bar of the given type at the specified position.
+     * Loads all images for the bar and initializes its fill level.
+     *
+     * @param {string[]} type - Array of image paths representing bar states.
+     * @param {number} x - Horizontal position on the screen.
+     * @param {number} y - Vertical position on the screen.
+     * @param {boolean} full - Whether the bar should start at 100%.
+     */
     constructor(type, x, y, full) {
         super();
         this.type = type;
@@ -17,6 +25,13 @@ class StatusBar extends DrawableObject {
         this.setPercentage(full ? 100 : 0, type);
     }
 
+    /**
+     * Updates the bar's percentage value and selects the appropriate
+     * image based on predefined thresholds (0, 20, 40, 60, 80, 100).
+     *
+     * @param {number} _percentage - New percentage value (0–100).
+     * @param {string[]} _type - Array of image paths for the bar.
+     */
     setPercentage(_percentage, _type) {
         this.percentage = _percentage;
 
@@ -35,4 +50,3 @@ class StatusBar extends DrawableObject {
         }
     }
 }
-

@@ -1,22 +1,33 @@
+/**
+ * Base class for all objects that can move, fall due to gravity,
+ * and update their hitbox dynamically. Extends DrawableObject.
+ */
 class MoveableObject extends DrawableObject {
-    speed = 0.15;
-    otherDirection = false;
-    currentImage = 0;
-    speedY = 0;
-    acceleration = 2;
-    energy = 100;
-    lastHit = 0;
 
+    /**
+     * Called once the world reference is assigned.
+     * Starts gravity simulation for the object.
+     */
     initAfterWorldSet() {
         this.applyGravity();
     }
 
+    /**
+     * Starts the gravity loop, applying vertical movement
+     * at a fixed interval using the world's tracked timers.
+     */
     applyGravity() {
         this.gravityInterval = this.world.setIntervalTracked(() => {
             this.applyGravityStep();
         }, 1000 / 25);
     }
 
+    /**
+     * Applies one step of gravity:
+     * - moves the object vertically
+     * - reduces vertical speed
+     * - stops falling when reaching the ground
+     */
     applyGravityStep() {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
@@ -26,6 +37,12 @@ class MoveableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Determines whether the object is above the ground level.
+     * Throwable objects always return true to allow arc movement.
+     *
+     * @returns {boolean} True if the object is above ground.
+     */
     isAboveGround() {
         if (this instanceof ThrowableObject) {
             return true;
@@ -33,6 +50,9 @@ class MoveableObject extends DrawableObject {
         return this.y < 180;
     }
 
+    /**
+     * Updates the real hitbox frame using offset‑adjusted values.
+     */
     getRealFrame() {
         this.calculateRealX();
         this.calculateRealY();
@@ -40,38 +60,64 @@ class MoveableObject extends DrawableObject {
         this.calculateRealHeight();
     }
 
+    /**
+     * Calculates the hitbox's X position based on the object's offset.
+     */
     calculateRealX() {
         this.rX = this.x + this.offset.left;
     }
 
+    /**
+     * Calculates the hitbox's Y position based on the object's offset.
+     */
     calculateRealY() {
         this.rY = this.y + this.offset.top;
     }
 
+    /**
+     * Calculates the hitbox width based on the object's offset.
+     */
     calculateRealWidth() {
         this.rWidth = this.width - this.offset.left - this.offset.right;
     }
 
+    /**
+     * Calculates the hitbox height based on the object's offset.
+     */
     calculateRealHeight() {
         this.rHeight = this.height - this.offset.top - this.offset.bottom;
     }
 
+    /**
+     * Moves the object continuously to the right using a tracked interval.
+     */
     moveRight() {
         this.world.setIntervalTracked(() => {
             this.x += this.speed;
         }, 1000 / 60);
     }
 
+    /**
+     * Moves the object continuously to the left using a tracked interval.
+     */
     moveLeft() {
         this.moveInterval = this.world.setIntervalTracked(() => {
             this.x -= this.speed;
         }, 1000 / 60);
     }
 
+    /**
+     * Stops any active movement interval.
+     */
     stopMoving() {
         clearInterval(this.moveInterval);
     }
 
+    /**
+     * Plays an animation by cycling through the provided image list.
+     *
+     * @param {string[]} images - Array of image paths for the animation.
+     */
     playAnimation(images) {
         const index = this.currentImage % images.length;
         const path = images[index];
@@ -80,6 +126,10 @@ class MoveableObject extends DrawableObject {
         this.currentImage++;
     }
 
+    /**
+     * Updates the object's position based on movement direction,
+     * unless the object is dead or has no energy.
+     */
     updatePosition() {
         if (this.dead || this.energy <= 0) return;
         if (this.speed === 0) return;
@@ -87,6 +137,9 @@ class MoveableObject extends DrawableObject {
         this.applyMovementDirection();
     }
 
+    /**
+     * Applies horizontal movement depending on the facing direction.
+     */
     applyMovementDirection() {
         if (this.otherDirection) {
             this.x += this.speed;

@@ -1,3 +1,8 @@
+/**
+ * The main game controller responsible for rendering, updating,
+ * spawning objects, handling collisions, and managing the entire
+ * game world state.
+ */
 class World {
     character = new Character();
     canvas;
@@ -32,6 +37,13 @@ class World {
     intervals = [];
     timeouts = [];
 
+    /**
+     * Initializes the world, loads the level, assigns world references,
+     * and spawns initial bottles and coins.
+     *
+     * @param {HTMLCanvasElement} canvas - The canvas to render on.
+     * @param {Keyboard} keyboard - The keyboard input handler.
+     */
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
@@ -44,34 +56,57 @@ class World {
         this.spawnCoins();
     }
 
+    /**
+     * Starts the rendering loop and the game logic loops.
+     */
     start() {
         this.draw();
         this.run();
     }
 
+    /**
+     * Creates a tracked interval so it can be cleared when the game stops.
+     *
+     * @param {Function} fn - The function to run repeatedly.
+     * @param {number} time - Interval duration in ms.
+     * @returns {number} The interval ID.
+     */
     setIntervalTracked(fn, time) {
         const id = setInterval(fn, time);
         this.intervals.push(id);
         return id;
     }
 
+    /**
+     * Creates a tracked timeout so it can be cleared when the game stops.
+     *
+     * @param {Function} callback - The function to run once.
+     * @param {number} time - Timeout duration in ms.
+     * @returns {number} The timeout ID.
+     */
     setTimeoutTracked(callback, time) {
         const id = setTimeout(callback, time);
         this.timeouts.push(id);
         return id;
     }
 
+    /**
+     * Spawns bottles at random positions throughout the level.
+     */
     spawnBottles() {
-    for (let i = 0; i < this.maxBottles; i++) {
-        const x = 200 + Math.random() * 2400;
-        const y = 350;
+        for (let i = 0; i < this.maxBottles; i++) {
+            const x = 200 + Math.random() * 2400;
+            const y = 350;
 
-        const bottle = new Bottle(x, y);
-        this.assignWorld(bottle);
-        this.level.bottles.push(bottle);
+            const bottle = new Bottle(x, y);
+            this.assignWorld(bottle);
+            this.level.bottles.push(bottle);
+        }
     }
-}
 
+    /**
+     * Spawns coins at random positions and heights.
+     */
     spawnCoins() {
         const heights = [350, 300, 250, 200, 150];
 
@@ -85,11 +120,18 @@ class World {
         }
     }
 
+    /**
+     * Starts the main game loops: world logic and boss behavior.
+     */
     run() {
         this.startMainLoop();
         this.startBossLoop();
     }
 
+    /**
+     * Main gameplay loop: handles collisions, pickups, throwing,
+     * enemy removal, and boss triggers.
+     */
     startMainLoop() {
         this.interval1 = this.setIntervalTracked(() => {
             if (this.gameStopped) return;
@@ -105,6 +147,9 @@ class World {
         }, 100);
     }
 
+    /**
+     * Loop that updates the endboss behavior independently.
+     */
     startBossLoop() {
         this.interval2 = this.setIntervalTracked(() => {
             if (this.gameStopped) return;
@@ -114,6 +159,9 @@ class World {
         }, 100);
     }
 
+    /**
+     * Checks whether the character collides with any bottle.
+     */
     checkBottlePickup() {
         this.character.getRealFrame();
         this.level.bottles.forEach((bottle, index) => {
@@ -124,6 +172,12 @@ class World {
         });
     }
 
+    /**
+     * Handles bottle pickup: plays sound, increases count,
+     * removes bottle, updates UI.
+     *
+     * @param {number} index - Index of the bottle in the array.
+     */
     handleBottlePickup(index) {
         if (this.bottleCount >= this.maxBottles) return;
 
@@ -133,6 +187,9 @@ class World {
         this.updateBottleStatusBar();
     }
 
+    /**
+     * Checks whether the character collides with any coin.
+     */
     checkCoinPickup() {
         this.character.getRealFrame();
         this.level.coins.forEach((coin, index) => {
@@ -143,6 +200,12 @@ class World {
         });
     }
 
+    /**
+     * Handles coin pickup: plays sound, increases count,
+     * removes coin, updates UI.
+     *
+     * @param {number} index - Index of the coin in the array.
+     */
     handleCoinPickup(index) {
         SoundManager.play(this.soundCoinCollect);
         this.coinCount++;
@@ -150,6 +213,9 @@ class World {
         this.updateCoinStatusBar();
     }
 
+    /**
+     * Checks whether the player can throw a bottle.
+     */
     checkThrowObjects() {
         const now = Date.now();
         if (this.character.isHurt()) return;
@@ -162,6 +228,11 @@ class World {
         if (canThrow) this.throwBottle(now);
     }
 
+    /**
+     * Executes the bottle throw sequence.
+     *
+     * @param {number} now - Current timestamp.
+     */
     throwBottle(now) {
         SoundManager.play(this.soundBottleThrow);
 
@@ -170,6 +241,11 @@ class World {
         this.registerBottleThrow(bottle, now);
     }
 
+    /**
+     * Creates a new bottle at the character's throw position.
+     *
+     * @returns {Bottle} The new bottle instance.
+     */
     createThrownBottle() {
         const offsetX = this.character.otherDirection ? -20 : 20;
         const x = this.character.x + offsetX;
@@ -178,12 +254,23 @@ class World {
         return new Bottle(x, y);
     }
 
+    /**
+     * Initializes a thrown bottle by assigning world and starting movement.
+     *
+     * @param {Bottle} bottle - The bottle to initialize.
+     */
     initThrownBottle(bottle) {
         bottle.world = this;
         if (bottle.initAfterWorldSet) bottle.initAfterWorldSet();
         bottle.throw(this.character.otherDirection);
     }
 
+    /**
+     * Registers the thrown bottle and updates counters and UI.
+     *
+     * @param {Bottle} bottle - The thrown bottle.
+     * @param {number} now - Timestamp of the throw.
+     */
     registerBottleThrow(bottle, now) {
         this.flyingBottles.push(bottle);
         this.bottleCount--;
@@ -192,6 +279,9 @@ class World {
         this.updateBottleStatusBar();
     }
 
+    /**
+     * Updates the bottle status bar based on current bottle count.
+     */
     updateBottleStatusBar() {
         const percentage = (this.bottleCount / this.maxBottles) * 100;
         this.statusBar[2].setPercentage(
@@ -200,6 +290,9 @@ class World {
         );
     }
 
+    /**
+     * Updates the coin status bar based on current coin count.
+     */
     updateCoinStatusBar() {
         const percentage = (this.coinCount / this.maxCoins) * 100;
         this.statusBar[1].setPercentage(
@@ -208,6 +301,9 @@ class World {
         );
     }
 
+    /**
+     * Checks collisions between the character and all enemies.
+     */
     checkCollisions() {
         this.character.getRealFrame();
         this.level.enemies.forEach(enemy => {
@@ -216,6 +312,11 @@ class World {
         });
     }
 
+    /**
+     * Handles collision logic between the character and a single enemy.
+     *
+     * @param {HitableObject} enemy - The enemy to check.
+     */
     handleEnemyCollision(enemy) {
         if (enemy.isDead()) return;
         if (!this.character.isColliding(enemy)) return;
@@ -230,6 +331,11 @@ class World {
         this.handleEnemyHitsPlayer();
     }
 
+    /**
+     * Handles killing an enemy by jumping on it.
+     *
+     * @param {HitableObject} enemy - The enemy to kill.
+     */
     handleStompKill(enemy) {
         enemy.die();
         this.character.speedY = 12;
@@ -237,6 +343,9 @@ class World {
         this.character.lastMoveTime = Date.now();
     }
 
+    /**
+     * Handles the player taking damage from an enemy.
+     */
     handleEnemyHitsPlayer() {
         if (this.character.isAboveGround()) return;
 
@@ -247,6 +356,9 @@ class World {
         );
     }
 
+    /**
+     * Checks whether any thrown bottle hits an enemy.
+     */
     checkBottleHits() {
         this.flyingBottles.forEach(bottle => {
             if (bottle.isExploded) return;
@@ -259,6 +371,11 @@ class World {
             this.flyingBottles.filter(b => !b.markedForDeletion);
     }
 
+    /**
+     * Checks a single bottle against all enemies.
+     *
+     * @param {Bottle} bottle - The bottle to test.
+     */
     checkBottleHitEnemies(bottle) {
         for (let enemy of this.level.enemies) {
             enemy.getRealFrame();
@@ -270,6 +387,11 @@ class World {
         }
     }
 
+    /**
+     * Handles the result of a bottle hitting an enemy.
+     *
+     * @param {HitableObject} enemy - The enemy that was hit.
+     */
     handleBottleHitEnemy(enemy) {
         if (enemy instanceof Endboss) {
             this.handleEndbossHit(enemy);
@@ -278,6 +400,11 @@ class World {
         }
     }
 
+    /**
+     * Handles damage logic when the endboss is hit by a bottle.
+     *
+     * @param {Endboss} enemy - The endboss instance.
+     */
     handleEndbossHit(enemy) {
         enemy.lastHit = Date.now();
         enemy.hitsTaken++;
@@ -292,6 +419,9 @@ class World {
         if (enemy.hitsTaken >= enemy.hitsToKill) enemy.die();
     }
 
+    /**
+     * Checks whether the endboss should be activated.
+     */
     checkEndbossTrigger() {
         const boss = this.level.enemies.find(e => e.isEndboss);
         if (!boss || boss.activated) return;
@@ -301,6 +431,12 @@ class World {
         }
     }
 
+    /**
+     * Activates the endboss, plays alert sound, adds UI bar,
+     * and schedules movement start.
+     *
+     * @param {Endboss} boss - The endboss instance.
+     */
     activateEndboss(boss) {
         boss.activated = true;
         boss.preparing = true;
@@ -310,6 +446,11 @@ class World {
         this.scheduleEndbossStart(boss);
     }
 
+    /**
+     * Plays the endboss alert sound once.
+     *
+     * @param {Endboss} boss - The endboss instance.
+     */
     playEndbossAlert(boss) {
         if (boss.alertSoundPlayed) return;
 
@@ -317,6 +458,9 @@ class World {
         boss.alertSoundPlayed = true;
     }
 
+    /**
+     * Adds the endboss health bar to the UI.
+     */
     addEndbossStatusBar() {
         this.statusBar.push(
             new StatusBar(
@@ -328,6 +472,11 @@ class World {
         );
     }
 
+    /**
+     * Schedules the endboss to begin moving after its alert animation.
+     *
+     * @param {Endboss} boss - The endboss instance.
+     */
     scheduleEndbossStart(boss) {
         setTimeout(() => {
             boss.preparing = false;
@@ -335,6 +484,9 @@ class World {
         }, 2000);
     }
 
+    /**
+     * Stops the boss from moving when close enough to the player.
+     */
     checkEndbossAttack() {
         const boss = this.level.enemies.find(e => e.isEndboss);
         if (!boss || boss.dead) return;
@@ -343,6 +495,10 @@ class World {
         if (distance < boss.attackRange) boss.speed = 0;
     }
 
+    /**
+     * Main rendering function: clears frame, draws world and UI,
+     * and schedules the next frame.
+     */
     draw() {
         if (this.gameStopped) return;
 
@@ -352,12 +508,18 @@ class World {
         this.scheduleNextFrame();
     }
 
+    /**
+     * Prepares the canvas for the next frame and updates enemy positions.
+     */
     prepareFrame() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(this.camera_x, 0);
         this.level.enemies.forEach(e => e.updatePosition());
     }
 
+    /**
+     * Draws all world objects in the correct order.
+     */
     drawWorld() {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
@@ -369,24 +531,43 @@ class World {
         this.ctx.translate(-this.camera_x, 0);
     }
 
+    /**
+     * Draws all UI elements such as status bars.
+     */
     drawUI() {
         this.addObjectsToMap(this.statusBar);
     }
 
+    /**
+     * Schedules the next animation frame.
+     */
     scheduleNextFrame() {
         requestAnimationFrame(() => this.draw());
     }
 
+    /**
+     * Removes enemies that have been marked for deletion.
+     */
     removeDeadEnemies() {
         this.level.enemies = this.level.enemies.filter(
             e => !e.markedForDeletion
         );
     }
 
+    /**
+     * Draws an array of objects onto the canvas.
+     *
+     * @param {DrawableObject[]} objects - Objects to draw.
+     */
     addObjectsToMap(objects) {
         objects.forEach(o => this.addToMap(o));
     }
 
+    /**
+     * Draws a single object, flipping it horizontally if needed.
+     *
+     * @param {DrawableObject} obj - The object to draw.
+     */
     addToMap(obj) {
         if (obj.otherDirection) {
             this.ctx.save();
@@ -404,6 +585,9 @@ class World {
         }
     }
 
+    /**
+     * Assigns the world reference to all objects in the level.
+     */
     setWorld() {
         this.assignWorld(this.character);
 
@@ -415,11 +599,20 @@ class World {
         this.level.coins.forEach(c => this.assignWorld(c));
     }
 
+    /**
+     * Assigns the world reference to a single object and calls its init hook.
+     *
+     * @param {Object} obj - Any game object with a world reference.
+     */
     assignWorld(obj) {
         obj.world = this;
         if (obj.initAfterWorldSet) obj.initAfterWorldSet();
     }
 
+    /**
+     * Stops the game completely by clearing all intervals, timeouts,
+     * and animation frames.
+     */
     stopGame() {
         this.gameStopped = true;
 

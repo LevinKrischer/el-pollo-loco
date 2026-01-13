@@ -1,3 +1,37 @@
+/**
+ * A centralized registry for all image asset paths used throughout the game.
+ *
+ * The ImageHub class acts as a static, read‑only container that organizes
+ * every sprite sheet, animation frame sequence, and background layer into
+ * structured categories. This allows all drawable and animated objects
+ * (Character, Enemies, BackgroundObject, StatusBars, etc.) to load their
+ * required images without hard‑coding file paths inside each class.
+ *
+ * Key benefits:
+ * - Ensures all image paths are maintained in one place.
+ * - Makes asset management scalable and easier to update.
+ * - Provides consistent structure for animations (idle, walking, hurt, etc.).
+ * - Prevents typos and duplicated strings across the codebase.
+ * - Allows game objects to preload entire animation sequences efficiently.
+ *
+ * The class contains no methods; all properties are static so they can be
+ * accessed globally without instantiation:
+ *
+ * Example:
+ *   this.loadImages(ImageHub.character.walking);
+ *   this.loadImage(ImageHub.background.air[0]);
+ *
+ * Categories include:
+ * - character animations (idle, long idle, walking, jumping, hurt, dead)
+ * - enemy animations (chicken, small chicken, endboss)
+ * - background layers for parallax scrolling
+ * - status bar images (health, bottles, coins, endboss health)
+ * - collectible items (coins, bottles)
+ *
+ * This structure makes ImageHub the single source of truth for all visual
+ * assets in the game.
+ */
+
 class ImageHub {
     static character = {
         idle: [
