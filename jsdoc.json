@@ -19,7 +19,7 @@
             "./models/moveable-object.class.js",
             "./models/sound-hub.class.js",
             "./models/status-bar.class.js",
-            "./models/throwable-object.class.js",
+            "./models/throwable-objects.class.js",
             "./models/level.class.js"
         ]
     },
