@@ -327,9 +327,4 @@ canvas {
     canvas {
         height: 100vh;
     }
-
-    .mobileButtons div img {
-        width: 40px;
-        height: 40px;
-    }
 }
