@@ -255,6 +255,12 @@ canvas {
     cursor: pointer;
 }
 
+.mobileButton {
+    border:unset;
+    background-color: inherit;
+    padding: 0;
+}
+
 @media screen and (orientation: portrait) and (max-width: 900px) {
     .fullscreenNotice {
         display: flex;
