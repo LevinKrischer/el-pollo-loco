@@ -4,6 +4,20 @@
  */
 class HitableObject extends MoveableObject {
 
+    energy = 100;
+    lastHit = 0;
+    dead = false;
+    deathSoundPlayed = false;
+    deathAnimationDuration = 1500;
+
+    soundEndbossHurt = SoundHub.sfx.endboss.hurt;
+    soundEndbossDead = SoundHub.sfx.endboss.dead;
+
+    soundChickenDead1 = SoundHub.sfx.chicken.dead1;
+    soundChickenDead2 = SoundHub.sfx.chicken.dead2;
+
+    offset = { top: 0, right: 0, bottom: 0, left: 0 };
+
     /**
      * Applies damage to the object unless it is currently in a hurt state.
      * Triggers hit effects when appropriate.

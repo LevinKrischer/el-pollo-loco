@@ -5,6 +5,8 @@
  */
 class SoundManager {
 
+    static muted = false;
+
     /**
      * Plays the given audio clip if sound is not muted.
      * Resets playback to the beginning before playing.

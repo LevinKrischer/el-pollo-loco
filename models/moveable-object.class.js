@@ -4,6 +4,14 @@
  */
 class MoveableObject extends DrawableObject {
 
+    speed = 0.15;
+    otherDirection = false;
+    currentImage = 0;
+    speedY = 0;
+    acceleration = 2;
+    energy = 100;
+    lastHit = 0;
+
     /**
      * Called once the world reference is assigned.
      * Starts gravity simulation for the object.

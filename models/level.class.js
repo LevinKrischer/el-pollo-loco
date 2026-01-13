@@ -6,6 +6,13 @@
  */
 class Level {
 
+    enemies;
+    clouds;
+    backgroundObjects;
+    bottles;
+    coins;
+    level_end_x = 2900;
+
     /**
      * Creates a new level with the given sets of world objects.
      *

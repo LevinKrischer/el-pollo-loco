@@ -4,6 +4,14 @@
  */
 class DrawableObject {
 
+    img;
+    imageCache = {};
+    x = 120;
+    y = 250;
+    currentImage = 0;
+    height = 150;
+    width = 100;
+
     /**
      * Loads a single image and assigns it as the object's current sprite.
      *

@@ -5,6 +5,11 @@
  */
 class Keyboard {
 
+    static SPACE = false;
+    static D = false;
+    static RIGHT = false;
+    static LEFT = false;
+
     constructor() {
         Keyboard.setControls();
         Keyboard.setMobileControls();

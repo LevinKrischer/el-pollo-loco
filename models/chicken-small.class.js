@@ -5,6 +5,16 @@
  */
 class ChickenSmall extends HitableObject {
 
+    imgsWalking = ImageHub.chickenSmall.walking;
+    imgsDead = ImageHub.chickenSmall.dead;
+    currentImage = 0;
+    height = 50;
+    width = 50;
+    y = 375;
+    energy = 1;
+
+    offset = { top: 5, right: 0, bottom: 0, left: 5 };
+
     constructor() {
         super().loadImage(ImageHub.chickenSmall.walking[0]);
         this.loadImages(this.imgsWalking);

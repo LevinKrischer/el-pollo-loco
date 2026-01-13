@@ -5,6 +5,34 @@
  */
 class Endboss extends HitableObject {
 
+    imgsWalking = ImageHub.endboss.walking;
+    imgsDead = ImageHub.endboss.dead;
+    imgsAlert = ImageHub.endboss.alert;
+    imgsHurt = ImageHub.endboss.hurt;
+    imgsAttack = ImageHub.endboss.attack;
+
+    currentImage = 0;
+    height = 400;
+    width = 350;
+    y = 50;
+
+    isEndboss = true;
+    hitsToKill = 5;
+    hitsTaken = 0;
+    lastHit = 0;
+
+    dead = false;
+    activated = false;
+    attackRange = 80;
+    isAttacking = false;
+    canAttack = true;
+    attackCooldown = 1500;
+    preparing = false;
+
+    deathAnimationDuration = 1200;
+
+    offset = { top: 20, right: 20, bottom: 0, left: 40 };
+
     constructor() {
         super();
         this.x = 3000;

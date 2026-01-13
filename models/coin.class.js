@@ -4,6 +4,16 @@
  */
 class Coin extends MoveableObject {
 
+    width = 80;
+    height = 80;
+
+    offset = {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
+    };
+
     /**
      * Creates a new coin at the given world coordinates and loads
      * all rotation animation frames.

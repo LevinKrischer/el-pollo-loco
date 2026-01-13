@@ -5,6 +5,39 @@
  */
 class Character extends HitableObject {
 
+    imgsWalking = ImageHub.character.walking;
+    imgsIdle = ImageHub.character.idle;
+    imgsIdleLong = ImageHub.character.long_idle;
+    imgsJump = ImageHub.character.jumping;
+    imgsHurt = ImageHub.character.hurt;
+    imgsDead = ImageHub.character.dead;
+
+    soundWalk = SoundHub.sfx.character.run;
+    soundSnore = SoundHub.sfx.character.snoring;
+    soundJump = SoundHub.sfx.character.jump;
+    soundHurt = SoundHub.sfx.character.damage;
+    soundDead = SoundHub.sfx.character.dead;
+
+    walkSound = null;
+    snoreSound = null;
+    hurtSound = null;
+
+    hurtSoundPlayed = false;
+    deathSoundPlayed = false;
+    deathAnimationDuration = 800;
+
+    height = 250;
+    y = 180;
+    speed = 6;
+    world;
+    energy = 50;
+
+    offset = { top: 100, right: 20, bottom: 5, left: 15 };
+
+    lastMoveTime = Date.now();
+    longIdleDelay = 5000;
+    wasOnGround = true;
+
     constructor() {
         super();
         this.loadImage(this.imgsIdle[0]);

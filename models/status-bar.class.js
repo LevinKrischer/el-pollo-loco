@@ -5,6 +5,13 @@
  */
 class StatusBar extends DrawableObject {
 
+    imgsStatusHealth = ImageHub.statusBar.health;
+    imgsStatusCoins = ImageHub.statusBar.coins;
+    imgsStatusBottles = ImageHub.statusBar.bottle;
+    imgStatusBossHealth = ImageHub.statusBar.endboss;
+
+    percentage = 100;
+
     /**
      * Creates a new status bar of the given type at the specified position.
      * Loads all images for the bar and initializes its fill level.
