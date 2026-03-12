@@ -48,8 +48,10 @@ class Character extends HitableObject {
     /**
      * Called once the world reference is assigned.
      * Starts gravity and all update loops.
+     * Resets the idle timer so snoring doesn't play immediately on game start.
      */
     initAfterWorldSet() {
+        this.lastMoveTime = Date.now();
         this.applyGravity();
         this.startLoops();
     }

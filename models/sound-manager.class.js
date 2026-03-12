@@ -19,7 +19,8 @@ class SoundManager {
     }
 
     /**
-     * Plays the given audio clip if sound is not muted.
+     * Plays the given audio clip. The audio will be muted or unmuted based on 
+     * the global mute state.
      * Resets playback to the beginning before playing.
      *
      * @param {HTMLAudioElement} audio - The audio object to play.
@@ -27,9 +28,9 @@ class SoundManager {
      */
     static play(audio) {
         if (!audio || !(audio instanceof HTMLAudioElement)) return null;
-        if (this.muted) return audio;
 
         audio.currentTime = 0;
+        audio.muted = this.muted;
         audio.play();
         return audio;
     }

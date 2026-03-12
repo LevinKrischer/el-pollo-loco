@@ -32,6 +32,7 @@ body {
 .mainContainer {
     display: flex;
     justify-content: center;
+    position: relative;
     width: 100vw;
     height: 100vh;
     max-width: 728px;
@@ -160,6 +161,38 @@ canvas {
 .buttonsRight {
     display: flex;
     gap: 16px;
+}
+
+.gameplaySoundButton {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: 2px solid #8b4513;
+    border-radius: 10px;
+    background-color: #ffca00;
+    box-shadow: 2px 2px 0 #8b4513;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.gameplaySoundButton:hover {
+    scale: 1.1;
+    background-color: #ffe063;
+}
+
+.gameplaySoundButton img {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.gameplaySoundButton.hidden {
+    display: none;
 }
 
 .overlay {

@@ -42,11 +42,11 @@ window.addEventListener("DOMContentLoaded", () => {
     // Initialize sound system
     SoundManager.init();
     updateSoundButtonIcon();
+    updateGameplaySoundButtonIcon();
 
-    // Initialize game
+    // Initialize keyboard
     keyboard = new Keyboard();
     canvas = document.getElementById('canvas');
-    world = new World(canvas, keyboard);
 });
 
 /**
@@ -128,6 +128,8 @@ function hideStartScreen() {
     const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.add("hidden");
     canvas.style.display = "block";
+    const soundButton = document.getElementById("gameplaySoundButton");
+    if (soundButton) soundButton.classList.remove("hidden");
     blurActiveElement();
 }
 
@@ -138,22 +140,37 @@ function showStartScreen() {
     const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.remove("hidden");
     canvas.style.display = "none";
+    const soundButton = document.getElementById("gameplaySoundButton");
+    if (soundButton) soundButton.classList.add("hidden");
     closeVisibleEndScreen();
 }
 
+
 /**
- * Toggles the global sound state (muted/unmuted) and updates the UI icon.
+ * Toggles the global sound state (muted/unmuted) and updates the UI icons.
+ * Removes focus from the button to prevent keyboard input conflicts.
  */
 function toggleSound() {
     SoundManager.toggleMute();
     updateSoundButtonIcon();
+    updateGameplaySoundButtonIcon();
+    document.getElementById('gameplaySoundButton').blur();
 }
-
 /**
  * Updates the sound toggle button icon depending on the mute state.
  */
 function updateSoundButtonIcon() {
     const img = document.getElementById('soundToggleButton');
+    img.src = SoundManager.muted
+        ? './assets/img/0_project-images/sound-off.png'
+        : './assets/img/0_project-images/sound-on.png';
+}
+
+/**
+ * Updates the gameplay sound button icon depending on the mute state.
+ */
+function updateGameplaySoundButtonIcon() {
+    const img = document.getElementById('gameplaySoundIcon');
     img.src = SoundManager.muted
         ? './assets/img/0_project-images/sound-off.png'
         : './assets/img/0_project-images/sound-on.png';
@@ -236,6 +253,8 @@ function hideEndScreen(screen) {
  */
 function showEndScreen(screen) {
     screen.classList.remove('invisible');
+    const soundButton = document.getElementById("gameplaySoundButton");
+    if (soundButton) soundButton.classList.add("hidden");
 
     requestAnimationFrame(() => {
         screen.classList.add('visible');
@@ -258,6 +277,8 @@ function closeVisibleEndScreen() {
 function hideEndScreens() {
     document.getElementById('gameOverScreen').classList.add('invisible');
     document.getElementById('winScreen').classList.add('invisible');
+    const soundButton = document.getElementById("gameplaySoundButton");
+    if (soundButton) soundButton.classList.remove("hidden");
 }
 
 /**
