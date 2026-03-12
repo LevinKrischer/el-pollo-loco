@@ -10,7 +10,7 @@ class StatusBar extends DrawableObject {
     imgsStatusBottles = ImageHub.statusBar.bottle;
     imgStatusBossHealth = ImageHub.statusBar.endboss;
 
-    percentage = 100;
+    percentage = 50;
 
     /**
      * Creates a new status bar of the given type at the specified position.
@@ -44,15 +44,15 @@ class StatusBar extends DrawableObject {
 
         if (this.percentage == 100) {
             this.loadImage(_type[5]);
-        } else if (this.percentage > 80) {
+        } else if (this.percentage >= 80) {
             this.loadImage(_type[4]);
-        } else if (this.percentage > 60) {
+        } else if (this.percentage >= 60) {
             this.loadImage(_type[3]);
-        } else if (this.percentage > 40) {
+        } else if (this.percentage >= 40) {
             this.loadImage(_type[2]);
-        } else if (this.percentage > 20) {
+        } else if (this.percentage >= 20) {
             this.loadImage(_type[1]);
-        } else if (this.percentage == 0) {
+        } else {
             this.loadImage(_type[0]);
         }
     }

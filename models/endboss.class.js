@@ -17,16 +17,24 @@ class Endboss extends HitableObject {
     y = 50;
 
     isEndboss = true;
-    hitsToKill = 5;
+    hitsToKill = 10;
     hitsTaken = 0;
     lastHit = 0;
 
     dead = false;
     activated = false;
     attackRange = 80;
+    baseChaseSpeed = 4;
+    fastChaseSpeed = 7;
+    currentChaseSpeed = 4;
+    nextSpeedChangeAt = 0;
+    minSpeedPhaseDuration = 700;
+    maxSpeedPhaseDuration = 1600;
+    fastSpeedChance = 0.4;
     isAttacking = false;
     canAttack = true;
-    attackCooldown = 1500;
+    attackCooldown = 1000;
+    hitInvulnerabilityDuration = 1000;
     preparing = false;
 
     deathAnimationDuration = 1200;
@@ -71,12 +79,12 @@ class Endboss extends HitableObject {
 
     /**
      * Returns whether the endboss is currently in a hurt state.
-     * Hurt state lasts for 2 seconds after being hit.
+     * Hurt state lasts for 1500 ms after being hit.
      *
      * @returns {boolean} True if the boss is hurt.
      */
     isHurt() {
-        return (Date.now() - this.lastHit) / 1000 < 2;
+        return Date.now() - this.lastHit < this.hitInvulnerabilityDuration;
     }
 
     /**
@@ -168,6 +176,26 @@ class Endboss extends HitableObject {
     }
 
     /**
+     * Updates the current chase speed at irregular intervals so the boss
+     * alternates between normal pace and short faster bursts.
+     */
+    updateChaseSpeed() {
+        const now = Date.now();
+        if (now < this.nextSpeedChangeAt) return;
+
+        this.currentChaseSpeed =
+            Math.random() < this.fastSpeedChance
+                ? this.fastChaseSpeed
+                : this.baseChaseSpeed;
+
+        const phaseDuration =
+            this.minSpeedPhaseDuration +
+            Math.random() * (this.maxSpeedPhaseDuration - this.minSpeedPhaseDuration);
+
+        this.nextSpeedChangeAt = now + phaseDuration;
+    }
+
+    /**
      * Handles movement and attack decisions based on the distance
      * between the boss and the character.
      *
@@ -186,7 +214,8 @@ class Endboss extends HitableObject {
         }
 
         if (!this.isAttacking) {
-            this.speed = 4;
+            this.updateChaseSpeed();
+            this.speed = this.currentChaseSpeed;
         }
     }
 }

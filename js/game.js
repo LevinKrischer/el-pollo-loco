@@ -23,6 +23,31 @@ let keyboard;
 let bgMusic = SoundHub.music.background;
 
 /**
+ * Returns whether a touch event should suppress the browser default behavior.
+ * Only gameplay surfaces are blocked so menu and overlay buttons stay tappable.
+ *
+ * @param {TouchEvent} event - The touch event to evaluate.
+ * @returns {boolean} True if the default browser behavior should be prevented.
+ */
+function shouldPreventTouchDefault(event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return false;
+
+    return Boolean(target.closest('canvas, .mobileButtons, .mobileButton'));
+}
+
+/**
+ * Prevents default browser touch behavior only on gameplay-related elements.
+ *
+ * @param {TouchEvent} event - The touch event to handle.
+ */
+function handleTouchInteraction(event) {
+    if (shouldPreventTouchDefault(event)) {
+        event.preventDefault();
+    }
+}
+
+/**
  * Initializes the game once the DOM is fully loaded.
  * 
  * This handler prevents default browser interactions such as the context menu
@@ -35,9 +60,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Disable right-click and touch-hold behavior
     window.addEventListener("contextmenu", e => e.preventDefault());
-    window.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
-    window.addEventListener("touchend",   e => e.preventDefault(), { passive: false });
-    window.addEventListener("touchmove",  e => e.preventDefault(), { passive: false });
+    window.addEventListener("touchstart", handleTouchInteraction, { passive: false });
+    window.addEventListener("touchend", handleTouchInteraction, { passive: false });
+    window.addEventListener("touchmove", handleTouchInteraction, { passive: false });
 
     // Initialize sound system
     SoundManager.init();

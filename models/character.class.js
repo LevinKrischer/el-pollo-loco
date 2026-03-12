@@ -31,7 +31,9 @@ class Character extends HitableObject {
     y = 180;
     speed = 6;
     world;
-    energy = 100;
+    maxEnergy = 50;
+    damagePerHit = 10;
+    energy = this.maxEnergy;
 
     offset = { top: 100, right: 20, bottom: 5, left: 15 };
 
@@ -148,6 +150,17 @@ class Character extends HitableObject {
             this.wasOnGround = false;
             this.stopSnoring();
         }
+    }
+
+    /**
+     * Applies one fixed health step of damage and synchronizes the UI.
+     * The character can survive at most five hits.
+     *
+     * @param {number} [amount=this.damagePerHit] - Damage amount in health points.
+     */
+    hit(amount = this.damagePerHit) {
+        super.hit(amount);
+        if (this.world?.updateHealthStatusBar) this.world.updateHealthStatusBar();
     }
 
     /**

@@ -11,7 +11,8 @@ class World {
     camera_x = 0;
     gameStopped = false;
 
-    maxBottles = 10;
+    maxBottleInventory = 5;
+    bottleSpawnCount = 20;
     coinCount = 0;
     maxCoins = 15;
     bottleCount = 0;
@@ -94,7 +95,7 @@ class World {
      * Spawns bottles at random positions throughout the level.
      */
     spawnBottles() {
-        for (let i = 0; i < this.maxBottles; i++) {
+        for (let i = 0; i < this.bottleSpawnCount; i++) {
             const x = 200 + Math.random() * 2400;
             const y = 350;
 
@@ -179,7 +180,7 @@ class World {
      * @param {number} index - Index of the bottle in the array.
      */
     handleBottlePickup(index) {
-        if (this.bottleCount >= this.maxBottles) return;
+        if (this.bottleCount >= this.maxBottleInventory) return;
 
         SoundManager.play(this.soundBottleCollect);
         this.bottleCount++;
@@ -283,7 +284,8 @@ class World {
      * Updates the bottle status bar based on current bottle count.
      */
     updateBottleStatusBar() {
-        const percentage = (this.bottleCount / this.maxBottles) * 100;
+        const percentage =
+            (this.bottleCount / this.maxBottleInventory) * 100;
         this.statusBar[2].setPercentage(
             percentage,
             this.statusBar[2].imgsStatusBottles
@@ -298,6 +300,19 @@ class World {
         this.statusBar[1].setPercentage(
             percentage,
             this.statusBar[1].imgsStatusCoins
+        );
+    }
+
+    /**
+     * Updates the health status bar based on the character's current health.
+     */
+    updateHealthStatusBar() {
+        const percentage =
+            (this.character.energy / this.character.maxEnergy) * 100;
+
+        this.statusBar[0].setPercentage(
+            percentage,
+            this.statusBar[0].imgsStatusHealth
         );
     }
 
@@ -350,10 +365,6 @@ class World {
         if (this.character.isAboveGround()) return;
 
         this.character.hit();
-        this.statusBar[0].setPercentage(
-            this.character.energy,
-            this.statusBar[0].imgsStatusHealth
-        );
     }
 
     /**
@@ -380,6 +391,10 @@ class World {
         for (let enemy of this.level.enemies) {
             enemy.getRealFrame();
             if (!enemy.isDead() && bottle.isColliding(enemy)) {
+                if (enemy instanceof Endboss && enemy.isHurt()) {
+                    continue;
+                }
+
                 bottle.explode();
                 this.handleBottleHitEnemy(enemy);
                 return;
@@ -406,6 +421,8 @@ class World {
      * @param {Endboss} enemy - The endboss instance.
      */
     handleEndbossHit(enemy) {
+        if (enemy.isHurt()) return;
+
         enemy.lastHit = Date.now();
         enemy.hitsTaken++;
         SoundManager.play(this.soundEndbossHurt);
@@ -590,6 +607,7 @@ class World {
      */
     setWorld() {
         this.assignWorld(this.character);
+        this.updateHealthStatusBar();
 
         this.level.enemies.forEach(e => this.assignWorld(e));
         this.level.clouds.forEach(c => this.assignWorld(c));
