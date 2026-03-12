@@ -44,9 +44,10 @@ class HitableObject extends MoveableObject {
         this.lastHit = Date.now();
 
         if (this instanceof Character) {
+            this.lastMoveTime = Date.now();
+            if (typeof this.stopSnoring === 'function') this.stopSnoring();
             SoundManager.play(this.soundHurt);
             SoundManager.stop(this.walkSound);
-            SoundManager.stop(this.snoreSound);
         }
 
         if (this.isEndboss) {
