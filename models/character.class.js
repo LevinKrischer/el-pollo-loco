@@ -37,6 +37,7 @@ class Character extends HitableObject {
 
     lastMoveTime = Date.now();
     longIdleDelay = 5000;
+    hurtAnimationDuration = 450;
     wasOnGround = true;
 
     constructor() {
@@ -106,14 +107,9 @@ class Character extends HitableObject {
     }
 
     /**
-     * Handles movement input and prevents walking while hurt.
+     * Handles movement input.
      */
     handleMovement() {
-        if (this.isHurt()) {
-            SoundManager.stop(this.walkSound);
-            return;
-        }
-
         this.handleMoveRight();
         this.handleMoveLeft();
         this.handleJump();
@@ -160,7 +156,7 @@ class Character extends HitableObject {
      */
     updateAnimation() {
         if (this.isDead()) return this.handleDeadAnimation();
-        if (this.isHurt()) return this.handleHurtAnimation();
+        if (this.isHurtAnimationActive()) return this.handleHurtAnimation();
         if (this.isAboveGround()) return this.playAnimation(this.imgsJump);
 
         this.wasOnGround = true;
@@ -172,6 +168,14 @@ class Character extends HitableObject {
 
         SoundManager.stop(this.walkSound);
         this.handleIdleAnimation();
+    }
+
+    /**
+     * Returns whether the hurt animation should still be shown.
+     * This is intentionally shorter than the invulnerability window.
+     */
+    isHurtAnimationActive() {
+        return Date.now() - this.lastHit < this.hurtAnimationDuration;
     }
 
     /**
