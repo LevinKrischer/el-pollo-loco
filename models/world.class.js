@@ -13,28 +13,19 @@ class World {
 
     maxBottleInventory = 5;
     bottleSpawnCount = 20;
-    coinCount = 0;
     maxCoins = 15;
-    bottleCount = 0;
-    flyingBottles = [];
 
-    statusBar = [
-        new StatusBar(ImageHub.statusBar.health, 40, 0, true),
-        new StatusBar(ImageHub.statusBar.coins, 40, 45, false),
-        new StatusBar(ImageHub.statusBar.bottle, 40, 90, false)
-    ];
-
-    lastThrowTime = 0;
-    throwCooldown = 500;
-    alertSoundPlayed = false;
+    uiManager;
+    pickupManager;
+    collisionManager;
+    bottleManager;
+    endbossManager;
 
     soundBottleCollect = SoundHub.sfx.collectibles.bottle;
     soundBottleThrow = SoundHub.sfx.collectibles.bottleThrow;
     soundCoinCollect = SoundHub.sfx.collectibles.coin;
-
     soundEndbossHurt = SoundHub.sfx.endboss.hurt;
     soundEndbossAlert = SoundHub.sfx.endboss.alert;
-
     intervals = [];
     timeouts = [];
 
@@ -51,6 +42,11 @@ class World {
         this.keyboard = keyboard;
 
         this.level = createLevel1();
+        this.uiManager = new UIManager(this);
+        this.pickupManager = new PickupManager(this);
+        this.collisionManager = new CollisionManager(this);
+        this.bottleManager = new BottleManager(this);
+        this.endbossManager = new EndbossManager(this);
 
         this.setWorld();
         this.spawnBottles();
@@ -137,14 +133,14 @@ class World {
         this.interval1 = this.setIntervalTracked(() => {
             if (this.gameStopped) return;
 
-            this.checkCollisions();
-            this.checkBottlePickup();
-            this.checkThrowObjects();
-            this.checkCoinPickup();
-            this.checkBottleHits();
-            this.removeDeadEnemies();
-            this.checkEndbossTrigger();
-            this.checkEndbossAttack();
+            this.collisionManager.checkCollisions();
+            this.pickupManager.checkBottlePickup();
+            this.bottleManager.checkThrowObjects();
+            this.pickupManager.checkCoinPickup();
+            this.bottleManager.checkBottleHits();
+            this.collisionManager.removeDeadEnemies();
+            this.endbossManager.checkEndbossTrigger();
+            this.endbossManager.checkEndbossAttack();
         }, 100);
     }
 
@@ -155,361 +151,15 @@ class World {
         this.interval2 = this.setIntervalTracked(() => {
             if (this.gameStopped) return;
 
-            const boss = this.level.enemies.find(e => e.isEndboss && !e.dead);
-            if (boss) boss.updateBehavior(this.character);
+            this.endbossManager.updateBehavior();
         }, 100);
-    }
-
-    /**
-     * Checks whether the character collides with any bottle.
-     */
-    checkBottlePickup() {
-        this.character.getRealFrame();
-        this.level.bottles.forEach((bottle, index) => {
-            bottle.getRealFrame();
-            if (this.character.isColliding(bottle)) {
-                this.handleBottlePickup(index);
-            }
-        });
-    }
-
-    /**
-     * Handles bottle pickup: plays sound, increases count,
-     * removes bottle, updates UI.
-     *
-     * @param {number} index - Index of the bottle in the array.
-     */
-    handleBottlePickup(index) {
-        if (this.bottleCount >= this.maxBottleInventory) return;
-
-        SoundManager.play(this.soundBottleCollect);
-        this.bottleCount++;
-        this.level.bottles.splice(index, 1);
-        this.updateBottleStatusBar();
-    }
-
-    /**
-     * Checks whether the character collides with any coin.
-     */
-    checkCoinPickup() {
-        this.character.getRealFrame();
-        this.level.coins.forEach((coin, index) => {
-            coin.getRealFrame();
-            if (this.character.isColliding(coin)) {
-                this.handleCoinPickup(index);
-            }
-        });
-    }
-
-    /**
-     * Handles coin pickup: plays sound, increases count,
-     * removes coin, updates UI.
-     *
-     * @param {number} index - Index of the coin in the array.
-     */
-    handleCoinPickup(index) {
-        SoundManager.play(this.soundCoinCollect);
-        this.coinCount++;
-        this.level.coins.splice(index, 1);
-        this.updateCoinStatusBar();
-    }
-
-    /**
-     * Checks whether the player can throw a bottle.
-     */
-    checkThrowObjects() {
-        const now = Date.now();
-        if (this.character.isHurt()) return;
-
-        const canThrow =
-            Keyboard.D &&
-            this.bottleCount > 0 &&
-            now - this.lastThrowTime >= this.throwCooldown;
-
-        if (canThrow) this.throwBottle(now);
-    }
-
-    /**
-     * Executes the bottle throw sequence.
-     *
-     * @param {number} now - Current timestamp.
-     */
-    throwBottle(now) {
-        SoundManager.play(this.soundBottleThrow);
-
-        const bottle = this.createThrownBottle();
-        this.initThrownBottle(bottle);
-        this.registerBottleThrow(bottle, now);
-    }
-
-    /**
-     * Creates a new bottle at the character's throw position.
-     *
-     * @returns {Bottle} The new bottle instance.
-     */
-    createThrownBottle() {
-        const offsetX = this.character.otherDirection ? -20 : 20;
-        const x = this.character.x + offsetX;
-        const y = this.character.y + 80;
-
-        return new Bottle(x, y);
-    }
-
-    /**
-     * Initializes a thrown bottle by assigning world and starting movement.
-     *
-     * @param {Bottle} bottle - The bottle to initialize.
-     */
-    initThrownBottle(bottle) {
-        bottle.world = this;
-        if (bottle.initAfterWorldSet) bottle.initAfterWorldSet();
-        bottle.throw(this.character.otherDirection);
-    }
-
-    /**
-     * Registers the thrown bottle and updates counters and UI.
-     *
-     * @param {Bottle} bottle - The thrown bottle.
-     * @param {number} now - Timestamp of the throw.
-     */
-    registerBottleThrow(bottle, now) {
-        this.flyingBottles.push(bottle);
-        this.bottleCount--;
-        this.lastThrowTime = now;
-        this.character.lastMoveTime = now;
-        this.updateBottleStatusBar();
-    }
-
-    /**
-     * Updates the bottle status bar based on current bottle count.
-     */
-    updateBottleStatusBar() {
-        const percentage =
-            (this.bottleCount / this.maxBottleInventory) * 100;
-        this.statusBar[2].setPercentage(
-            percentage,
-            this.statusBar[2].imgsStatusBottles
-        );
-    }
-
-    /**
-     * Updates the coin status bar based on current coin count.
-     */
-    updateCoinStatusBar() {
-        const percentage = (this.coinCount / this.maxCoins) * 100;
-        this.statusBar[1].setPercentage(
-            percentage,
-            this.statusBar[1].imgsStatusCoins
-        );
     }
 
     /**
      * Updates the health status bar based on the character's current health.
      */
     updateHealthStatusBar() {
-        const percentage =
-            (this.character.energy / this.character.maxEnergy) * 100;
-
-        this.statusBar[0].setPercentage(
-            percentage,
-            this.statusBar[0].imgsStatusHealth
-        );
-    }
-
-    /**
-     * Checks collisions between the character and all enemies.
-     */
-    checkCollisions() {
-        this.character.getRealFrame();
-        this.level.enemies.forEach(enemy => {
-            enemy.getRealFrame();
-            this.handleEnemyCollision(enemy);
-        });
-    }
-
-    /**
-     * Handles collision logic between the character and a single enemy.
-     *
-     * @param {HitableObject} enemy - The enemy to check.
-     */
-    handleEnemyCollision(enemy) {
-        if (enemy.isDead()) return;
-        if (!this.character.isColliding(enemy)) return;
-        if (enemy.isEndboss) return;
-
-        const falling = this.character.speedY < 0;
-        if (falling) {
-            this.handleStompKill(enemy);
-            return;
-        }
-
-        this.handleEnemyHitsPlayer();
-    }
-
-    /**
-     * Handles killing an enemy by jumping on it.
-     *
-     * @param {HitableObject} enemy - The enemy to kill.
-     */
-    handleStompKill(enemy) {
-        enemy.die();
-        this.character.speedY = 12;
-        this.character.wasOnGround = false;
-        this.character.lastMoveTime = Date.now();
-    }
-
-    /**
-     * Handles the player taking damage from an enemy.
-     */
-    handleEnemyHitsPlayer() {
-        if (this.character.isAboveGround()) return;
-
-        this.character.hit();
-    }
-
-    /**
-     * Checks whether any thrown bottle hits an enemy.
-     */
-    checkBottleHits() {
-        this.flyingBottles.forEach(bottle => {
-            if (bottle.isExploded) return;
-
-            bottle.getRealFrame();
-            this.checkBottleHitEnemies(bottle);
-        });
-
-        this.flyingBottles =
-            this.flyingBottles.filter(b => !b.markedForDeletion);
-    }
-
-    /**
-     * Checks a single bottle against all enemies.
-     *
-     * @param {Bottle} bottle - The bottle to test.
-     */
-    checkBottleHitEnemies(bottle) {
-        for (let enemy of this.level.enemies) {
-            enemy.getRealFrame();
-            if (!enemy.isDead() && bottle.isColliding(enemy)) {
-                if (enemy instanceof Endboss && enemy.isHurt()) {
-                    continue;
-                }
-
-                bottle.explode();
-                this.handleBottleHitEnemy(enemy);
-                return;
-            }
-        }
-    }
-
-    /**
-     * Handles the result of a bottle hitting an enemy.
-     *
-     * @param {HitableObject} enemy - The enemy that was hit.
-     */
-    handleBottleHitEnemy(enemy) {
-        if (enemy instanceof Endboss) {
-            this.handleEndbossHit(enemy);
-        } else {
-            enemy.die();
-        }
-    }
-
-    /**
-     * Handles damage logic when the endboss is hit by a bottle.
-     *
-     * @param {Endboss} enemy - The endboss instance.
-     */
-    handleEndbossHit(enemy) {
-        if (enemy.isHurt()) return;
-
-        enemy.lastHit = Date.now();
-        enemy.hitsTaken++;
-        SoundManager.play(this.soundEndbossHurt);
-
-        const percentage =
-            ((enemy.hitsToKill - enemy.hitsTaken) / enemy.hitsToKill) * 100;
-
-        const bossBar = this.statusBar[this.statusBar.length - 1];
-        bossBar.setPercentage(percentage, ImageHub.statusBar.endboss);
-
-        if (enemy.hitsTaken >= enemy.hitsToKill) enemy.die();
-    }
-
-    /**
-     * Checks whether the endboss should be activated.
-     */
-    checkEndbossTrigger() {
-        const boss = this.level.enemies.find(e => e.isEndboss);
-        if (!boss || boss.activated) return;
-
-        if (this.character.x > 2500) {
-            this.activateEndboss(boss);
-        }
-    }
-
-    /**
-     * Activates the endboss, plays alert sound, adds UI bar,
-     * and schedules movement start.
-     *
-     * @param {Endboss} boss - The endboss instance.
-     */
-    activateEndboss(boss) {
-        boss.activated = true;
-        boss.preparing = true;
-
-        this.playEndbossAlert(boss);
-        this.addEndbossStatusBar();
-        this.scheduleEndbossStart(boss);
-    }
-
-    /**
-     * Plays the endboss alert sound once.
-     *
-     * @param {Endboss} boss - The endboss instance.
-     */
-    playEndbossAlert(boss) {
-        if (boss.alertSoundPlayed) return;
-
-        SoundManager.play(this.soundEndbossAlert);
-        boss.alertSoundPlayed = true;
-    }
-
-    /**
-     * Adds the endboss health bar to the UI.
-     */
-    addEndbossStatusBar() {
-        this.statusBar.push(
-            new StatusBar(
-                ImageHub.statusBar.endboss,
-                this.canvas.width - 240,
-                0,
-                true
-            )
-        );
-    }
-
-    /**
-     * Schedules the endboss to begin moving after its alert animation.
-     *
-     * @param {Endboss} boss - The endboss instance.
-     */
-    scheduleEndbossStart(boss) {
-        setTimeout(() => {
-            boss.preparing = false;
-            boss.speed = 4;
-        }, 2000);
-    }
-
-    /**
-     * Stops the boss from moving when close enough to the player.
-     */
-    checkEndbossAttack() {
-        const boss = this.level.enemies.find(e => e.isEndboss);
-        if (!boss || boss.dead) return;
-
-        const distance = Math.abs(boss.x - this.character.x);
-        if (distance < boss.attackRange) boss.speed = 0;
+        this.uiManager.updateHealthStatusBar();
     }
 
     /**
@@ -543,7 +193,7 @@ class World {
         this.addObjectsToMap(this.level.bottles);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.enemies);
-        this.addObjectsToMap(this.flyingBottles);
+        this.addObjectsToMap(this.bottleManager.flyingBottles);
         this.addObjectsToMap(this.level.coins);
         this.ctx.translate(-this.camera_x, 0);
     }
@@ -552,28 +202,18 @@ class World {
      * Draws all UI elements such as status bars.
      */
     drawUI() {
-        this.addObjectsToMap(this.statusBar);
+        this.addObjectsToMap(this.uiManager.statusBar);
     }
 
     /**
      * Schedules the next animation frame.
      */
     scheduleNextFrame() {
-        requestAnimationFrame(() => this.draw());
-    }
-
-    /**
-     * Removes enemies that have been marked for deletion.
-     */
-    removeDeadEnemies() {
-        this.level.enemies = this.level.enemies.filter(
-            e => !e.markedForDeletion
-        );
+        this.animationFrameId = requestAnimationFrame(() => this.draw());
     }
 
     /**
      * Draws an array of objects onto the canvas.
-     *
      * @param {DrawableObject[]} objects - Objects to draw.
      */
     addObjectsToMap(objects) {
@@ -582,7 +222,6 @@ class World {
 
     /**
      * Draws a single object, flipping it horizontally if needed.
-     *
      * @param {DrawableObject} obj - The object to draw.
      */
     addToMap(obj) {
@@ -612,7 +251,6 @@ class World {
         this.level.enemies.forEach(e => this.assignWorld(e));
         this.level.clouds.forEach(c => this.assignWorld(c));
         this.level.backgroundObjects.forEach(bg => this.assignWorld(bg));
-        this.level.clouds.forEach(c => this.assignWorld(c));
         this.level.bottles.forEach(b => this.assignWorld(b));
         this.level.coins.forEach(c => this.assignWorld(c));
     }

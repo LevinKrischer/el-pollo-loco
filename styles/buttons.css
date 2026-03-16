@@ -45,6 +45,16 @@
     width: 100%;
 }
 
+.bottomButtonsGameOver {
+    position: absolute;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    bottom: 0;
+    width: 100%;
+    padding: 0 20px 0 120px;
+}
+
 .buttonsLeft,
 .buttonsRight {
     display: flex;
