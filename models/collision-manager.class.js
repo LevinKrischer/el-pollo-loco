@@ -1,6 +1,3 @@
-/**
- * Handles collisions between character and enemies.
- */
 class CollisionManager {
     /**
      * @param {World} world - The game world.
@@ -22,7 +19,6 @@ class CollisionManager {
 
     /**
      * Handles collision logic between the character and a single enemy.
-     *
      * @param {HitableObject} enemy - The enemy to check.
      */
     handleEnemyCollision(enemy) {

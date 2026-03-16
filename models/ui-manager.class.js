@@ -1,6 +1,3 @@
-/**
- * Manages all status bars and their percentage updates.
- */
 class UIManager {
     /**
      * @param {World} world - The game world.

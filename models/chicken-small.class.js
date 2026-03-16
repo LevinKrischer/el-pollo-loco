@@ -1,8 +1,3 @@
-/**
- * A small chicken enemy with simple left‑movement behavior and
- * a basic walking/death animation cycle. Inherits hit detection
- * and damage logic from HitableObject.
- */
 class ChickenSmall extends HitableObject {
 
     imgsWalking = ImageHub.chickenSmall.walking;
@@ -12,7 +7,6 @@ class ChickenSmall extends HitableObject {
     width = 50;
     y = 375;
     energy = 1;
-
     offset = { top: 5, right: 0, bottom: 0, left: 5 };
 
     constructor() {

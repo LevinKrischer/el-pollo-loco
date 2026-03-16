@@ -1,6 +1,3 @@
-/**
- * Handles collectible pickup logic for bottles and coins.
- */
 class PickupManager {
     bottleCount = 0;
     coinCount = 0;

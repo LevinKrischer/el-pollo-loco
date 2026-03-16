@@ -1,8 +1,3 @@
-/**
- * The main controllable player character. Handles movement, physics,
- * camera tracking, animation states, and character‑related sound effects.
- * Inherits hit detection and damage logic from HitableObject.
- */
 class Character extends HitableObject {
 
     imgsWalking = ImageHub.character.walking;
@@ -11,22 +6,18 @@ class Character extends HitableObject {
     imgsJump = ImageHub.character.jumping;
     imgsHurt = ImageHub.character.hurt;
     imgsDead = ImageHub.character.dead;
-
     soundWalk = SoundHub.sfx.character.run;
     soundSnore = SoundHub.sfx.character.snoring;
     soundJump = SoundHub.sfx.character.jump;
     soundHurt = SoundHub.sfx.character.damage;
     soundDead = SoundHub.sfx.character.dead;
-
     walkSound = null;
     snoreSound = null;
     hurtSound = null;
     isSnoring = false;
-
     hurtSoundPlayed = false;
     deathSoundPlayed = false;
     deathAnimationDuration = 800;
-
     height = 250;
     y = 180;
     speed = 6;
@@ -34,9 +25,7 @@ class Character extends HitableObject {
     maxEnergy = 50;
     damagePerHit = 10;
     energy = this.maxEnergy;
-
     offset = { top: 100, right: 20, bottom: 5, left: 15 };
-
     lastMoveTime = Date.now();
     longIdleDelay = 5000;
     hurtAnimationDuration = 450;

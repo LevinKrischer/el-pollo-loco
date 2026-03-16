@@ -1,8 +1,3 @@
-/**
- * A standard chicken enemy that walks left continuously and switches
- * between walking and death animations. Inherits hit detection and
- * damage logic from HitableObject.
- */
 class Chicken extends HitableObject {
 
     imgsWalking = ImageHub.chicken.walking;
@@ -12,7 +7,6 @@ class Chicken extends HitableObject {
     width = 60;
     y = 365;
     energy = 1;
-
     offset = { top: 0, right: 0, bottom: 10, left: 0 };
 
     constructor() {

@@ -1,6 +1,3 @@
-/**
- * Handles endboss trigger, behavior updates and damage logic.
- */
 class EndbossManager {
     /**
      * @param {World} world - The game world.

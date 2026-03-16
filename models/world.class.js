@@ -10,17 +10,14 @@ class World {
     keyboard;
     camera_x = 0;
     gameStopped = false;
-
     maxBottleInventory = 5;
     bottleSpawnCount = 12;
     maxCoins = 15;
-
     uiManager;
     pickupManager;
     collisionManager;
     bottleManager;
     endbossManager;
-
     soundBottleCollect = SoundHub.sfx.collectibles.bottle;
     soundBottleThrow = SoundHub.sfx.collectibles.bottleThrow;
     soundCoinCollect = SoundHub.sfx.collectibles.coin;

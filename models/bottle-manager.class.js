@@ -1,6 +1,3 @@
-/**
- * Handles bottle throw and bottle hit logic.
- */
 class BottleManager {
     flyingBottles = [];
     lastThrowTime = 0;

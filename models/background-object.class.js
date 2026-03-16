@@ -1,7 +1,3 @@
-/**
- * Represents a static background layer used for parallax scrolling.
- * Inherits image‑loading and drawing behavior from DrawableObject.
- */
 class BackgroundObject extends DrawableObject {
 
     /**

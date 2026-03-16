@@ -1,19 +1,11 @@
-/**
- * A throwable bottle that can idle‑animate, rotate while thrown,
- * and play a splash animation when exploding. Inherits physics,
- * animation utilities, and world‑tracked timers from ThrowableObject.
- */
 class Bottle extends ThrowableObject {
 
     isExploded = false;
     isThrown = false;
-
     imgsSplash = ImageHub.bottle.splash;
     imgsBottleNormal = ImageHub.bottle.normal;
     imgsBottleRotation = ImageHub.bottle.rotating;
-
     soundBreak = SoundHub.sfx.collectibles.bottleBreak;
-
     offset = {
         top: 10,
         right: 10,

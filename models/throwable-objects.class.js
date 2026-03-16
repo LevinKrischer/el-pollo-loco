@@ -1,7 +1,3 @@
-/**
- * Base class for all objects that can be thrown by the player.
- * Extends HitableObject to support collisions, damage, and gravity.
- */
 class ThrowableObject extends HitableObject {
 
     offset = {
@@ -13,7 +9,6 @@ class ThrowableObject extends HitableObject {
 
     /**
      * Creates a new throwable object at the given world coordinates.
-     *
      * @param {number} x - Horizontal world position.
      * @param {number} y - Vertical world position.
      */

@@ -1,7 +1,3 @@
-/**
- * Base class for all objects that can move, fall due to gravity,
- * and update their hitbox dynamically. Extends DrawableObject.
- */
 class MoveableObject extends DrawableObject {
 
     speed = 0.15;

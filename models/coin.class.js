@@ -1,7 +1,3 @@
-/**
- * A collectible coin that rotates continuously.
- * Inherits movement and animation utilities from MoveableObject.
- */
 class Coin extends MoveableObject {
 
     width = 80;

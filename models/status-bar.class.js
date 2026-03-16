@@ -15,7 +15,6 @@ class StatusBar extends DrawableObject {
     /**
      * Creates a new status bar of the given type at the specified position.
      * Loads all images for the bar and initializes its fill level.
-     *
      * @param {string[]} type - Array of image paths representing bar states.
      * @param {number} x - Horizontal position on the screen.
      * @param {number} y - Vertical position on the screen.
@@ -35,7 +34,6 @@ class StatusBar extends DrawableObject {
     /**
      * Updates the bar's percentage value and selects the appropriate
      * image based on predefined thresholds (0, 20, 40, 60, 80, 100).
-     *
      * @param {number} _percentage - New percentage value (0–100).
      * @param {string[]} _type - Array of image paths for the bar.
      */

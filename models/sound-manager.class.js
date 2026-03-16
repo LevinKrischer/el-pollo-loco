@@ -1,9 +1,3 @@
-/**
- * Provides global audio control utilities such as playing, stopping,
- * and muting all game sounds. Works together with SoundHub to manage
- * preloaded audio assets. The mute state is persisted in localStorage
- * to maintain user preferences across sessions.
- */
 class SoundManager {
 
     static muted = false;

@@ -1,25 +1,6 @@
-/**
- * The main canvas element used for rendering the game world.
- * @type {HTMLCanvasElement | null}
- */
 let canvas;
-
-/**
- * The active game world instance.
- * @type {World | null}
- */
 let world;
-
-/**
- * The global keyboard input handler.
- * @type {Keyboard}
- */
 let keyboard;
-
-/**
- * Background music audio object provided by SoundHub.
- * @type {HTMLAudioElement}
- */
 let bgMusic = SoundHub.music.background;
 
 /**
@@ -70,19 +51,14 @@ function handleTouchInteraction(event) {
  */
 window.addEventListener("DOMContentLoaded", () => {
 
-    // Disable right-click and touch-hold behavior
     window.addEventListener("contextmenu", e => e.preventDefault());
     window.addEventListener("touchstart", handleTouchInteraction, { passive: false });
     window.addEventListener("touchend", handleTouchInteraction, { passive: false });
     window.addEventListener("touchmove", handleTouchInteraction, { passive: false });
-
-    // Initialize sound system
     SoundManager.init();
     updateSoundButtonIcon();
     updateGameplaySoundButtonIcon();
     setupFirstInteractionMusicTrigger();
-
-    // Initialize keyboard
     keyboard = new Keyboard();
     canvas = document.getElementById('canvas');
 });
@@ -174,7 +150,6 @@ function showStartScreen() {
     if (soundButton) soundButton.classList.add("hidden");
     closeVisibleEndScreen();
 }
-
 
 /**
  * Toggles the global sound state (muted/unmuted) and updates the UI icons.

@@ -1,7 +1,3 @@
-/**
- * A simple background cloud that continuously moves left across the screen.
- * Inherits movement behavior from MoveableObject.
- */
 class Cloud extends MoveableObject {
 
     y = 20;

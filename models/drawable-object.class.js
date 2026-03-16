@@ -1,7 +1,3 @@
-/**
- * Base class for all drawable game objects.
- * Provides image loading, caching, and drawing functionality.
- */
 class DrawableObject {
 
     img;
@@ -24,7 +20,6 @@ class DrawableObject {
 
     /**
      * Draws the object's current image onto the given canvas context.
-     *
      * @param {CanvasRenderingContext2D} ctx - The rendering context to draw on.
      */
     draw(ctx) {
@@ -33,7 +28,6 @@ class DrawableObject {
 
     /**
      * Loads multiple images into the internal image cache for animation use.
-     *
      * @param {string[]} arr - Array of image file paths.
      */
     loadImages(arr) {

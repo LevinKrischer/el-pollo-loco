@@ -20,7 +20,6 @@ class Endboss extends HitableObject {
     hitsToKill = 7;
     hitsTaken = 0;
     lastHit = 0;
-
     dead = false;
     activated = false;
     attackRange = 80;
@@ -41,15 +40,12 @@ class Endboss extends HitableObject {
     hurtRepositionSpeed = 2.5;
     hurtReengageSpeedBonus = 1;
     preparing = false;
-
     deathAnimationDuration = 1200;
-
     offset = { top: 20, right: 20, bottom: 0, left: 40 };
 
     constructor() {
         super();
         this.x = 3000;
-
         this.loadImage(this.imgsAlert[0]);
         this.loadImages(this.imgsAlert);
         this.loadImages(this.imgsDead);
@@ -160,7 +156,6 @@ class Endboss extends HitableObject {
 
     /**
      * Updates the boss's behavior logic, including movement and attack decisions.
-     *
      * @param {Character} character - The player character.
      */
     updateBehavior(character) {
@@ -175,7 +170,6 @@ class Endboss extends HitableObject {
     /**
      * Drives a phased hurt behavior instead of fully stopping:
      * short knockback, brief repositioning, then aggressive re-engage.
-     *
      * @param {Character} character - The player character.
      */
     handleHurtBehavior(character) {

@@ -9,19 +9,15 @@ class HitableObject extends MoveableObject {
     dead = false;
     deathSoundPlayed = false;
     deathAnimationDuration = 1500;
-
     soundEndbossHurt = SoundHub.sfx.endboss.hurt;
     soundEndbossDead = SoundHub.sfx.endboss.dead;
-
     soundChickenDead1 = SoundHub.sfx.chicken.dead1;
     soundChickenDead2 = SoundHub.sfx.chicken.dead2;
-
     offset = { top: 0, right: 0, bottom: 0, left: 0 };
 
     /**
      * Applies damage to the object unless it is currently in a hurt state.
      * Triggers hit effects when appropriate.
-     *
      * @param {number} [amount=2] - Amount of damage to apply.
      */
     hit(amount = 2) {
@@ -58,7 +54,6 @@ class HitableObject extends MoveableObject {
     /**
      * Returns whether the object is currently in a hurt state.
      * Hurt state lasts for 1 second after being hit.
-     *
      * @returns {boolean} True if the object is hurt.
      */
     isHurt() {
@@ -68,7 +63,6 @@ class HitableObject extends MoveableObject {
 
     /**
      * Returns whether the object is dead.
-     *
      * @returns {boolean} True if energy is zero or the dead flag is set.
      */
     isDead() {
@@ -88,7 +82,6 @@ class HitableObject extends MoveableObject {
 
     /**
      * Checks whether this object is colliding with another hitbox.
-     *
      * @param {HitableObject} hitObj - The other object to test collision against.
      * @returns {boolean} True if the hitboxes overlap.
      */

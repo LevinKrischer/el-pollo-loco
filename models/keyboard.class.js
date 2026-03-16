@@ -1,8 +1,3 @@
-/**
- * Manages keyboard and touch input for the game.
- * Although the class uses static flags, the constructor initializes
- * all event listeners for both desktop and mobile controls.
- */
 class Keyboard {
 
     static SPACE = false;
@@ -48,13 +43,10 @@ class Keyboard {
     static setMobileControls() {
         document.getElementById('btnLeft').addEventListener('touchstart', () => { Keyboard.LEFT = true; });
         document.getElementById('btnLeft').addEventListener('touchend', () => { Keyboard.LEFT = false; });
-
         document.getElementById('btnRight').addEventListener('touchstart', () => { Keyboard.RIGHT = true; });
         document.getElementById('btnRight').addEventListener('touchend', () => { Keyboard.RIGHT = false; });
-
         document.getElementById('btnJump').addEventListener('touchstart', () => { Keyboard.SPACE = true; });
         document.getElementById('btnJump').addEventListener('touchend', () => { Keyboard.SPACE = false; });
-
         document.getElementById('btnThrow').addEventListener('touchstart', () => { Keyboard.D = true; });
         document.getElementById('btnThrow').addEventListener('touchend', () => { Keyboard.D = false; });
     }
