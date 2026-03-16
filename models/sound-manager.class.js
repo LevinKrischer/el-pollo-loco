@@ -31,7 +31,10 @@ class SoundManager {
 
         audio.currentTime = 0;
         audio.muted = this.muted;
-        audio.play();
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {});
+        }
         return audio;
     }
 

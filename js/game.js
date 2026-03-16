@@ -23,6 +23,18 @@ let keyboard;
 let bgMusic = SoundHub.music.background;
 
 /**
+ * Arms one-time listeners that start background music after the
+ * first explicit user interaction (required by browser autoplay rules).
+ */
+function setupFirstInteractionMusicTrigger() {
+    const trigger = () => startBackgroundMusic();
+
+    window.addEventListener('pointerdown', trigger, { once: true });
+    window.addEventListener('keydown', trigger, { once: true });
+    window.addEventListener('touchstart', trigger, { once: true, passive: true });
+}
+
+/**
  * Returns whether a touch event should suppress the browser default behavior.
  * Only gameplay surfaces are blocked so menu and overlay buttons stay tappable.
  *
@@ -68,6 +80,7 @@ window.addEventListener("DOMContentLoaded", () => {
     SoundManager.init();
     updateSoundButtonIcon();
     updateGameplaySoundButtonIcon();
+    setupFirstInteractionMusicTrigger();
 
     // Initialize keyboard
     keyboard = new Keyboard();
@@ -75,20 +88,11 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * Initializes the game by preparing the canvas, starting background music,
- * and showing the start screen.
+ * Initializes the game by preparing the canvas and showing the start screen.
  */
 function init() {
     canvas = document.getElementById('canvas');
-    startBgMusic();
     showStartScreen();
-}
-
-/**
- * Plays the background music using the SoundManager.
- */
-function startBgMusic() {
-    SoundManager.play(bgMusic);
 }
 
 /**
@@ -136,6 +140,7 @@ function createNewWorld() {
  * Starts background music if the sound system is not muted.
  */
 function startBackgroundMusic() {
+    if (!bgMusic.paused) return;
     SoundManager.play(bgMusic);
 }
 

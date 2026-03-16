@@ -1,0 +1,77 @@
+@media screen and (orientation: portrait) and (max-width: 1000px) {
+    .fullscreenNotice {
+        display: flex;
+    }
+
+    .logo-main,
+    .mainContainer,
+    .startScreen,
+    canvas,
+    .endScreen,
+    .overlay {
+        display: none !important;
+    }
+}
+
+@media (max-width: 800px) {
+    .mobileButtons {
+        display: flex;
+    }
+
+    .gameplaySoundButton {
+        left: 50%;
+        right: auto;
+        bottom: 12px;
+        padding: 6px 10px;
+        transform: translateX(-50%);
+    }
+
+    .gameplaySoundButton img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .logo-main {
+        display: none;
+    }
+
+    body {
+        justify-content: center;
+        height: 100dvh;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    .mainContainer {
+        width: 100%;
+    }
+
+    canvas {
+        width: 100%;
+    }
+
+    .button {
+        padding: 4px 8px;
+        font-size: 16px;
+    }
+
+    .mobileButtons {
+        padding: 0 8px;
+    }
+}
+
+@media only screen and (max-height: 620px) {
+    .logo-main {
+        display: none;
+    }
+}
+
+@media only screen and (max-height: 480px) {
+    .mainContainer {
+        height: 100vh;
+    }
+
+    canvas {
+        height: 100vh;
+    }
+}

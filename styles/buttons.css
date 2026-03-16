@@ -1,0 +1,104 @@
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid #8b4513;
+    border-radius: 10px;
+    background-color: #ffca00;
+    font-family: "Courier New", Courier, monospace;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0 #8b4513;
+    transition: all 0.2s ease-in-out;
+    touch-action: manipulation;
+}
+
+.button:hover {
+    scale: 1.1;
+    background-color: #ffe063;
+}
+
+.button img {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.topButtons {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    width: 100%;
+}
+
+.bottomButtons {
+    position: absolute;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    bottom: 0;
+    padding-bottom: 40px;
+    width: 100%;
+}
+
+.buttonsLeft,
+.buttonsRight {
+    display: flex;
+    gap: 16px;
+}
+
+.gameplaySoundButton {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: 2px solid #8b4513;
+    border-radius: 10px;
+    background-color: #ffca00;
+    box-shadow: 2px 2px 0 #8b4513;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.gameplaySoundButton:hover {
+    scale: 1.1;
+    background-color: #ffe063;
+}
+
+.gameplaySoundButton img {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.gameplaySoundButton.hidden {
+    display: none;
+}
+
+.mobileButtons {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    justify-content: space-between;
+    padding: 0 24px;
+    width: 100%;
+}
+
+.mobileButtons div img {
+    cursor: pointer;
+}
+
+.mobileButton {
+    border: unset;
+    background-color: inherit;
+    padding: 0;
+    touch-action: manipulation;
+}
