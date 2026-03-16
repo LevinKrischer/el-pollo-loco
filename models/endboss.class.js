@@ -17,7 +17,7 @@ class Endboss extends HitableObject {
     y = 50;
 
     isEndboss = true;
-    hitsToKill = 10;
+    hitsToKill = 7;
     hitsTaken = 0;
     lastHit = 0;
 
@@ -26,7 +26,7 @@ class Endboss extends HitableObject {
     attackRange = 80;
     baseChaseSpeed = 4;
     fastChaseSpeed = 7;
-    currentChaseSpeed = 4;
+    currentChaseSpeed = 3;
     nextSpeedChangeAt = 0;
     minSpeedPhaseDuration = 700;
     maxSpeedPhaseDuration = 1600;
@@ -34,7 +34,12 @@ class Endboss extends HitableObject {
     isAttacking = false;
     canAttack = true;
     attackCooldown = 1000;
-    hitInvulnerabilityDuration = 1000;
+    hitInvulnerabilityDuration = 1500;
+    hurtKnockbackDuration = 220;
+    hurtRepositionDuration = 700;
+    hurtKnockbackSpeed = 6;
+    hurtRepositionSpeed = 2.5;
+    hurtReengageSpeedBonus = 1;
     preparing = false;
 
     deathAnimationDuration = 1200;
@@ -150,7 +155,6 @@ class Endboss extends HitableObject {
      * Plays the hurt animation and temporarily stops movement.
      */
     playHurtAnimation() {
-        this.speed = 0;
         return this.playAnimation(this.imgsHurt);
     }
 
@@ -161,11 +165,37 @@ class Endboss extends HitableObject {
      */
     updateBehavior(character) {
         if (this.dead) return;
-        if (this.isHurt()) return this.pauseBehavior();
+        if (this.isHurt()) return this.handleHurtBehavior(character);
         if (this.preparing) return this.pauseBehavior();
         if (!this.activated) return this.pauseBehavior();
 
         this.handleMovementBehavior(character);
+    }
+
+    /**
+     * Drives a phased hurt behavior instead of fully stopping:
+     * short knockback, brief repositioning, then aggressive re-engage.
+     *
+     * @param {Character} character - The player character.
+     */
+    handleHurtBehavior(character) {
+        const elapsed = Date.now() - this.lastHit;
+        const towardPlayer = character.x > this.x;
+
+        if (elapsed < this.hurtKnockbackDuration) {
+            this.otherDirection = !towardPlayer;
+            this.speed = this.hurtKnockbackSpeed;
+            return;
+        }
+
+        if (elapsed < this.hurtRepositionDuration) {
+            this.otherDirection = Math.random() < 0.5 ? towardPlayer : !towardPlayer;
+            this.speed = this.hurtRepositionSpeed;
+            return;
+        }
+
+        this.otherDirection = towardPlayer;
+        this.speed = this.fastChaseSpeed + this.hurtReengageSpeedBonus;
     }
 
     /**

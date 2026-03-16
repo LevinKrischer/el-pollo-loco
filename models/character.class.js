@@ -41,6 +41,9 @@ class Character extends HitableObject {
     longIdleDelay = 5000;
     hurtAnimationDuration = 450;
     wasOnGround = true;
+    isJumping = false;
+    jumpFrameIndex = 0;
+    jumpAnimationFinished = false;
 
     constructor() {
         super();
@@ -143,8 +146,11 @@ class Character extends HitableObject {
      * Initiates a jump if the character is currently on the ground.
      */
     handleJump() {
-        if (Keyboard.SPACE && this.wasOnGround) {
+        if (Keyboard.SPACE && this.wasOnGround && !this.isJumping) {
             this.speedY = 20;
+            this.isJumping = true;
+            this.jumpFrameIndex = 0;
+            this.jumpAnimationFinished = false;
             this.lastMoveTime = Date.now();
             SoundManager.play(this.soundJump);
             this.wasOnGround = false;
@@ -168,10 +174,20 @@ class Character extends HitableObject {
      * hurt state, or idle behavior.
      */
     updateAnimation() {
+        const airborne = this.isAboveGround();
+
         if (this.isDead()) return this.handleDeadAnimation();
         if (this.isHurtAnimationActive()) return this.handleHurtAnimation();
-        if (this.isAboveGround()) return this.playAnimation(this.imgsJump);
+        if (airborne) {
+            this.isJumping = true;
+            this.wasOnGround = false;
+            return this.playJumpAnimationOnce();
+        }
 
+        if (this.isJumping) {
+            this.isJumping = false;
+            this.resetJumpAnimation();
+        }
         this.wasOnGround = true;
 
         if (Keyboard.RIGHT || Keyboard.LEFT) {
@@ -262,6 +278,36 @@ class Character extends HitableObject {
 
         this.stopSnoring();
         this.playAnimation(this.imgsIdle);
+    }
+
+    /**
+     * Plays the jump animation exactly once per jump and then holds
+     * the last jump frame until landing.
+     */
+    playJumpAnimationOnce() {
+        const lastIndex = this.imgsJump.length - 1;
+        const frameIndex = this.jumpAnimationFinished
+            ? lastIndex
+            : this.jumpFrameIndex;
+        const path = this.imgsJump[frameIndex];
+
+        this.img = this.imageCache[path];
+
+        if (!this.jumpAnimationFinished) {
+            if (this.jumpFrameIndex < lastIndex) {
+                this.jumpFrameIndex++;
+            } else {
+                this.jumpAnimationFinished = true;
+            }
+        }
+    }
+
+    /**
+     * Resets jump animation state so the next jump starts from frame one.
+     */
+    resetJumpAnimation() {
+        this.jumpFrameIndex = 0;
+        this.jumpAnimationFinished = false;
     }
 
 

@@ -12,7 +12,7 @@ class World {
     gameStopped = false;
 
     maxBottleInventory = 5;
-    bottleSpawnCount = 20;
+    bottleSpawnCount = 12;
     maxCoins = 15;
 
     uiManager;

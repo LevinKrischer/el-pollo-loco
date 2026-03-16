@@ -13,11 +13,20 @@
     }
 }
 
-@media (max-width: 800px) {
+@media screen and (orientation: landscape) and (max-width: 1000px) {
     .mobileButtons {
         display: flex;
     }
 
+    .gameplaySoundButton {
+        width: 40px;
+        height: 40px;
+        bottom: 6px;
+        opacity: 0.6;
+    }
+}
+
+@media (max-width: 800px) {
     .gameplaySoundButton {
         left: 50%;
         right: auto;

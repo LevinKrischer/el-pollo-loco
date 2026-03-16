@@ -63,8 +63,9 @@
 
 .gameplaySoundButton {
     position: absolute;
-    bottom: 24px;
-    right: 24px;
+    bottom: 12px;
+    left: 50%;
+    right: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -75,6 +76,7 @@
     background-color: #ffca00;
     box-shadow: 2px 2px 0 #8b4513;
     transition: all 0.2s ease-in-out;
+    transform: translateX(-50%);
     z-index: 100;
 }
 
