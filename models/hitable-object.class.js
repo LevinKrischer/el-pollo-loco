@@ -132,7 +132,6 @@ class HitableObject extends MoveableObject {
         if (!(this instanceof Endboss)) return;
 
         SoundManager.play(this.soundEndbossDead);
-        console.log("Boss dead:", this.world, this.world?.gameStopped);
 
         this.playAnimation(this.imgsDead);
 
