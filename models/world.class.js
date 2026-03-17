@@ -11,8 +11,8 @@ class World {
     camera_x = 0;
     gameStopped = false;
     maxBottleInventory = 5;
-    bottleSpawnCount = 12;
-    maxCoins = 15;
+    bottleSpawnCount = 10;
+    maxCoins = 10;
     uiManager;
     pickupManager;
     collisionManager;
@@ -104,7 +104,7 @@ class World {
     spawnCoins() {
         const heights = [350, 300, 250, 200, 150];
 
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < this.maxCoins; i++) {
             const x = 200 + Math.random() * 3000;
             const y = heights[Math.floor(Math.random() * heights.length)];
 

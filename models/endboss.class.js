@@ -17,7 +17,7 @@ class Endboss extends HitableObject {
     y = 50;
 
     isEndboss = true;
-    hitsToKill = 7;
+    hitsToKill = 5;
     hitsTaken = 0;
     lastHit = 0;
     dead = false;
