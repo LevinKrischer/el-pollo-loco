@@ -50,9 +50,11 @@
     }
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 740px) {
     .mainContainer {
-        width: 100%;
+        width: 97%;
+        min-width: auto;
+        aspect-ratio: 3 / 2;
     }
 
     canvas {
@@ -67,9 +69,13 @@
     .mobileButtons {
         padding: 0 8px;
     }
+
+    .logo-main {
+        display: none;
+    }
 }
 
-@media only screen and (max-height: 620px) {
+@media only screen and (max-height: 740px) {
     .logo-main {
         display: none;
     }
@@ -77,10 +83,15 @@
 
 @media only screen and (max-height: 480px) {
     .mainContainer {
-        height: 100vh;
+        height: 97dvh;
+        width:auto;
+        min-width: auto;
+        max-width: 97dvw;
+        aspect-ratio: 3 / 2!important;
     }
 
-    canvas {
-        height: 100vh;
+    .button {
+        padding: 4px 8px;
+        font-size: 16px;
     }
 }
