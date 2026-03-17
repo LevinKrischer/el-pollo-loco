@@ -299,7 +299,6 @@ class Character extends HitableObject {
         this.jumpAnimationFinished = false;
     }
 
-
     /**
      * Plays the walking sound if not already playing.
      */
@@ -320,6 +319,9 @@ class Character extends HitableObject {
         this.snoreSound = SoundManager.play(this.soundSnore);
     }
 
+    /**
+     * Stops the snoring sound and resets the snoring state.
+     */
     stopSnoring() {
         if (!this.isSnoring) return;
 

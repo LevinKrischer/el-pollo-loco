@@ -2,6 +2,7 @@ let canvas;
 let world;
 let keyboard;
 let bgMusic = SoundHub.music.background;
+const TOUCH_CONTROLS_STORAGE_KEY = 'touchControlsVisible';
 
 /**
  * Arms one-time listeners that start background music after the
@@ -128,14 +129,97 @@ function blurActiveElement() {
 }
 
 /**
+ * Shows or hides the gameplay button section.
+ *
+ * @param {boolean} visible - Whether the section should be visible.
+ */
+function setGameplayButtonsVisibility(visible) {
+    const gameplayButtons = document.querySelector('.gameplayButtons');
+    if (!gameplayButtons) return;
+
+    gameplayButtons.classList.toggle('hidden', !visible);
+}
+
+/**
+ * Shows or hides the touch control buttons across all screen sizes.
+ *
+ * @param {boolean} visible - Whether mobile controls should be visible.
+ */
+function setMobileButtonsVisibility(visible) {
+    const mobileButtons = document.querySelector('.mobileButtons');
+    if (!mobileButtons) return;
+
+    mobileButtons.classList.toggle('hidden', !visible);
+    mobileButtons.classList.toggle('show', visible);
+}
+
+/**
+ * Returns whether touch controls should be visible by default
+ * for the current device.
+ *
+ * @returns {boolean} True on touch-first devices.
+ */
+function shouldShowTouchControlsByDefault() {
+    const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const touchCapability = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    return coarsePointer || touchCapability;
+}
+
+/**
+ * Returns the persisted touch-controls visibility state.
+ *
+ * @returns {boolean|null} True/false if stored, otherwise null.
+ */
+function getSavedTouchControlsVisibility() {
+    const saved = localStorage.getItem(TOUCH_CONTROLS_STORAGE_KEY);
+    if (saved === null) return null;
+    return saved === 'true';
+}
+
+/**
+ * Persists touch-controls visibility in localStorage.
+ *
+ * @param {boolean} visible - Whether touch controls are visible.
+ */
+function saveTouchControlsVisibility(visible) {
+    localStorage.setItem(TOUCH_CONTROLS_STORAGE_KEY, visible);
+}
+
+/**
+ * Resolves touch-controls visibility from storage or responsive default.
+ *
+ * @returns {boolean} Final visibility state to apply.
+ */
+function resolveTouchControlsVisibility() {
+    const savedVisibility = getSavedTouchControlsVisibility();
+    if (savedVisibility !== null) return savedVisibility;
+
+    const defaultVisibility = shouldShowTouchControlsByDefault();
+    saveTouchControlsVisibility(defaultVisibility);
+    return defaultVisibility;
+}
+
+/**
+ * Applies saved/default touch-controls visibility and refreshes the icon.
+ */
+function applyDefaultTouchControlsState() {
+    setMobileButtonsVisibility(resolveTouchControlsVisibility());
+    updateGameplayTouchButtonIcon();
+}
+
+/**
  * Hides the start screen and shows the game canvas.
  */
 function hideStartScreen() {
     const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.add("hidden");
     canvas.style.display = "block";
+    setGameplayButtonsVisibility(true);
     const soundButton = document.getElementById("gameplaySoundButton");
     if (soundButton) soundButton.classList.remove("hidden");
+    const touchToggleButton = document.getElementById("gameplayShowTouchButton");
+    if (touchToggleButton) touchToggleButton.classList.remove("hidden");
+    applyDefaultTouchControlsState();
     blurActiveElement();
 }
 
@@ -146,8 +230,13 @@ function showStartScreen() {
     const startScreen = document.getElementById("startScreen");
     if (startScreen) startScreen.classList.remove("hidden");
     canvas.style.display = "none";
+    setGameplayButtonsVisibility(false);
     const soundButton = document.getElementById("gameplaySoundButton");
     if (soundButton) soundButton.classList.add("hidden");
+    const touchToggleButton = document.getElementById("gameplayShowTouchButton");
+    if (touchToggleButton) touchToggleButton.classList.add("hidden");
+    setMobileButtonsVisibility(false);
+    updateGameplayTouchButtonIcon();
     closeVisibleEndScreen();
 }
 
@@ -160,6 +249,38 @@ function toggleSound() {
     updateSoundButtonIcon();
     updateGameplaySoundButtonIcon();
     document.getElementById('gameplaySoundButton').blur();
+}
+
+/**
+ * Toggles visibility of the mobile touch controls.
+ */
+function toggleTouchControls() {
+    const mobileButtons = document.querySelector('.mobileButtons');
+    const touchToggleButton = document.getElementById('gameplayShowTouchButton');
+
+    if (!mobileButtons || !touchToggleButton) return;
+
+    const controlsAreVisible = getComputedStyle(mobileButtons).display !== 'none';
+    const nextVisibility = !controlsAreVisible;
+    setMobileButtonsVisibility(nextVisibility);
+    saveTouchControlsVisibility(nextVisibility);
+    updateGameplayTouchButtonIcon();
+    touchToggleButton.blur();
+}
+
+/**
+ * Updates the touch-controls toggle icon based on the current visibility state.
+ */
+function updateGameplayTouchButtonIcon() {
+    const icon = document.getElementById('gameplayShowTouchIcon');
+    const mobileButtons = document.querySelector('.mobileButtons');
+
+    if (!icon || !mobileButtons) return;
+
+    const controlsAreVisible = getComputedStyle(mobileButtons).display !== 'none';
+    icon.src = controlsAreVisible
+        ? './assets/img/0_project-images/tap-off.png'
+        : './assets/img/0_project-images/tap.png';
 }
 /**
  * Updates the sound toggle button icon depending on the mute state.
@@ -258,8 +379,11 @@ function hideEndScreen(screen) {
  */
 function showEndScreen(screen) {
     screen.classList.remove('invisible');
+    setGameplayButtonsVisibility(false);
     const soundButton = document.getElementById("gameplaySoundButton");
     if (soundButton) soundButton.classList.add("hidden");
+    const touchToggleButton = document.getElementById("gameplayShowTouchButton");
+    if (touchToggleButton) touchToggleButton.classList.add("hidden");
 
     requestAnimationFrame(() => {
         screen.classList.add('visible');
@@ -282,8 +406,12 @@ function closeVisibleEndScreen() {
 function hideEndScreens() {
     document.getElementById('gameOverScreen').classList.add('invisible');
     document.getElementById('winScreen').classList.add('invisible');
+    setGameplayButtonsVisibility(true);
     const soundButton = document.getElementById("gameplaySoundButton");
     if (soundButton) soundButton.classList.remove("hidden");
+    const touchToggleButton = document.getElementById("gameplayShowTouchButton");
+    if (touchToggleButton) touchToggleButton.classList.remove("hidden");
+    applyDefaultTouchControlsState();
 }
 
 /**

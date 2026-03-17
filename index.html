@@ -102,9 +102,15 @@
 
         <canvas id="canvas" width="720" height="480"></canvas>
 
-        <button class="gameplaySoundButton hidden" id="gameplaySoundButton" onclick="toggleSound()">
-            <img id="gameplaySoundIcon" src="./assets/img/0_project-images/sound-on.png" alt="sound toggle icon" />
-        </button>
+        <section class="gameplayButtons">
+            <button class="gameplaySoundButton hidden" id="gameplaySoundButton" onclick="toggleSound()">
+                <img id="gameplaySoundIcon" src="./assets/img/0_project-images/sound-on.png" alt="sound toggle icon" />
+            </button>
+            <button class="gameplayShowTouchButton hidden" id="gameplayShowTouchButton" onclick="toggleTouchControls()">
+                <img id="gameplayShowTouchIcon" src="./assets/img/0_project-images/tap-off.png"
+                    alt="touch controls toggle icon" />
+            </button>
+        </section>
 
         <section class="endScreen invisible" id="gameOverScreen">
             <div class="endscreenInner">
@@ -158,6 +164,8 @@
             by littleicon - Flaticon</a>
         <a href="https://www.flaticon.com/free-icons/keyboard-key" title="keyboard-key icons">Keyboard-key icons created
             by littleicon - Flaticon</a>
+        <a href="https://www.flaticon.com/free-icons/tap" title="tap icons">Tap icons created by Pixel perfect -
+            Flaticon</a>
     </footer>
 </body>
 

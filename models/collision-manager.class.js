@@ -43,6 +43,8 @@ class CollisionManager {
     handleStompKill(enemy) {
         enemy.die();
         this.world.character.speedY = 12;
+        this.world.character.isJumping = true;
+        this.world.character.resetJumpAnimation();
         this.world.character.wasOnGround = false;
         this.world.character.lastMoveTime = Date.now();
     }

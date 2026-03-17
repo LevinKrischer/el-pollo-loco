@@ -60,6 +60,10 @@ class UIManager {
         const hasEndbossBar = this.statusBar.length > 3;
         if (hasEndbossBar) return;
 
+        if (typeof setGameplayButtonsVisibility === 'function') {
+            setGameplayButtonsVisibility(false);
+        }
+
         this.statusBar.push(
             new StatusBar(
                 ImageHub.statusBar.endboss,

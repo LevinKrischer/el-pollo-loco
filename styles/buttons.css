@@ -61,11 +61,19 @@
     gap: 16px;
 }
 
-.gameplaySoundButton {
+.gameplayButtons {
     position: absolute;
-    bottom: 12px;
-    left: 50%;
-    right: auto;
+    top: 20px;
+    right: 20px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.gameplaySoundButton,
+.gameplayShowTouchButton {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -76,22 +84,24 @@
     background-color: #ffca00;
     box-shadow: 2px 2px 0 #8b4513;
     transition: all 0.2s ease-in-out;
-    transform: translateX(-50%);
     z-index: 100;
 }
 
-.gameplaySoundButton:hover {
+.gameplaySoundButton:hover,
+.gameplayShowTouchButton:hover {
     scale: 1.1;
     background-color: #ffe063;
 }
 
-.gameplaySoundButton img {
+.gameplaySoundButton img,
+.gameplayShowTouchButton img {
     width: 24px;
     height: 24px;
     transition: transform 0.2s ease-in-out;
 }
 
-.gameplaySoundButton.hidden {
+.gameplaySoundButton.hidden,
+.gameplayShowTouchButton.hidden {
     display: none;
 }
 
@@ -102,6 +112,10 @@
     justify-content: space-between;
     padding: 0 24px;
     width: 100%;
+}
+
+.mobileButtons.show {
+    display: flex;
 }
 
 .mobileButtons div img {
