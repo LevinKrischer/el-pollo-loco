@@ -1,4 +1,4 @@
-function createLevel1() {
+﻿function createLevel1() {
     return new Level(
         [
             new Chicken(),
@@ -63,3 +63,4 @@ function createLevel1() {
         []
     );
 }
+

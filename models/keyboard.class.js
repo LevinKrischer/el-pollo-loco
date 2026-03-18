@@ -1,4 +1,4 @@
-class Keyboard {
+﻿class Keyboard {
 
     static SPACE = false;
     static D = false;
@@ -14,14 +14,13 @@ class Keyboard {
      * Registers all keyboard event listeners and updates the static
      * input flags based on keydown and keyup events.
      */
-    static setControls() {
+     static setControls() {
         window.addEventListener("keydown", (e) => {
             if (e.key === ' ' || e.key === "ArrowUp") Keyboard.SPACE = true;
             if (e.key === 'ArrowLeft') Keyboard.LEFT = true;
             if (e.key === "ArrowRight") Keyboard.RIGHT = true;
             if (e.key === 'd') Keyboard.D = true;
         });
-
         window.addEventListener("keyup", (e) => {
             if (e.key === ' ' || e.key === "ArrowUp") Keyboard.SPACE = false;
             if (e.key === 'ArrowLeft') Keyboard.LEFT = false;
@@ -33,14 +32,9 @@ class Keyboard {
     /**
      * Registers touch event listeners for mobile controls and updates
      * the static input flags based on touchstart and touchend events.
-     *
-     * Expected button IDs:
-     * - btnLeft
-     * - btnRight
-     * - btnJump
-     * - btnThrow
+     * Expected button IDs: btnLeft, btnRight, btnJump, btnThrow
      */
-    static setMobileControls() {
+     static setMobileControls() {
         document.getElementById('btnLeft').addEventListener('touchstart', () => { Keyboard.LEFT = true; });
         document.getElementById('btnLeft').addEventListener('touchend', () => { Keyboard.LEFT = false; });
         document.getElementById('btnRight').addEventListener('touchstart', () => { Keyboard.RIGHT = true; });

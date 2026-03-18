@@ -1,125 +1,126 @@
-class SoundHub {
+﻿class SoundHub {
 
     static music = {
         background: (() => {
-            const a = new Audio("assets/sounds/game/backgroundsound.mp3");
-            a.volume = 0.4;
-            a.loop = true;
-            return a;
+            const audio = new Audio("assets/sounds/game/backgroundsound.mp3");
+            audio.volume = 0.4;
+            audio.loop = true;
+            return audio;
         })(),
 
         gameStart: (() => {
-            const a = new Audio("assets/sounds/game/gameStart.mp3");
-            a.volume = 0.4;
-            return a;
+            const audio = new Audio("assets/sounds/game/gameStart.mp3");
+            audio.volume = 0.4;
+            return audio;
         })(),
 
         gameOver: (() => {
-            const a = new Audio("assets/sounds/game/gameOver.mp3");
-            a.volume = 0.5;
-            return a;
+            const audio = new Audio("assets/sounds/game/gameOver.mp3");
+            audio.volume = 0.5;
+            return audio;
         })()
     };
 
     static sfx = {
         ui: {
             click: (() => {
-                const a = new Audio("assets/sounds/game/click.mp3");
-                a.volume = 0.4;
-                return a;
+                const audio = new Audio("assets/sounds/game/click.mp3");
+                audio.volume = 0.4;
+                return audio;
             })()
         },
 
         character: {
             damage: (() => {
-                const a = new Audio("assets/sounds/character/characterDamage.mp3");
-                a.volume = 0.4;
-                return a;
+                const audio = new Audio("assets/sounds/character/characterDamage.mp3");
+                audio.volume = 0.4;
+                return audio;
             })(),
 
             dead: (() => {
-                const a = new Audio("assets/sounds/character/characterDead.wav");
-                a.volume = 0.5;
-                return a;
+                const audio = new Audio("assets/sounds/character/characterDead.wav");
+                audio.volume = 0.5;
+                return audio;
             })(),
 
             jump: (() => {
-                const a = new Audio("assets/sounds/character/characterJump.wav");
-                a.volume = 0.3;
-                return a;
+                const audio = new Audio("assets/sounds/character/characterJump.wav");
+                audio.volume = 0.3;
+                return audio;
             })(),
 
             run: (() => {
-                const a = new Audio("assets/sounds/character/characterRun.mp3");
-                a.volume = 0.2;
-                return a;
+                const audio = new Audio("assets/sounds/character/characterRun.mp3");
+                audio.volume = 0.2;
+                return audio;
             })(),
 
             snoring: (() => {
-                const a = new Audio("assets/sounds/character/characterSnoring.mp3");
-                a.volume = 0.25;
-                return a;
+                const audio = new Audio("assets/sounds/character/characterSnoring.mp3");
+                audio.volume = 0.25;
+                return audio;
             })()
         },
 
         chicken: {
             dead1: (() => {
-                const a = new Audio("assets/sounds/chicken/chickenDead.mp3");
-                a.volume = 0.4;
-                return a;
+                const audio = new Audio("assets/sounds/chicken/chickenDead.mp3");
+                audio.volume = 0.4;
+                return audio;
             })(),
 
             dead2: (() => {
-                const a = new Audio("assets/sounds/chicken/chickenDead2.mp3");
-                a.volume = 0.4;
-                return a;
+                const audio = new Audio("assets/sounds/chicken/chickenDead2.mp3");
+                audio.volume = 0.4;
+                return audio;
             })()
         },
 
         collectibles: {
             bottle: (() => {
-                const a = new Audio("assets/sounds/collectibles/bottleCollectSound.wav");
-                a.volume = 0.4;
-                return a;
+                const audio = new Audio("assets/sounds/collectibles/bottleCollectSound.wav");
+                audio.volume = 0.4;
+                return audio;
             })(),
 
             bottleBreak: (() => {
-                const a = new Audio("assets/sounds/throwable/bottleBreak.mp3");
-                a.volume = 0.5;
-                return a;
+                const audio = new Audio("assets/sounds/throwable/bottleBreak.mp3");
+                audio.volume = 0.5;
+                return audio;
             })(),
 
             bottleThrow: (() => {
-                const a = new Audio("assets/sounds/throwable/throw.mp3");
-                a.volume = 0.4;
-                return a;
+                const audio = new Audio("assets/sounds/throwable/throw.mp3");
+                audio.volume = 0.4;
+                return audio;
             })(),
 
             coin: (() => {
-                const a = new Audio("assets/sounds/collectibles/collectSound.wav");
-                a.volume = 0.35;
-                return a;
+                const audio = new Audio("assets/sounds/collectibles/collectSound.wav");
+                audio.volume = 0.35;
+                return audio;
             })()
         },
 
         endboss: {
             alert: (() => {
-                const a = new Audio("assets/sounds/endboss/endbossApproach.wav");
-                a.volume = 0.6;
-                return a;
+                const audio = new Audio("assets/sounds/endboss/endbossApproach.wav");
+                audio.volume = 0.6;
+                return audio;
             })(),
 
             hurt: (() => {
-                const a = new Audio("assets/sounds/endboss/endbossHurt.wav");
-                a.volume = 0.6;
-                return a;
+                const audio = new Audio("assets/sounds/endboss/endbossHurt.wav");
+                audio.volume = 0.6;
+                return audio;
             })(),
 
             dead: (() => {
-                const a = new Audio("assets/sounds/endboss/endbossDead.wav");
-                a.volume = 0.7;
-                return a;
+                const audio = new Audio("assets/sounds/endboss/endbossDead.wav");
+                audio.volume = 0.7;
+                return audio;
             })()
         }
     };
 }
+

@@ -1,4 +1,4 @@
-class Character extends HitableObject {
+﻿class Character extends HitableObject {
 
     imgsWalking = ImageHub.character.walking;
     imgsIdle = ImageHub.character.idle;
@@ -45,7 +45,7 @@ class Character extends HitableObject {
      * Starts gravity and all update loops.
      * Resets the idle timer so snoring doesn't play immediately on game start.
      */
-    initAfterWorldSet() {
+     initAfterWorldSet() {
         this.lastMoveTime = Date.now();
         this.applyGravity();
         this.startLoops();
@@ -55,7 +55,7 @@ class Character extends HitableObject {
      * Preloads all animation frames for walking, idle, long idle,
      * jumping, hurt, and death states.
      */
-    preloadAllImages() {
+     preloadAllImages() {
         this.loadImages(this.imgsWalking);
         this.loadImages(this.imgsIdle);
         this.loadImages(this.imgsIdleLong);
@@ -67,7 +67,7 @@ class Character extends HitableObject {
     /**
      * Starts the animation update loop and the continuous movement update loop.
      */
-    startLoops() {
+     startLoops() {
         this.world.setIntervalTracked(() => this.updateAnimation(), 80);
         requestAnimationFrame(() => this.update());
     }
@@ -76,7 +76,7 @@ class Character extends HitableObject {
      * Main update loop for movement and camera tracking.
      * Runs every animation frame.
      */
-    update() {
+     update() {
         this.handleMovement();
         this.updateCamera();
         requestAnimationFrame(() => this.update());
@@ -86,15 +86,13 @@ class Character extends HitableObject {
      * Adjusts the camera position based on the character's location
      * within a left/right dead zone.
      */
-    updateCamera() {
+     updateCamera() {
         const deadZoneLeft = 100;
         const deadZoneRight = 300;
         const camX = -this.world.camera_x;
-
         if (this.x < camX + deadZoneLeft) {
             this.world.camera_x = -(this.x - deadZoneLeft);
         }
-
         if (this.x > camX + deadZoneRight) {
             this.world.camera_x = -(this.x - deadZoneRight);
         }
@@ -103,7 +101,7 @@ class Character extends HitableObject {
     /**
      * Handles movement input.
      */
-    handleMovement() {
+     handleMovement() {
         this.handleMoveRight();
         this.handleMoveLeft();
         this.handleJump();
@@ -112,7 +110,7 @@ class Character extends HitableObject {
     /**
      * Moves the character to the right if allowed by input and level bounds.
      */
-    handleMoveRight() {
+     handleMoveRight() {
         if (Keyboard.RIGHT && this.x < this.world.level.level_end_x) {
             this.x += this.speed;
             this.otherDirection = false;
@@ -123,7 +121,7 @@ class Character extends HitableObject {
     /**
      * Moves the character to the left if allowed by input and world bounds.
      */
-    handleMoveLeft() {
+     handleMoveLeft() {
         if (Keyboard.LEFT && this.x > 0) {
             this.x -= this.speed;
             this.otherDirection = true;
@@ -134,7 +132,7 @@ class Character extends HitableObject {
     /**
      * Initiates a jump if the character is currently on the ground.
      */
-    handleJump() {
+     handleJump() {
         if (Keyboard.SPACE && this.wasOnGround && !this.isJumping) {
             this.speedY = 20;
             this.isJumping = true;
@@ -150,10 +148,9 @@ class Character extends HitableObject {
     /**
      * Applies one fixed health step of damage and synchronizes the UI.
      * The character can survive at most five hits.
-     *
      * @param {number} [amount=this.damagePerHit] - Damage amount in health points.
      */
-    hit(amount = this.damagePerHit) {
+     hit(amount = this.damagePerHit) {
         super.hit(amount);
         if (this.world?.updateHealthStatusBar) this.world.updateHealthStatusBar();
     }
@@ -162,28 +159,38 @@ class Character extends HitableObject {
      * Updates the animation state based on movement, jumping,
      * hurt state, or idle behavior.
      */
-    updateAnimation() {
+     updateAnimation() {
         const airborne = this.isAboveGround();
-
         if (this.isDead()) return this.handleDeadAnimation();
         if (this.isHurtAnimationActive()) return this.handleHurtAnimation();
-        if (airborne) {
-            this.isJumping = true;
-            this.wasOnGround = false;
-            return this.playJumpAnimationOnce();
-        }
+        if (airborne) return this.handleAirborneAnimation();
+        this.handleGroundedAnimation();
+    }
 
+    /**
+     * Handles animation while the character is airborne.
+     */
+     handleAirborneAnimation() {
+        this.isJumping = true;
+        this.wasOnGround = false;
+        return this.playJumpAnimationOnce();
+    }
+
+    /**
+     * Handles animation while the character is on the ground.
+     * Transitions jump state and plays movement or idle animation.
+     */
+     handleGroundedAnimation() {
         if (this.isJumping) {
             this.isJumping = false;
             this.resetJumpAnimation();
         }
         this.wasOnGround = true;
-
         if (Keyboard.RIGHT || Keyboard.LEFT) {
-            this.stopSnoring(); this.playWalkSound();
+            this.stopSnoring();
+            this.playWalkSound();
             return this.playAnimation(this.imgsWalking);
         }
-
         SoundManager.stop(this.walkSound);
         this.handleIdleAnimation();
     }
@@ -192,40 +199,37 @@ class Character extends HitableObject {
      * Returns whether the hurt animation should still be shown.
      * This is intentionally shorter than the invulnerability window.
      */
-    isHurtAnimationActive() {
+     isHurtAnimationActive() {
         return Date.now() - this.lastHit < this.hurtAnimationDuration;
     }
 
     /**
      * Plays the death animation, triggers death sound once,
-     * and schedules the game‑over screen.
+     * and schedules the gameâ€‘over screen.
      */
-    handleDeadAnimation() {
+     handleDeadAnimation() {
         SoundManager.stop(this.walkSound);
         SoundManager.stop(this.snoreSound);
-
         const frame = this.playAnimation(this.imgsDead);
-
         if (!this.deathSoundPlayed) {
             this.playDeathSound();
             this.scheduleDeathEndscreen();
         }
-
         return frame;
     }
 
     /**
      * Plays the death sound once.
      */
-    playDeathSound() {
+     playDeathSound() {
         SoundManager.play(this.soundDead);
         this.deathSoundPlayed = true;
     }
 
     /**
-     * Schedules the game‑over screen after the death animation finishes.
+     * Schedules the gameâ€‘over screen after the death animation finishes.
      */
-    scheduleDeathEndscreen() {
+     scheduleDeathEndscreen() {
         this.world.setTimeoutTracked(() => {
             if (!this.endScreenShown) {
                 this.endScreenShown = true;
@@ -238,15 +242,13 @@ class Character extends HitableObject {
     /**
      * Plays the hurt animation and triggers the hurt sound once.
      */
-    handleHurtAnimation() {
+     handleHurtAnimation() {
         SoundManager.stop(this.walkSound);
         SoundManager.stop(this.snoreSound);
-
         if (!this.hurtSoundPlayed) {
             SoundManager.play(this.soundHurt);
             this.hurtSoundPlayed = true;
         }
-
         return this.playAnimation(this.imgsHurt);
     }
 
@@ -254,9 +256,8 @@ class Character extends HitableObject {
      * Plays either the normal idle animation or the long idle animation
      * depending on how long the character has been inactive.
      */
-    handleIdleAnimation() {
+     handleIdleAnimation() {
         const idleTime = Date.now() - this.lastMoveTime;
-
         if (idleTime > this.longIdleDelay) {
             if (!this.isSnoring) {
                 this.snoreSound = SoundManager.play(this.soundSnore);
@@ -264,7 +265,6 @@ class Character extends HitableObject {
             }
             return this.playAnimation(this.imgsIdleLong);
         }
-
         this.stopSnoring();
         this.playAnimation(this.imgsIdle);
     }
@@ -273,28 +273,37 @@ class Character extends HitableObject {
      * Plays the jump animation exactly once per jump and then holds
      * the last jump frame until landing.
      */
-    playJumpAnimationOnce() {
+     playJumpAnimationOnce() {
+        this.renderCurrentJumpFrame();
+        this.advanceJumpFrame();
+    }
+
+    /**
+     * Renders the current jump frame based on animation progress.
+     */
+     renderCurrentJumpFrame() {
         const lastIndex = this.imgsJump.length - 1;
-        const frameIndex = this.jumpAnimationFinished
-            ? lastIndex
-            : this.jumpFrameIndex;
+        const frameIndex = this.jumpAnimationFinished ? lastIndex : this.jumpFrameIndex;
         const path = this.imgsJump[frameIndex];
-
         this.img = this.imageCache[path];
+    }
 
-        if (!this.jumpAnimationFinished) {
-            if (this.jumpFrameIndex < lastIndex) {
-                this.jumpFrameIndex++;
-            } else {
-                this.jumpAnimationFinished = true;
-            }
+    /**
+     * Advances to the next jump frame unless animation is complete.
+     */
+     advanceJumpFrame() {
+        if (this.jumpAnimationFinished) return;
+        if (this.jumpFrameIndex < this.imgsJump.length - 1) {
+            this.jumpFrameIndex++;
+        } else {
+            this.jumpAnimationFinished = true;
         }
     }
 
     /**
      * Resets jump animation state so the next jump starts from frame one.
      */
-    resetJumpAnimation() {
+     resetJumpAnimation() {
         this.jumpFrameIndex = 0;
         this.jumpAnimationFinished = false;
     }
@@ -302,9 +311,8 @@ class Character extends HitableObject {
     /**
      * Plays the walking sound if not already playing.
      */
-    playWalkSound() {
+     playWalkSound() {
         if (this.walkSound && !this.walkSound.paused) return;
-
         SoundManager.stop(this.walkSound);
         this.walkSound = SoundManager.play(this.soundWalk);
     }
@@ -312,9 +320,8 @@ class Character extends HitableObject {
     /**
      * Plays the snoring sound during long idle animation.
      */
-    playSnoreSound() {
+     playSnoreSound() {
         if (this.snoreSound && !this.snoreSound.paused) return;
-
         SoundManager.stop(this.snoreSound);
         this.snoreSound = SoundManager.play(this.soundSnore);
     }
@@ -322,9 +329,8 @@ class Character extends HitableObject {
     /**
      * Stops the snoring sound and resets the snoring state.
      */
-    stopSnoring() {
+     stopSnoring() {
         if (!this.isSnoring) return;
-
         SoundManager.stop(this.snoreSound);
         this.snoreSound = null;
         this.isSnoring = false;

@@ -1,8 +1,7 @@
-class BackgroundObject extends DrawableObject {
+﻿class BackgroundObject extends DrawableObject {
 
     /**
      * Creates a new background object at a given horizontal position.
-     *
      * @param {string} imagePath - Path to the background image.
      * @param {number} x - Horizontal world position where the object is placed.
      */
@@ -14,3 +13,4 @@ class BackgroundObject extends DrawableObject {
         this.height = 480;
     }
 }
+

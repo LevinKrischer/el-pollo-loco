@@ -1,4 +1,4 @@
-class Bottle extends ThrowableObject {
+﻿class Bottle extends ThrowableObject {
 
     isExploded = false;
     isThrown = false;
@@ -16,11 +16,10 @@ class Bottle extends ThrowableObject {
     /**
      * Creates a new bottle at the given world coordinates and loads
      * all required animation frames.
-     *
      * @param {number} x - Horizontal world position.
      * @param {number} y - Vertical world position.
      */
-    constructor(x, y) {
+     constructor(x, y) {
         super();
         this.loadImage(this.imgsBottleNormal[0]);
         this.loadImages(this.imgsBottleNormal);
@@ -36,7 +35,7 @@ class Bottle extends ThrowableObject {
      * Called once the world reference is assigned.
      * Starts the bottle's animation loop.
      */
-    initAfterWorldSet() {
+     initAfterWorldSet() {
         this.animate();
     }
 
@@ -48,19 +47,15 @@ class Bottle extends ThrowableObject {
      * - resets animation state
      * - schedules deletion after a short delay
      */
-    explode() {
+     explode() {
         this.isExploded = true;
-
         SoundManager.play(this.soundBreak);
-
         clearInterval(this.throwInterval);
         clearInterval(this.gravityInterval);
-
         this.speed = 0;
         this.speedY = 0;
         this.currentImage = 0;
         this.isThrown = false;
-
         this.world.setTimeoutTracked(() => {
             this.markedForDeletion = true;
         }, 400);
@@ -72,7 +67,7 @@ class Bottle extends ThrowableObject {
      * - rotation animation (thrown)
      * - idle animation (default)
      */
-    animate() {
+     animate() {
         let idleTimer = 0;
 
         this.world.setIntervalTracked(() => {
@@ -84,11 +79,10 @@ class Bottle extends ThrowableObject {
 
     /**
      * Plays the idle animation in timed intervals.
-     *
      * @param {number} timer - Accumulated idle time.
      * @returns {number} Updated timer value.
      */
-    animateIdle(timer) {
+     animateIdle(timer) {
         if (timer >= 300) {
             this.playAnimation(this.imgsBottleNormal);
             return 0;
@@ -99,14 +93,14 @@ class Bottle extends ThrowableObject {
     /**
      * Plays the rotation animation while the bottle is thrown.
      */
-    animateThrow() {
+     animateThrow() {
         this.playAnimation(this.imgsBottleRotation);
     }
 
     /**
      * Plays the splash animation after the bottle explodes.
      */
-    animateSplash() {
+     animateSplash() {
         this.playAnimation(this.imgsSplash);
     }
 }

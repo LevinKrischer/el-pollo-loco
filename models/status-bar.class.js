@@ -1,25 +1,11 @@
-/**
- * A drawable status bar used to display values such as health,
- * collected coins, bottle count, or boss health. The bar updates
- * its displayed image based on the current percentage value.
- */
-class StatusBar extends DrawableObject {
+﻿class StatusBar extends DrawableObject {
 
     imgsStatusHealth = ImageHub.statusBar.health;
     imgsStatusCoins = ImageHub.statusBar.coins;
     imgsStatusBottles = ImageHub.statusBar.bottle;
     imgStatusBossHealth = ImageHub.statusBar.endboss;
-
     percentage = 50;
 
-    /**
-     * Creates a new status bar of the given type at the specified position.
-     * Loads all images for the bar and initializes its fill level.
-     * @param {string[]} type - Array of image paths representing bar states.
-     * @param {number} x - Horizontal position on the screen.
-     * @param {number} y - Vertical position on the screen.
-     * @param {boolean} full - Whether the bar should start at 100%.
-     */
     constructor(type, x, y, full) {
         super();
         this.type = type;
@@ -34,24 +20,26 @@ class StatusBar extends DrawableObject {
     /**
      * Updates the bar's percentage value and selects the appropriate
      * image based on predefined thresholds (0, 20, 40, 60, 80, 100).
-     * @param {number} _percentage - New percentage value (0–100).
+     * @param {number} _percentage - New percentage value (0â€“100).
      * @param {string[]} _type - Array of image paths for the bar.
      */
-    setPercentage(_percentage, _type) {
+     setPercentage(_percentage, _type) {
         this.percentage = _percentage;
+        this.loadImage(_type[this.resolveImageIndexForPercentage()]);
+    }
 
-        if (this.percentage == 100) {
-            this.loadImage(_type[5]);
-        } else if (this.percentage >= 80) {
-            this.loadImage(_type[4]);
-        } else if (this.percentage >= 60) {
-            this.loadImage(_type[3]);
-        } else if (this.percentage >= 40) {
-            this.loadImage(_type[2]);
-        } else if (this.percentage >= 20) {
-            this.loadImage(_type[1]);
-        } else {
-            this.loadImage(_type[0]);
-        }
+    /**
+     * Returns the image array index that matches the current percentage
+     * using fixed thresholds: 0, 20, 40, 60, 80, 100.
+     * @returns {number} Index between 0 and 5.
+     */
+     resolveImageIndexForPercentage() {
+        if (this.percentage == 100) return 5;
+        if (this.percentage >= 80) return 4;
+        if (this.percentage >= 60) return 3;
+        if (this.percentage >= 40) return 2;
+        if (this.percentage >= 20) return 1;
+        return 0;
     }
 }
+

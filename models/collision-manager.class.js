@@ -1,7 +1,5 @@
-class CollisionManager {
-    /**
-     * @param {World} world - The game world.
-     */
+﻿class CollisionManager {
+
     constructor(world) {
         this.world = world;
     }
@@ -9,7 +7,7 @@ class CollisionManager {
     /**
      * Checks collisions between the character and all enemies.
      */
-    checkCollisions() {
+     checkCollisions() {
         this.world.character.getRealFrame();
         this.world.level.enemies.forEach(enemy => {
             enemy.getRealFrame();
@@ -21,26 +19,23 @@ class CollisionManager {
      * Handles collision logic between the character and a single enemy.
      * @param {HitableObject} enemy - The enemy to check.
      */
-    handleEnemyCollision(enemy) {
+     handleEnemyCollision(enemy) {
         if (enemy.isDead()) return;
         if (!this.world.character.isColliding(enemy)) return;
         if (enemy.isEndboss) return;
-
         const falling = this.world.character.speedY < 0;
         if (falling) {
             this.handleStompKill(enemy);
             return;
         }
-
         this.handleEnemyHitsPlayer();
     }
 
     /**
      * Handles killing an enemy by jumping on it.
-     *
      * @param {HitableObject} enemy - The enemy to kill.
      */
-    handleStompKill(enemy) {
+     handleStompKill(enemy) {
         enemy.die();
         this.world.character.speedY = 12;
         this.world.character.isJumping = true;
@@ -52,18 +47,18 @@ class CollisionManager {
     /**
      * Handles the player taking damage from an enemy.
      */
-    handleEnemyHitsPlayer() {
+     handleEnemyHitsPlayer() {
         if (this.world.character.isAboveGround()) return;
-
         this.world.character.hit();
     }
 
     /**
      * Removes enemies marked for deletion.
      */
-    removeDeadEnemies() {
+     removeDeadEnemies() {
         this.world.level.enemies = this.world.level.enemies.filter(
             enemy => !enemy.markedForDeletion
         );
     }
 }
+

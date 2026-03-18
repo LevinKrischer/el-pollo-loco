@@ -1,9 +1,4 @@
-/**
- * The final boss enemy with complex behavior including walking,
- * alerting, attacking, taking damage, and playing a death animation.
- * Inherits hit detection and damage logic from HitableObject.
- */
-class Endboss extends HitableObject {
+﻿class Endboss extends HitableObject {
 
     imgsWalking = ImageHub.endboss.walking;
     imgsDead = ImageHub.endboss.dead;
@@ -58,44 +53,40 @@ class Endboss extends HitableObject {
      * Called once the world reference is assigned.
      * Starts the animation update loop.
      */
-    initAfterWorldSet() {
+     initAfterWorldSet() {
         this.startLoops();
     }
 
     /**
      * Starts the periodic animation update loop.
      */
-    startLoops() {
+     startLoops() {
         this.world.setIntervalTracked(() => this.updateAnimation(), 100);
     }
 
     /**
      * Returns whether the endboss is dead.
-     *
      * @returns {boolean} True if the boss has been defeated.
      */
-    isDead() {
+     isDead() {
         return this.dead;
     }
 
     /**
      * Returns whether the endboss is currently in a hurt state.
      * Hurt state lasts for 1500 ms after being hit.
-     *
      * @returns {boolean} True if the boss is hurt.
      */
-    isHurt() {
+     isHurt() {
         return Date.now() - this.lastHit < this.hitInvulnerabilityDuration;
     }
 
     /**
      * Attempts to attack the character if the boss is allowed to attack.
-     *
      * @param {Character} character - The player character to attack.
      */
-    attack(character) {
+     attack(character) {
         if (!this.canAttack || this.isAttacking || this.dead) return;
-
         this.beginAttack(character);
         this.scheduleAttackEnd();
         this.scheduleAttackCooldown();
@@ -104,30 +95,28 @@ class Endboss extends HitableObject {
     /**
      * Begins the attack sequence by stopping movement,
      * marking the boss as attacking, and damaging the character.
-     *
      * @param {Character} character - The player character.
      */
-    beginAttack(character) {
+     beginAttack(character) {
         this.isAttacking = true;
         this.canAttack = false;
         this.speed = 0;
-
         character.hit(10);
     }
 
     /**
      * Ends the attack animation after a short delay.
      */
-    scheduleAttackEnd() {
+     scheduleAttackEnd() {
         this.world.setTimeoutTracked(() => {
             this.isAttacking = false;
         }, 600);
     }
 
     /**
-     * Re‑enables attacking after the cooldown period.
+     * Re-enables attacking after the cooldown period.
      */
-    scheduleAttackCooldown() {
+     scheduleAttackCooldown() {
         this.world.setTimeoutTracked(() => {
             this.canAttack = true;
         }, this.attackCooldown);
@@ -137,20 +126,19 @@ class Endboss extends HitableObject {
      * Updates the boss's animation state based on its current behavior:
      * dead, hurt, attacking, preparing, walking, or idle alert.
      */
-    updateAnimation() {
+     updateAnimation() {
         if (this.dead) return this.playAnimation(this.imgsDead);
         if (this.isHurt()) return this.playHurtAnimation();
         if (this.isAttacking) return this.playAnimation(this.imgsAttack);
         if (this.preparing) return this.playAnimation(this.imgsAlert);
         if (this.speed !== 0) return this.playAnimation(this.imgsWalking);
-
         this.playAnimation(this.imgsAlert);
     }
 
     /**
      * Plays the hurt animation and temporarily stops movement.
      */
-    playHurtAnimation() {
+     playHurtAnimation() {
         return this.playAnimation(this.imgsHurt);
     }
 
@@ -158,12 +146,11 @@ class Endboss extends HitableObject {
      * Updates the boss's behavior logic, including movement and attack decisions.
      * @param {Character} character - The player character.
      */
-    updateBehavior(character) {
+     updateBehavior(character) {
         if (this.dead) return;
         if (this.isHurt()) return this.handleHurtBehavior(character);
         if (this.preparing) return this.pauseBehavior();
         if (!this.activated) return this.pauseBehavior();
-
         this.handleMovementBehavior(character);
     }
 
@@ -172,22 +159,37 @@ class Endboss extends HitableObject {
      * short knockback, brief repositioning, then aggressive re-engage.
      * @param {Character} character - The player character.
      */
-    handleHurtBehavior(character) {
+     handleHurtBehavior(character) {
         const elapsed = Date.now() - this.lastHit;
         const towardPlayer = character.x > this.x;
+        if (elapsed < this.hurtKnockbackDuration) return this.applyHurtKnockback(towardPlayer);
+        if (elapsed < this.hurtRepositionDuration) return this.applyHurtReposition(towardPlayer);
+        this.applyHurtReengage(towardPlayer);
+    }
 
-        if (elapsed < this.hurtKnockbackDuration) {
-            this.otherDirection = !towardPlayer;
-            this.speed = this.hurtKnockbackSpeed;
-            return;
-        }
+    /**
+     * Applies knockback movement directly away from the player.
+     * @param {boolean} towardPlayer - True if the player is to the right.
+     */
+     applyHurtKnockback(towardPlayer) {
+        this.otherDirection = !towardPlayer;
+        this.speed = this.hurtKnockbackSpeed;
+    }
 
-        if (elapsed < this.hurtRepositionDuration) {
-            this.otherDirection = Math.random() < 0.5 ? towardPlayer : !towardPlayer;
-            this.speed = this.hurtRepositionSpeed;
-            return;
-        }
+    /**
+     * Applies a randomised repositioning movement during the hurt window.
+     * @param {boolean} towardPlayer - True if the player is to the right.
+     */
+     applyHurtReposition(towardPlayer) {
+        this.otherDirection = Math.random() < 0.5 ? towardPlayer : !towardPlayer;
+        this.speed = this.hurtRepositionSpeed;
+    }
 
+    /**
+     * Re-engages the player at increased speed after the hurt window expires.
+     * @param {boolean} towardPlayer - True if the player is to the right.
+     */
+     applyHurtReengage(towardPlayer) {
         this.otherDirection = towardPlayer;
         this.speed = this.fastChaseSpeed + this.hurtReengageSpeedBonus;
     }
@@ -195,7 +197,7 @@ class Endboss extends HitableObject {
     /**
      * Pauses movement during hurt, preparation, or inactive states.
      */
-    pauseBehavior() {
+     pauseBehavior() {
         this.speed = 0;
     }
 
@@ -203,40 +205,28 @@ class Endboss extends HitableObject {
      * Updates the current chase speed at irregular intervals so the boss
      * alternates between normal pace and short faster bursts.
      */
-    updateChaseSpeed() {
+     updateChaseSpeed() {
         const now = Date.now();
         if (now < this.nextSpeedChangeAt) return;
-
-        this.currentChaseSpeed =
-            Math.random() < this.fastSpeedChance
-                ? this.fastChaseSpeed
-                : this.baseChaseSpeed;
-
-        const phaseDuration =
-            this.minSpeedPhaseDuration +
-            Math.random() * (this.maxSpeedPhaseDuration - this.minSpeedPhaseDuration);
-
+        this.currentChaseSpeed = Math.random() < this.fastSpeedChance ? this.fastChaseSpeed : this.baseChaseSpeed;
+        const phaseDuration = this.minSpeedPhaseDuration + Math.random() * (this.maxSpeedPhaseDuration - this.minSpeedPhaseDuration);
         this.nextSpeedChangeAt = now + phaseDuration;
     }
 
     /**
      * Handles movement and attack decisions based on the distance
      * between the boss and the character.
-     *
      * @param {Character} character - The player character.
      */
-    handleMovementBehavior(character) {
+     handleMovementBehavior(character) {
         const dx = this.x - character.x;
         const distance = Math.abs(dx);
-
         this.otherDirection = dx < 0;
-
         if (distance < this.attackRange) {
             this.speed = 0;
             this.attack(character);
             return;
         }
-
         if (!this.isAttacking) {
             this.updateChaseSpeed();
             this.speed = this.currentChaseSpeed;

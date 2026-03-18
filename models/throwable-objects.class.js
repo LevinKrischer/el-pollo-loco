@@ -1,4 +1,4 @@
-class ThrowableObject extends HitableObject {
+﻿class ThrowableObject extends HitableObject {
 
     offset = {
         top: 0,
@@ -7,11 +7,6 @@ class ThrowableObject extends HitableObject {
         left: 0
     };
 
-    /**
-     * Creates a new throwable object at the given world coordinates.
-     * @param {number} x - Horizontal world position.
-     * @param {number} y - Vertical world position.
-     */
     constructor(x, y) {
         super();
         this.x = x;
@@ -25,20 +20,17 @@ class ThrowableObject extends HitableObject {
      * - marks the object as thrown
      * - applies upward velocity
      * - starts gravity simulation
-     * - moves horizontally depending on the facing direction
-     *
+     * - moves horizontally depending on the facing direction 
      * @param {boolean} facingLeft - Whether the throw direction is left.
      */
-    throw(facingLeft) {
+     throw(facingLeft) {
         this.isThrown = true;
-
         this.speedY = 15;
         this.applyGravity();
-
         const direction = facingLeft ? -10 : 10;
-
         this.throwInterval = this.world.setIntervalTracked(() => {
             this.x += direction;
         }, 25);
     }
 }
+

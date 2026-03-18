@@ -1,8 +1,4 @@
-/**
- * Base class for all objects that can take damage, die,
- * and trigger hit or death effects. Extends MoveableObject.
- */
-class HitableObject extends MoveableObject {
+﻿class HitableObject extends MoveableObject {
 
     energy = 100;
     lastHit = 0;
@@ -20,11 +16,9 @@ class HitableObject extends MoveableObject {
      * Triggers hit effects when appropriate.
      * @param {number} [amount=2] - Amount of damage to apply.
      */
-    hit(amount = 2) {
+     hit(amount = 2) {
         if (this.isHurt()) return;
-
         this.energy -= amount;
-
         if (this.energy < 0) {
             this.energy = 0;
         } else {
@@ -36,16 +30,14 @@ class HitableObject extends MoveableObject {
      * Handles sound and state changes when the object is hit.
      * Plays different sounds depending on the object type.
      */
-    handleHitEffects() {
+     handleHitEffects() {
         this.lastHit = Date.now();
-
         if (this instanceof Character) {
             this.lastMoveTime = Date.now();
             if (typeof this.stopSnoring === 'function') this.stopSnoring();
             SoundManager.play(this.soundHurt);
             SoundManager.stop(this.walkSound);
         }
-
         if (this.isEndboss) {
             SoundManager.play(this.soundEndbossHurt);
         }
@@ -56,7 +48,7 @@ class HitableObject extends MoveableObject {
      * Hurt state lasts for 1 second after being hit.
      * @returns {boolean} True if the object is hurt.
      */
-    isHurt() {
+     isHurt() {
         const timePassed = (Date.now() - this.lastHit) / 1000;
         return timePassed < 1;
     }
@@ -65,7 +57,7 @@ class HitableObject extends MoveableObject {
      * Returns whether the object is dead.
      * @returns {boolean} True if energy is zero or the dead flag is set.
      */
-    isDead() {
+     isDead() {
         return this.dead || this.energy <= 0;
     }
 
@@ -73,7 +65,7 @@ class HitableObject extends MoveableObject {
      * Calculates the real hitbox frame based on the object's offset.
      * Used for collision detection.
      */
-    getRealFrame() {
+     getRealFrame() {
         this.rX = this.x + this.offset.left;
         this.rY = this.y + this.offset.top;
         this.rWidth = this.width - this.offset.left - this.offset.right;
@@ -85,7 +77,7 @@ class HitableObject extends MoveableObject {
      * @param {HitableObject} hitObj - The other object to test collision against.
      * @returns {boolean} True if the hitboxes overlap.
      */
-    isColliding(hitObj) {
+     isColliding(hitObj) {
         return (
             this.rX + this.rWidth > hitObj.rX &&
             this.rX < hitObj.rX + hitObj.rWidth &&
@@ -98,17 +90,15 @@ class HitableObject extends MoveableObject {
      * Kills the object, plays death sounds, triggers endboss logic,
      * stops movement, and schedules deletion.
      */
-    die() {
+     die() {
         this.energy = 0;
         this.dead = true;
         this.speed = 0;
-
         if (!this.deathSoundPlayed) {
             this.handleDeathSound();
             this.handleEndbossDeath();
             this.deathSoundPlayed = true;
         }
-
         this.stopMovement();
         this.scheduleDeletion();
     }
@@ -116,7 +106,7 @@ class HitableObject extends MoveableObject {
     /**
      * Plays the appropriate death sound depending on the object type.
      */
-    handleDeathSound() {
+     handleDeathSound() {
         if (this instanceof Chicken) {
             SoundManager.play(this.soundChickenDead1);
         } else if (this instanceof ChickenSmall) {
@@ -128,13 +118,10 @@ class HitableObject extends MoveableObject {
      * Handles the special death sequence for the endboss,
      * including animation, sound, and triggering the win screen.
      */
-    handleEndbossDeath() {
+     handleEndbossDeath() {
         if (!(this instanceof Endboss)) return;
-
         SoundManager.play(this.soundEndbossDead);
-
         this.playAnimation(this.imgsDead);
-
         this.world.setTimeoutTracked(() => {
             if (!this.world.gameStopped) {
                 this.world.stopGame();
@@ -146,7 +133,7 @@ class HitableObject extends MoveableObject {
     /**
      * Stops any active movement interval.
      */
-    stopMovement() {
+     stopMovement() {
         if (this.moveInterval) {
             clearInterval(this.moveInterval);
         }
@@ -155,9 +142,10 @@ class HitableObject extends MoveableObject {
     /**
      * Schedules the object for deletion after a delay.
      */
-    scheduleDeletion() {
+     scheduleDeletion() {
         this.world.setTimeoutTracked(() => {
             this.markedForDeletion = true;
         }, 5000);
     }
 }
+

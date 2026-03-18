@@ -1,5 +1,5 @@
-class Cloud extends MoveableObject {
-
+﻿class Cloud extends MoveableObject {
+    
     y = 20;
     width = 500;
     height = 250;
@@ -7,8 +7,6 @@ class Cloud extends MoveableObject {
     constructor() {
         super();
         this.loadImage("assets/img/5_background/layers/4_clouds/1.png");
-
-        // Random horizontal spawn position
         this.x = Math.random() * 3600;
     }
 
@@ -16,14 +14,15 @@ class Cloud extends MoveableObject {
      * Called once the world reference is assigned.
      * Starts the cloud's movement animation.
      */
-    initAfterWorldSet() {
+     initAfterWorldSet() {
         this.animate();
     }
 
     /**
      * Moves the cloud left continuously.
      */
-    animate() {
+     animate() {
         this.moveLeft();
     }
 }
+

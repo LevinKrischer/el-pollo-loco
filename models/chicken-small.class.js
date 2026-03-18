@@ -1,4 +1,4 @@
-class ChickenSmall extends HitableObject {
+﻿class ChickenSmall extends HitableObject {
 
     imgsWalking = ImageHub.chickenSmall.walking;
     imgsDead = ImageHub.chickenSmall.dead;
@@ -13,8 +13,6 @@ class ChickenSmall extends HitableObject {
         super().loadImage(ImageHub.chickenSmall.walking[0]);
         this.loadImages(this.imgsWalking);
         this.loadImages(this.imgsDead);
-
-        // Random spawn position and speed
         this.x = 500 + Math.random() * 3500;
         this.speed = 0.15 + Math.random() * 0.4;
     }
@@ -23,7 +21,7 @@ class ChickenSmall extends HitableObject {
      * Called once the world reference is assigned.
      * Starts movement and animation loops.
      */
-    initAfterWorldSet() {
+     initAfterWorldSet() {
         this.animate();
     }
 
@@ -31,7 +29,7 @@ class ChickenSmall extends HitableObject {
      * Starts the chicken's movement and animation loop.
      * Moves left continuously and begins frame updates.
      */
-    animate() {
+     animate() {
         this.moveLeft();
         this.startAnimationLoop();
     }
@@ -40,7 +38,7 @@ class ChickenSmall extends HitableObject {
      * Runs the animation loop, switching between walking frames
      * and the death animation depending on the chicken's state.
      */
-    startAnimationLoop() {
+     startAnimationLoop() {
         this.world.setIntervalTracked(() => {
             if (this.isDead()) {
                 this.playAnimation(this.imgsDead);
@@ -54,20 +52,18 @@ class ChickenSmall extends HitableObject {
      * Advances the walking animation by selecting the next frame
      * from the walking sprite list.
      */
-    playWalkingFrame() {
+     playWalkingFrame() {
         const index = this.currentImage % this.imgsWalking.length;
         const path = this.imgsWalking[index];
-
         this.img = this.imageCache[path];
         this.currentImage++;
     }
 
     /**
      * Returns whether the chicken is dead (energy depleted).
-     *
      * @returns {boolean} True if the chicken has no energy left.
      */
-    isDead() {
+     isDead() {
         return this.energy <= 0;
     }
 }

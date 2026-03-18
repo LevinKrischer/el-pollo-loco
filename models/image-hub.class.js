@@ -1,4 +1,4 @@
-class ImageHub {
+﻿class ImageHub {
     static character = {
         idle: [
             "assets/img/2_character_pepe/1_idle/idle/I-1.png",
@@ -12,7 +12,6 @@ class ImageHub {
             "assets/img/2_character_pepe/1_idle/idle/I-9.png",
             "assets/img/2_character_pepe/1_idle/idle/I-10.png"
         ],
-
         long_idle: [
             "assets/img/2_character_pepe/1_idle/long_idle/I-11.png",
             "assets/img/2_character_pepe/1_idle/long_idle/I-12.png",
